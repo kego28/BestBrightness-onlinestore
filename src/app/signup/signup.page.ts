@@ -18,6 +18,26 @@ export class SignupPage implements OnInit {
     duration: Math.random() * 3 + 4
   }));
 
+  isMenuOpen = false;
+  isScrolled = false;
+
+
+  // @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  onSubmit(){}
+
+
   isRegister = false;
   showLoginPassword = false;
   showRegisterPassword = false;

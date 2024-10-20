@@ -105,7 +105,24 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
     this.fetchPendingOrdersCount();
     this.fetchSalesData(this.currentFilter);
   }
-  
+  isMenuOpen = false;
+  isScrolled = false;
+
+
+  // @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  onSubmit(){}
 
   ngAfterViewInit() {
     this.updateChart();

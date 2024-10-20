@@ -1,0 +1,513 @@
+<ion-header class="ion-no-border">
+ 
+  <ion-toolbar class="bg-purple-600">
+    <ion-title>
+      <div class="flex items-center">
+        <span class="text-white text-xl font-bold">BESTBRIGHTNESS</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+    
+    <ion-toolbar class="bg-purple-600 px-4">
+      <ion-searchbar placeholder="Search Product" class="custom-searchbar"></ion-searchbar>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-content>
+  <ion-grid>
+    <ion-row>
+
+      <!-- Sidebar -->
+      <ion-col size="1" class="bg-purple-600 min-h-screen">
+        <ion-list lines="none" class="bg-transparent">
+          <ion-item class="bg-transparent text-white">
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            <ion-button routerLink="/home">Home</ion-button>
+          </ion-item>
+          <!-- <ion-item class="bg-transparent text-white">
+            <ion-icon name="grid-outline" slot="start"></ion-icon>
+            <ion-label>Categories</ion-label>
+          </ion-item> --> 
+          <!-- <ion-item class="bg-transparent text-white">
+            <ion-icon name="wallet-outline" slot="start"></ion-icon>
+            <ion-label>Wallet</ion-label>
+          </ion-item> -->
+
+          <ion-item class="bg-transparent text-white">
+            <ion-icon name="cart-outline" slot="start"></ion-icon>
+            <ion-button routerLink="/cart">Cart</ion-button>
+          </ion-item>
+          <ion-item class="bg-transparent text-white">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-button routerLink="/account">User Profile</ion-button>
+          </ion-item>
+          <!-- <ion-item class="bg-transparent text-white">
+            <ion-icon name="settings-outline" slot="start"></ion-icon>
+            <ion-label>Settings</ion-label>
+          </ion-item> -->
+          <!-- <ion-item class="bg-transparent text-white">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            <ion-label>Log Out</ion-label>
+          </ion-item> -->
+        </ion-list>
+      </ion-col>
+
+    <!-- // Desktop navigation links for Home, About, Contact, Privacy Policy -->
+    <!-- <ion-buttons slot="start" class="desktop-nav" style="display: flex; justify-content: center; width: 100%;">
+      <ion-button routerLink="/home" style="color: white; text-transform: none;">Home</ion-button>
+      <ion-button routerLink="/about-us" style="color: white; text-transform: none;">About</ion-button>
+      <ion-button routerLink="/contact" style="color: white; text-transform: none;">Contact</ion-button>
+      <ion-button routerLink="/privacy-policy" style="color: white; text-transform: none;">Privacy Policy</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header> -->
+
+
+
+<!-- <ion-menu contentId="main-content" side="start">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header> -->
+
+  <!-- <ion-content> -->
+    <!-- Side menu links for Home, About, Contact, Privacy Policy -->
+     <!-- <ion-list>
+      <ion-item button routerLink="/home">Home</ion-item>
+      <ion-item button routerLink="/about-us">About</ion-item>
+      <ion-item button routerLink="/contact">Contact</ion-item>
+      <ion-item button routerLink="/privacy-policy">Privacy Policy</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu> -->
+
+ <!-- Main Content -->
+ <ion-col size="10" class="bg-gray-100">
+  <div class="p-4">
+    <h2 class="text-xl font-semibold mb-4">Amazing Products<ion-badge color="danger">Afforable Prices</ion-badge></h2>
+    
+    <ion-row>
+      <ion-col size="12" size-sm="6" size-md="4" size-lg="3" *ngFor="let product of filteredProducts">
+        <ion-card class="rounded-lg overflow-hidden">
+          <div class="relative">
+            <img [src]="product.image_url || product.image" class="w-full h-48 object-cover" />
+            <ion-badge *ngIf="product.isSale" color="danger" 
+              class="absolute top-2 left-2">SALE</ion-badge>
+            <ion-button fill="solid" color="primary" class="absolute bottom-2 right-2">
+              <ion-icon name="cart-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <ion-card-content class="p-4">
+            <div class="flex items-center mb-2">
+              <!-- <ion-rating [rate]="product.rating" readonly="true"></ion-rating> -->
+            </div>
+            <h3 class="font-medium text-lg mb-1">{{ product.name }}</h3>
+            <p class="text-gray-600 mb-2">{{ product.description }}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-bold text-purple-600">
+                ${{ product.price | number:'1.2-2' }}
+              </span>
+              <ion-button fill="clear" color="medium">
+                <ion-icon name="cart-outline"></ion-icon>
+                </ion-button>
+                </div>
+                </ion-card-content>
+                </ion-card>
+                </ion-col>
+                </ion-row>
+                </div>
+                
+
+                
+
+
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-md="3">
+        <ion-item>
+          <ion-label>Category</ion-label>
+          <ion-select [(ngModel)]="selectedCategory" (ionChange)="filterByCategory(selectedCategory)">
+            <ion-select-option *ngFor="let category of categories" [value]="category">{{ category }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size="12" size-md="3">
+        <ion-item>
+          <ion-label>Sort By</ion-label>
+          <ion-select [(ngModel)]="sortOption" (ionChange)="sortProducts(sortOption)">
+            <ion-select-option value="name">Name</ion-select-option>
+            <ion-select-option value="price_low_high">Price: Low to High</ion-select-option>
+            <ion-select-option value="price_high_low">Price: High to Low</ion-select-option>
+            <!-- <ion-select-option value="rating">Rating</ion-select-option> -->
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row> 
+
+     <ion-row>
+      <ion-col size="6" size-sm="4" size-md="3" size-lg="2" *ngFor="let product of filteredProducts">
+        <ion-card class="compact-card">
+          <img [src]="product.image_url || product.image" [alt]="product.name" />
+          <ion-card-header>
+            <ion-card-subtitle>
+              <ion-badge color="danger" *ngIf="product.isSale">SALE</ion-badge>
+              <ion-badge color="primary" *ngIf="product.hasPromotion">{{ product.promotionName }}</ion-badge>
+            </ion-card-subtitle>
+            <ion-card-title></ion-card-title>
+            <p><strong>{{ product.name }}</strong></p>
+            <p>{{ product.description }}</p>
+          </ion-card-header>
+
+          <ion-card-content>
+            <div class="price-container">
+              <span class="price" [class.strikethrough]="product.hasPromotion">
+                R{{ product.price | number:'1.2-2' }}
+              </span>
+              <span *ngIf="product.hasPromotion" class="discounted-price">
+                R{{ product.discountedPrice | number:'1.2-2' }}
+              </span>
+            </div>
+            <div *ngIf="product.stock_quantity > 0; else outOfStock">
+              <div class="quantity-controls">
+                <ion-button fill="clear" (click)="decreaseQuantity(product)">
+                  <ion-icon name="remove-circle-outline"></ion-icon>
+                </ion-button>
+                <span>{{ product.quantity }}</span>
+                <ion-button fill="clear" (click)="increaseQuantity(product)">
+                  <ion-icon name="add-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+              <ion-button expand="block" fill="clear" (click)="addToCart(product)">Add to Cart</ion-button>
+            </div>
+            <ng-template #outOfStock>
+              <p class="out-of-stock">Out of Stock</p>
+            </ng-template>
+            </ion-card-content>
+            </ion-card>
+            </ion-col>
+            </ion-row>
+            </ion-grid>
+          </ion-content>
+         
+
+           _----------------------------------------------Login and signup-----------------------------------------
+
+<!-- <ion-content>
+  <div class="animated-background">
+    <div class="bubble" *ngFor="let bubble of bubbles" 
+         [ngStyle]="{'--size': bubble.size + 'px', 
+                    '--left': bubble.left + '%',
+                    '--delay': bubble.delay + 's',
+                    '--duration': bubble.duration + 's'}">
+    </div>
+  </div>
+
+  <div class="auth-container">
+    <ion-card [class.expand]="isRegister">
+      <div class="avatar"></div>
+      <ion-card-header>
+        <ion-card-title>{{ isRegister ? 'Register' : 'Login' }}</ion-card-title>
+        <ion-card-subtitle>{{ isRegister ? 'Create your account' : 'Welcome back' }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+     
+        <form *ngIf="!isRegister">
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="loginData.email" name="email"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon> 
+              <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="loginData.password" [type]="showLoginPassword ? 'text' : 'password'" name="password"></ion-input>
+              <ion-icon [name]="showLoginPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('login')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <div class="remember-forgot">
+            <ion-item lines="none">
+              <ion-checkbox slot="start">Remember me</ion-checkbox>
+            </ion-item>
+            <a href="forgot-password" class="forgot-password">Forgot Password?</a>
+          </div>
+
+          <ion-button expand="block" (click)="submitForm()">Login</ion-button>
+        </form>
+
+      
+        <form *ngIf="isRegister">
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="Username" labelPlacement="floating" placeholder="Enter your username" [(ngModel)]="userData.username" name="username"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="First Name" labelPlacement="floating" placeholder="Enter your first name" [(ngModel)]="userData.first_name" name="firstName"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="Last Name" labelPlacement="floating" placeholder="Enter your last name" [(ngModel)]="userData.last_name" name="lastName"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="userData.email" name="email"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="userData.password" [type]="showRegisterPassword ? 'text' : 'password'" name="password"></ion-input>
+              <ion-icon [name]="showRegisterPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('register')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input label="Confirm Password" labelPlacement="floating" placeholder="Confirm password" [(ngModel)]="userData.confirmPassword" [type]="showRegisterConfirmPassword ? 'text' : 'password'" name="confirmPassword"></ion-input>
+              <ion-icon [name]="showRegisterConfirmPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('registerConfirm')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <ion-button expand="block" (click)="submitForm()">Register</ion-button>
+        </form>
+
+        <div class="toggle-auth">
+          <ion-text>{{ isRegister ? 'Already have an account?' : 'Don\'t have an account?' }}</ion-text>
+          <a (click)="isRegister = !isRegister">{{ isRegister ? 'Login' : 'Register' }}</a>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<style>
+:host {
+  --ion-color-primary: #3880ff;
+  --ion-color-secondary: #3dc2ff;
+  --ion-background-color: #f4f5f8;
+}
+
+ion-content {
+  --background: transparent;
+}
+
+.animated-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  opacity: 0.6;
+  animation: float var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+  width: var(--size);
+  height: var(--size);
+  left: var(--left);
+  bottom: -100px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-100vh) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+ion-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  transition: all 0.3s ease;
+
+  &.expand {
+    max-width: 450px;
+  }
+}
+
+.avatar {
+  background-color: var(--ion-color-primary);
+  position: absolute;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.avatar::after {
+  content: "\1F464";
+  color: white;
+  font-size: 40px;
+}
+
+ion-card-header {
+  text-align: center;
+  padding-top: 2rem;
+}
+
+ion-card-title {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+ion-card-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+ion-item {
+  --background: rgba(255, 255, 255, 0.1);
+  --border-radius: 8px;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --highlight-height: 0;
+
+  &::part(native) {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+
+  ion-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  ion-input {
+    color: white !important;
+    --placeholder-color: rgba(255, 255, 255, 0.6);
+  }
+
+  ion-icon {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  
+  ion-checkbox {
+    --background: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.3);
+    --checkbox-background-checked: var(--ion-color-primary);
+  }
+  
+  ion-label, a {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+  }
+}
+
+ion-button {
+  --background: var(--ion-color-primary);
+  --background-hover: var(--ion-color-primary-shade);
+  --background-activated: var(--ion-color-primary-shade);
+  --border-radius: 8px;
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.toggle-auth {
+  text-align: center;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  
+  a {
+    color: var(--ion-color-secondary);
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+}
+
+@media (max-width: 480px) {
+  ion-card {
+    padding: 1.5rem;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+  }
+
+  .avatar::after {
+    font-size: 30px;
+  }
+
+  ion-card-title {
+    font-size: 20px;
+  }
+
+  ion-card-subtitle {
+    font-size: 14px;
+  }
+}
+</style> --> 
+
+                    
+
+

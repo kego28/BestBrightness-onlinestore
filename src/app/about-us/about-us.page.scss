@@ -1,54 +1,135 @@
 .about-content {
-  padding: 20px;
+  --background: #f4f4f4;
+}
+
+.about-hero {
+  background: linear-gradient(to right, #e2953d, #db7d11);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+  margin-bottom: 40px;
+}
+
+.about-hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.about-hero p {
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+
+.about-container {
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center items vertically */
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 20px;
 }
 
 .about-card {
-  background-color: #e1f0fc;
-  margin-bottom: 20px;
-  width: 100%; /* Make card full width */
-  text-align: center; /* Center text in the card */
+  flex: 1 1 300px;
+  max-width: 400px;
+  margin: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.about-card ion-card-title {
-  color: #84addd;
-}
-
-.about-card ion-card-content {
-  font-size: 18px;
-  color: #555;
+.about-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .icon-container {
   display: flex;
-  justify-content: center; /* Center icon horizontally */
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
 .icon-animation {
-  font-size: 40px;
-  animation: rotate 5s infinite linear;
+  font-size: 3em;
+  color: #db7d11;
+  animation: pulse 2s infinite;
 }
 
-@keyframes rotate {
-  100% { transform: rotate(360deg); }
-}
-/* Burger menu visibility for mobile */
-.burger-icon {
-  display: none;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
-.desktop-nav {
-  display: flex;
+ion-card-title {
+  font-size: 1.5em;
+  color: #333;
+  text-align: center;
+}
+
+ion-card-content {
+  color: #666;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.values-section {
+  background: rgb(252, 218, 186);
+  padding: 60px 20px;
+  margin-top: 40px;
+}
+
+.values-section h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.value-item {
+  text-align: center;
+}
+
+.value-item ion-icon {
+  font-size: 3em;
+  color: #db7d11;
+  margin-bottom: 15px;
+}
+
+.value-item h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.value-item p {
+  color: #666;
 }
 
 @media (max-width: 768px) {
-  .burger-icon {
-    display: block;
+  .about-hero h1 {
+    font-size: 2em;
   }
+  
+  .about-hero p {
+    font-size: 1em;
+  }
+  
+  .about-card {
+    flex: 1 1 100%;
+  }
+  
+  .values-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 
-  .desktop-nav {
-    display: none;
+@media (max-width: 480px) {
+  .values-grid {
+    grid-template-columns: 1fr;
   }
 }

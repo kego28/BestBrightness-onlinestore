@@ -1,285 +1,522 @@
-// ion-content.body {
-//   position: relative;
-//   height: 100vh; /* Ensure the content takes up the full height of the viewport */
-//  // --background: var(--secondary-color); /* Background color */
-// }
-
-// ion-card {
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%); /* Center the card */
-//   width: 300px; /* Default width */
-//   transition: width 0.3s ease; /* Smooth transition when toggling */
-// }
-
-// ion-card.expand {
-//   width: 500px; /* Expanded width for register form */
-// }
-
-// .auth-container {
-//   background: linear-gradient(135deg, #f5a7a1 0%, #a7c4f5 100%);
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   height: 100vh;
-// }
 
 // ion-content {
 //   --background: transparent;
+// }
+
+// .animated-background {
+//   position: absolute;
+//   width: 100%;
+//   height: 100%;
+//   top: 0;
+//   left: 0;
+//   z-index: 0;
+//   background: linear-gradient(135deg, #d6780d 0%, #2a5298 100%);
+// }
+
+// .bubble {
+//   position: absolute;
+//   border-radius: 50%;
+//   background: linear-gradient(45deg, #ff9a6b, #ffb88c);
+//   opacity: 0.6;
+//   animation: float var(--duration) ease-in-out infinite;
+//   animation-delay: var(--delay);
+//   width: var(--size);
+//   height: var(--size);
+//   left: var(--left);
+//   bottom:90px;
+// }
+
+// @keyframes float {
+//   0% {
+//     transform: translateY(0);
+//     opacity: 0.5;
+//   }
+//   50% {
+//     transform: translateY(-80vh);
+//     opacity: 0.2;
+//   }
+//   100% {
+//     transform: translateY(-100vh);
+//     opacity: 0;
+//   }
+// }
+
+// ion-card {
+//   position: relative;
+//   // background-color:#d37822;
+//   background: rgba(248, 190, 142, 0.1) !important;
+//   backdrop-filter: blur(10px);
+//   border-radius: 5px;
+//   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   // margin: 20px;
+//   width: 70%;
+//   height: 90%;
+//   padding-top:70px;
+//   max-width: 400px;
+//   margin: 0 auto;
+//   z-index: 1;
+//   top:50;
+//   // transform: translateY(-50%);
+
+//   &.expand {
+//     height: auto;
+//   }
+//   ion-card-header {
+//     ion-card-title {
+//       color: white;
+//     }
+//     ion-card-subtitle {
+//       color: rgba(255, 255, 255, 0.8);
+//     }
+//   }  
+
+// }
+
+// ion-card.expand {
+//   max-width: 500px;
+// }
+
+// .avatar{
+//   background-color: #144e88;
+//   position: absolute;
+//   border-radius: 50%;
+//   width: 40px;
+//   height: 40px;
 //   display: flex;
 //   justify-content: center;
 //   align-items: center;
+//   top: 20px;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   z-index: 999;
 // }
 
-ion-content {
-  --background: transparent;
-}
-// Add the animated background styles
-.animated-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  background: linear-gradient(135deg, #d6780d 0%, #2a5298 100%);
-}
+// .avatar::after {
+//   content: "\1F464";
+//   color: white;
+//   font-size: 30px;
+// }
 
-.bubble {
-  position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #ff9a6b, #ffb88c);
-  opacity: 0.6;
-  animation: float var(--duration) ease-in-out infinite;
-  animation-delay: var(--delay);
-  width: var(--size);
-  height: var(--size);
-  left: var(--left);
-  bottom:90px;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(-80vh);
-    opacity: 0.2;
-  }
-  100% {
-    transform: translateY(-100vh);
-    opacity: 0;
-  }
-}
-
-ion-card {
-  position: relative;
-  // background-color:#d37822;
-  background: rgba(248, 190, 142, 0.1) !important;
-  backdrop-filter: blur(10px);
-  border-radius: 5px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  // margin: 20px;
-  width: 70%;
-  height: 90%;
-  padding-top:70px;
-  max-width: 400px;
-  margin: 0 auto;
-  z-index: 1;
-  top:50;
-  // transform: translateY(-50%);
-
-  &.expand {
-    height: auto;
-  }
-  ion-card-header {
-    ion-card-title {
-      color: white;
-    }
-    ion-card-subtitle {
-      color: rgba(255, 255, 255, 0.8);
-    }
-  }  
-
-}
-
-ion-card.expand {
-  max-width: 500px;
-}
-
-.avatar{
-  background-color: #144e88;
-  position: absolute;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-}
-
-.avatar::after {
-  content: "\1F464";
-  color: white;
-  font-size: 30px;
-}
-
-// Style updates for form elements
-ion-item {
-  --background: rgba(255, 255, 255, 0.1);
-  --border-radius: 8px;
-  margin-bottom: 10px;
+// // Style updates for form elements
+// ion-item {
+//   --background: rgba(255, 255, 255, 0.1);
+//   --border-radius: 8px;
+//   margin-bottom: 10px;
   
-  &::part(native) {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    border-radius: 8px;
-  }
+//   &::part(native) {
+//     background: rgba(255, 255, 255, 0.1);
+//     backdrop-filter: blur(5px);
+//     border-radius: 8px;
+//   }
 
-  ion-label {
-    color: rgba(255, 255, 255, 0.9) !important;
-  }
+//   ion-label {
+//     color: rgba(255, 255, 255, 0.9) !important;
+//   }
 
-  ion-input {
-    color: rgba(255, 255, 255, 0.938) !important;
-    --placeholder-color: rgba(54, 51, 51, 0.6);
-  }
+//   ion-input {
+//     color: rgba(255, 255, 255, 0.938) !important;
+//     --placeholder-color: rgba(54, 51, 51, 0.6);
+//   }
 
-  ion-icon {
-    color: rgba(255, 255, 255, 0.9);
-  }
-}
+//   ion-icon {
+//     color: rgba(255, 255, 255, 0.9);
+//   }
+// }
 
-.avatar {
-  width: 80px;
-  height: 80px;
-  margin: 16px auto;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  backdrop-filter: blur(5px);
-}
+// .avatar {
+//   width: 80px;
+//   height: 80px;
+//   margin: 16px auto;
+//   background: rgba(255, 255, 255, 0.2);
+//   border-radius: 50%;
+//   backdrop-filter: blur(5px);
+// }
 
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 16px 0;
+// .remember-forgot {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin: 16px 0;
   
-  ion-checkbox {
-    --background: rgba(255, 255, 255, 0.1);
-    --border-color: rgba(255, 255, 255, 0.3);
-    --checkbox-background-checked: #2a5298;
-  }
+//   ion-checkbox {
+//     --background: rgba(255, 255, 255, 0.1);
+//     --border-color: rgba(255, 255, 255, 0.3);
+//     --checkbox-background-checked: #2a5298;
+//   }
   
-  // ion-label, a {
-  //   color: rgba(255, 255, 255, 0.9);
-  // }
-}
+//   // ion-label, a {
+//   //   color: rgba(255, 255, 255, 0.9);
+//   // }
+// }
 
-ion-button {
-  --background: #2a5298;
-  margin: 16px 0;
-}
+// ion-button {
+//   --background: #2a5298;
+//   margin: 16px 0;
+// }
 
-.register {
-  text-align: center;
-  margin-top: 16px;
-  color: rgba(255, 255, 255, 0.9);
+// .register {
+//   text-align: center;
+//   margin-top: 16px;
+//   color: rgba(255, 255, 255, 0.9);
   
-  a {
-    color: #4a8eff;
-    margin-left: 8px;
-    cursor: pointer;
-  }
-}
+//   a {
+//     color: #4a8eff;
+//     margin-left: 8px;
+//     cursor: pointer;
+//   }
+// }
 
-ion-card-header {
-  text-align: center;
-  padding-top: 50px;
-}
+// ion-card-header {
+//   text-align: center;
+//   padding-top: 50px;
+// }
 
-ion-card-title {
-  color: #32404e;
-  font-size: 24px;
-  font-weight: bold;
-}
+// ion-card-title {
+//   color: #32404e;
+//   font-size: 24px;
+//   font-weight: bold;
+// }
 
-ion-card-subtitle {
-  color: #161b1b;
-  font-size: 14px;
-}
+// ion-card-subtitle {
+//   color: #161b1b;
+//   font-size: 14px;
+// }
 
-.input-group {
-  position: relative;
-  margin-bottom: 5px;
-}
+// .input-group {
+//   position: relative;
+//   margin-bottom: 5px;
+// }
 
-// ion-input {
-//   --background: #f1efec;
-//   --padding-start: 20px;
-//   --padding-end: 10px;
-//   --padding-top: 5px;
-//   --padding-bottom: 5px;
+// // ion-input {
+// //   --background: #f1efec;
+// //   --padding-start: 20px;
+// //   --padding-end: 10px;
+// //   --padding-top: 5px;
+// //   --padding-bottom: 5px;
+// //   --border-radius: 5px;
+// // }
+
+// .input-group::before {
+//   position: absolute;
+//   left: 10px;
+//   top: 40%;
+//   transform: translateY(-50%);
+//   color: #c6d8d8;
+//   font-size: 20px;
+//   z-index: 1;
+// }
+
+// // .input-group.email::before {
+// //   content: "\2709";
+// // }
+
+// // .input-group.password::before {
+// //   content: "\1F512";
+// // }
+
+// .remember-forgot {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: 20px;
+//   font-size: 14px;
+// }
+
+// ion-checkbox {
+//   --size: 15px;
+//   margin-right: 8px;
+// }
+
+// .forgot-password {
+//   color: #4a90e2;
+//   text-decoration: none;
+// }
+
+// ion-button {
+//   --background: #3498db;
 //   --border-radius: 5px;
+//   margin-top: 20px;
 // }
 
-.input-group::before {
-  position: absolute;
-  left: 10px;
-  top: 40%;
-  transform: translateY(-50%);
-  color: #c6d8d8;
-  font-size: 20px;
-  z-index: 1;
-}
-
-// .input-group.email::before {
-//   content: "\2709";
+// .register {
+//   text-align: center;
+//   margin-top: 10px;
+//   font-size: 20x;
 // }
 
-// .input-group.password::before {
-//   content: "\1F512";
+// .register a {
+//   color: #4a90e2;
+//   text-decoration: none;
+//   cursor: pointer;
 // }
 
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
 
-ion-checkbox {
-  --size: 15px;
-  margin-right: 8px;
-}
 
-.forgot-password {
-  color: #4a90e2;
-  text-decoration: none;
-}
+// <ion-content>
+//   <div class="animated-background">
+//     <div class="bubble" *ngFor="let bubble of bubbles" 
+//          [ngStyle]="{'--size': bubble.size + 'px', 
+//                     '--left': bubble.left + '%',
+//                     '--delay': bubble.delay + 's',
+//                     '--duration': bubble.duration + 's'}">
+//     </div>
+//   </div>
 
-ion-button {
-  --background: #3498db;
-  --border-radius: 5px;
-  margin-top: 20px;
-}
+//   <div class="auth-container">
+//     <ion-card [class.expand]="isRegister">
+//       <div class="avatar"></div>
+//       <ion-card-header>
+//         <ion-card-title>{{ isRegister ? 'Register' : 'Login' }}</ion-card-title>
+//         <ion-card-subtitle>{{ isRegister ? 'Create your account' : 'Welcome back' }}</ion-card-subtitle>
+//       </ion-card-header>
 
-.register {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 20x;
-}
+//       <ion-card-content>
+//         <!-- Login form -->
+//         <form *ngIf="!isRegister">
+//           <div class="input-group">
+//             <ion-item>
+//               <ion-icon name="mail-outline" slot="start"></ion-icon>
+//               <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="loginData.email" name="email"></ion-input>
+//             </ion-item>
+//           </div>
 
-.register a {
-  color: #4a90e2;
-  text-decoration: none;
-  cursor: pointer;
-}
+//           <div class="input-group">
+//             <ion-item>
+//               <ion-icon name="lock-closed-outline" slot="start"></ion-icon> 
+//               <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="loginData.password" [type]="showLoginPassword ? 'text' : 'password'" name="password"></ion-input>
+//               <ion-icon [name]="showLoginPassword ? 'eye-off-outline' : 'eye-outline'" 
+//                         slot="end" (click)="togglePasswordVisibility('login')"></ion-icon>
+//             </ion-item>
+//           </div>
+
+//           <div class="remember-forgot">
+//             <ion-item lines="none">
+//               <ion-checkbox slot="start">Remember me</ion-checkbox>
+//             </ion-item>
+//             <a href="forgot-password" class="forgot-password">Forgot Password?</a>
+//           </div>
+
+//           <ion-button expand="block" (click)="submitForm()">Login</ion-button>
+//         </form>
+
+//         <!-- Register form -->
+//         <form *ngIf="isRegister">
+//           <!-- ... (register form fields) ... -->
+//         </form>
+
+//         <div class="register">
+//           <ion-text>{{ isRegister ? 'Already have an account?' : 'Don\'t have an account?' }}</ion-text>
+//           <a (click)="isRegister = !isRegister">{{ isRegister ? 'Login' : 'Register' }}</a>
+//         </div>
+//       </ion-card-content>
+//     </ion-card>
+//   </div>
+// </ion-content>
+
+// <style>
+// ion-content {
+//   --background: transparent;
+// }
+
+// .animated-background {
+//   position: absolute;
+//   width: 100%;
+//   height: 100vh;
+//   top: 0;
+//   left: 0;
+//   z-index: 0;
+//   background: linear-gradient(135deg, #d6780d 0%, #2a5298 100%);
+// }
+
+// .bubble {
+//   position: absolute;
+//   border-radius: 50%;
+//   background: linear-gradient(45deg, #ff9a6b, #ffb88c);
+//   opacity: 0.6;
+//   animation: float var(--duration) ease-in-out infinite;
+//   animation-delay: var(--delay);
+//   width: var(--size);
+//   height: var(--size);
+//   left: var(--left);
+//   bottom: 90px;
+// }
+
+// @keyframes float {
+//   0% {
+//     transform: translateY(0);
+//     opacity: 0.5;
+//   }
+//   50% {
+//     transform: translateY(-80vh);
+//     opacity: 0.2;
+//   }
+//   100% {
+//     transform: translateY(-100vh);
+//     opacity: 0;
+//   }
+// }
+
+// .auth-container {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   min-height: 100vh;
+//   padding: 20px;
+// }
+
+// ion-card {
+//   position: relative;
+//   background: rgba(248, 190, 142, 0.1) !important;
+//   backdrop-filter: blur(10px);
+//   border-radius: 5px;
+//   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   width: 70%;
+//   height: 90%;
+//   padding-top: 70px;
+//   max-width: 400px;
+//   margin: 0 auto;
+//   z-index: 1;
+//   top: 50;
+
+//   &.expand {
+//     height: auto;
+//     max-width: 500px;
+//   }
+// }
+
+// .avatar {
+//   background-color: #144e88;
+//   position: absolute;
+//   border-radius: 50%;
+//   width: 80px;
+//   height: 80px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   top: 20px;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   z-index: 999;
+// }
+
+// .avatar::after {
+//   content: "\1F464";
+//   color: white;
+//   font-size: 30px;
+// }
+
+// ion-card-header {
+//   text-align: center;
+//   padding-top: 50px;
+// }
+
+// ion-card-title {
+//   color: #32404e;
+//   font-size: 24px;
+//   font-weight: bold;
+// }
+
+// ion-card-subtitle {
+//   color: #161b1b;
+//   font-size: 14px;
+// }
+
+// .input-group {
+//   position: relative;
+//   margin-bottom: 5px;
+// }
+
+// ion-item {
+//   --background: rgba(255, 255, 255, 0.1);
+//   --border-radius: 8px;
+//   margin-bottom: 10px;
+  
+//   &::part(native) {
+//     background: rgba(255, 255, 255, 0.1);
+//     backdrop-filter: blur(5px);
+//     border-radius: 8px;
+//   }
+
+//   ion-label {
+//     color: rgba(255, 255, 255, 0.9) !important;
+//   }
+
+//   ion-input {
+//     color: rgba(255, 255, 255, 0.938) !important;
+//     --placeholder-color: rgba(54, 51, 51, 0.6);
+//   }
+
+//   ion-icon {
+//     color: rgba(255, 255, 255, 0.9);
+//   }
+// }
+
+// .remember-forgot {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin: 16px 0;
+//   font-size: 14px;
+  
+//   ion-checkbox {
+//     --background: rgba(255, 255, 255, 0.1);
+//     --border-color: rgba(255, 255, 255, 0.3);
+//     --checkbox-background-checked: #2a5298;
+//     --size: 15px;
+//     margin-right: 8px;
+//   }
+// }
+
+// .forgot-password {
+//   color: #4a90e2;
+//   text-decoration: none;
+// }
+
+// ion-button {
+//   --background: #3498db;
+//   --border-radius: 5px;
+//   margin-top: 20px;
+// }
+
+// .register {
+//   text-align: center;
+//   margin-top: 10px;
+//   font-size: 20px;
+//   color: rgba(255, 255, 255, 0.9);
+  
+//   a {
+//     color: #4a90e2;
+//     text-decoration: none;
+//     cursor: pointer;
+//     margin-left: 8px;
+//   }
+// }
+
+// @media (max-width: 480px) {
+//   ion-card {
+//     width: 90%;
+//     height: auto;
+//     padding-top: 50px;
+//   }
+
+//   .avatar {
+//     width: 60px;
+//     height: 60px;
+//     top: 10px;
+//   }
+
+//   .avatar::after {
+//     font-size: 24px;
+//   }
+
+//   ion-card-title {
+//     font-size: 20px;
+//   }
+
+//   ion-card-subtitle {
+//     font-size: 12px;
+//   }
+// }
+// </style>

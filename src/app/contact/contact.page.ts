@@ -5,4 +5,23 @@ import { Component } from '@angular/core';
   templateUrl: './contact.page.html',
   styleUrls: ['./contact.page.scss'],
 })
-export class ContactPage {}
+export class ContactPage {
+  isMenuOpen = false;
+  isScrolled = false;
+
+
+  // @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  onSubmit(){}
+}

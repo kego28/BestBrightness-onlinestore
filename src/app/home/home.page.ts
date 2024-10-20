@@ -9,7 +9,8 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 })
 export class HomePage implements OnInit, OnDestroy {
   isScrolled = false;
-
+  // isScrolled = false;
+  isMenuOpen = false;
   constructor(
     private menu: MenuController,
     private router: Router
@@ -22,6 +23,18 @@ export class HomePage implements OnInit, OnDestroy {
 
   openMenu() {
     this.menu.open();
+  }
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
   }
 
   Signup() {

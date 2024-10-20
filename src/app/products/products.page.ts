@@ -48,6 +48,26 @@ export class ProductsPage implements OnInit {
   promotions: Promotion[] = [];
   searchTerm: any;
 
+  isMenuOpen = false;
+  isScrolled = false;
+
+
+  // @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  onSubmit(){}
+
+
   constructor(
     private http: HttpClient,
     private cartService: CartService,

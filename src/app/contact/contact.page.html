@@ -1,79 +1,170 @@
-<ion-header class="ion-no-border" style="background-color: #0054e9;">
+
+<ion-header class="main-header" [class.header-scrolled]="isScrolled">
   <ion-toolbar>
-    
-    <ion-buttons slot="start" class="burger-icon">
-      <ion-menu-button></ion-menu-button>
+    <ion-buttons slot="start">
+      <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+        <ion-icon name="menu-outline"></ion-icon>
+      </ion-button>
+      <ion-title>
+        <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+      
+      </ion-title>
     </ion-buttons>
     
-    <!-- Desktop navigation links for Home, About, Contact, Privacy Policy -->
-    <ion-buttons slot="start" class="desktop-nav" style="display: flex; justify-content: center; width: 100%;">
-      <ion-button routerLink="/home" style="color: white; text-transform: none;">Home</ion-button>
-      <ion-button routerLink="/about-us" style="color: white; text-transform: none;">About</ion-button>
-      <ion-button routerLink="/contact" style="color: white; text-transform: none;">Contact</ion-button>
-      <ion-button routerLink="/privacy-policy" style="color: white; text-transform: none;">Privacy Policy</ion-button>
+    <ion-buttons slot="end" class="desktop-nav">
+      <ion-button routerLink="/account">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>Account</span>
+      </ion-button>
+      <ion-button routerLink="/products">
+        <ion-icon name="cube-outline"></ion-icon>
+        <span>Products</span>
+      </ion-button>
+      <ion-button routerLink="/Promotions">
+        <ion-icon name="gift-outline"></ion-icon>
+        <span>Promotions</span>
+      </ion-button>
+      <ion-button routerLink="/about-us">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>About Us</span>
+      </ion-button>
+      <ion-button routerLink="/contact">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span>Contact</span>
+      </ion-button>
+      <ion-button routerLink="/privacy-policy">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <span>Privacy</span>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
-
-
-<ion-menu contentId="main-content" side="start">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-    <!-- Side menu links for Home, About, Contact, Privacy Policy -->
-    <ion-list>
-      <ion-item button routerLink="/home">Home</ion-item>
-      <ion-item button routerLink="/about-us">About</ion-item>
-      <ion-item button routerLink="/contact">Contact</ion-item>
-      <ion-item button routerLink="/privacy-policy">Privacy Policy</ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
-
-
 <ion-content class="contact-content">
-  <div class="contact-container">
-    <ion-card class="contact-card">
-      <ion-card-header>
-        <div class="icon-container">
-          <ion-icon name="call-outline" class="icon-animation" style="color: #84addd;"></ion-icon>
-        </div>
-        <ion-card-title>Contact Information</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p><strong>Email:</strong> support&#64;cleanapp.com</p>
-        <p><strong>Phone:</strong> +123 456 7890</p>
-        <p><strong>Address:</strong> 123 Clean Street, Eco City, Planet Earth</p>
-      </ion-card-content>
-    </ion-card>
 
-    <ion-card class="contact-card">
-      <ion-card-header>
-        <div class="icon-container">
-          <ion-icon name="chatbubble-outline" class="icon-animation" style="color: #84addd;"></ion-icon>
-        </div>
-        <ion-card-title>Send Us a Message</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Your Name</ion-label>
-          <ion-input type="text"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Your Email</ion-label>
-          <ion-input type="email"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Your Message</ion-label>
-          <ion-textarea></ion-textarea>
-        </ion-item>
-        <ion-button expand="block" style="background-color: #84addd; color: white;">Send</ion-button>
-      </ion-card-content>
-    </ion-card>
+  <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+    <ion-list>
+      <ion-item routerLink="/account" (click)="closeMenu()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>Account</ion-label>
+      </ion-item>
+      <ion-item routerLink="/products" (click)="closeMenu()">
+        <ion-icon name="cube-outline" slot="start"></ion-icon>
+        <ion-label>Products</ion-label>
+      </ion-item>
+      <ion-item routerLink="/Promotions" (click)="closeMenu()">
+        <ion-icon name="gift-outline" slot="start"></ion-icon>
+        <ion-label>Promotions</ion-label>
+      </ion-item>
+      <ion-item routerLink="/about-us" (click)="closeMenu()">
+        <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+        <ion-label>About Us</ion-label>
+      </ion-item>
+      <ion-item routerLink="/contact" (click)="closeMenu()">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label>Contact</ion-label>
+      </ion-item>
+      <ion-item routerLink="/privacy-policy" (click)="closeMenu()">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label>Privacy Policy</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+
+  <div class="contact-hero">
+    <h1>Get in Touch</h1>
+    <p>We're here to help and answer any question you might have</p>
+  </div>
+
+  <div class="contact-container">
+    <div class="contact-info-section">
+      <ion-card class="contact-card">
+        <ion-card-header>
+          <div class="icon-container">
+            <ion-icon name="call-outline" class="icon-animation"></ion-icon>
+          </div>
+          <ion-card-title>Contact Information</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-item">
+            <ion-icon name="mail-outline"></ion-icon>
+            <p>support&#64;bestbrightness.com</p>
+          </div>
+          <div class="info-item">
+            <ion-icon name="call-outline"></ion-icon>
+            <p>+1 (555) 123-4567</p>
+          </div>
+          <div class="info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <p>123 Clean Street, Eco City, CA 90210</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="hours-card">
+        <ion-card-header>
+          <div class="icon-container">
+            <ion-icon name="time-outline" class="icon-animation"></ion-icon>
+          </div>
+          <ion-card-title>Business Hours</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
+          <p><strong>Saturday:</strong> 10:00 AM - 4:00 PM</p>
+          <p><strong>Sunday:</strong> Closed</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="contact-form-section">
+      <ion-card class="contact-card">
+        <ion-card-header>
+          <div class="icon-container">
+            <ion-icon name="chatbubble-outline" class="icon-animation"></ion-icon>
+          </div>
+          <ion-card-title>Send Us a Message</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form (ngSubmit)="onSubmit()">
+            <ion-item>
+              <ion-label position="floating">Your Name</ion-label>
+              <ion-input type="text" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Your Email</ion-label>
+              <ion-input type="email" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Subject</ion-label>
+              <ion-input type="text" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Your Message</ion-label>
+              <ion-textarea rows="4" required></ion-textarea>
+            </ion-item>
+            <ion-button expand="block" type="submit" class="submit-button">
+              <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+              Send Message
+            </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <div class="map-section">
+    <h2>Find Us</h2>
+    <div class="map-container">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3305.7152203521903!2d-118.24368674896251!3d34.05297902525843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c64f1b9f4a97%3A0x5c5987a58d24ca55!2sLos%20Angeles%2C%20CA%2090012!5e0!3m2!1sen!2sus!4v1634342241051!5m2!1sen!2sus" 
+        width="100%" 
+        height="450" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy">
+      </iframe>
+    </div>
   </div>
 </ion-content>
+
+

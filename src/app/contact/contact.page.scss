@@ -1,56 +1,137 @@
 .contact-content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center items vertically */
-  }
-  
-  .contact-card {
-    background-color: #e1f0fc;
-    margin-bottom: 20px;
-    width: 100%; /* Make card full width */
-    text-align: center; /* Center text in the card */
-  }
-  
-  .contact-card ion-card-title {
-    color: #84addd;
-  }
-  
-  .contact-card ion-card-content {
-    font-size: 18px;
-    color: #555;
-  }
-  
-  .icon-container {
-    display: flex;
-    justify-content: center; /* Center icon horizontally */
-  }
-  
-  .icon-animation {
-    font-size: 40px;
-    animation: bounce 2s infinite;
-  }
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  /* Burger menu visibility for mobile */
-.burger-icon {
-  display: none;
+  --background: #f4f4f4;
 }
 
-.desktop-nav {
+.contact-hero {
+  background: linear-gradient(to right, #e2953d, #db7d11);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+  margin-bottom: 40px;
+}
+
+.contact-hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.contact-hero p {
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+
+.contact-container {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-info-section,
+.contact-form-section {
+  flex: 1 1 400px;
+  margin: 20px;
+}
+
+.contact-card,
+.hours-card {
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.contact-card:hover,
+.hours-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.icon-animation {
+  font-size: 3em;
+  color: #db7d11;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+ion-card-title {
+  font-size: 1.5em;
+  color: #333;
+  text-align: center;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.info-item ion-icon {
+  font-size: 1.5em;
+  color: #db7d11;
+  margin-right: 15px;
+}
+
+ion-item {
+  --background: transparent;
+  --border-color: #db7d11;
+  --highlight-color-focused: #e2953d;
+  margin-bottom: 15px;
+}
+
+ion-label {
+  color: #666 !important;
+}
+
+.submit-button {
+  --background: #db7d11;
+  --background-hover: #e2953d;
+  --background-activated: #c26c0e;
+  margin-top: 20px;
+}
+
+.map-section {
+  padding: 40px 20px;
+  background: white;
+}
+
+.map-section h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.map-container {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
-  .burger-icon {
-    display: block;
+  .contact-hero h1 {
+    font-size: 2em;
   }
-
-  .desktop-nav {
-    display: none;
+  
+  .contact-hero p {
+    font-size: 1em;
+  }
+  
+  .contact-info-section,
+  .contact-form-section {
+    flex: 1 1 100%;
   }
 }
-  

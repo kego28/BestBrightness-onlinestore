@@ -1,89 +1,394 @@
-<!-- <div class="auth-container"> -->
-<ion-content>
-  
-<!-- Add this new div for animated background -->
-<div class="animated-background">
-  <div class="bubble" *ngFor="let bubble of bubbles" 
-       [ngStyle]="{'--size': bubble.size + 'px', 
-                  '--left': bubble.left + '%',
-                  '--delay': bubble.delay + 's',
-                  '--duration': bubble.duration + 's'}">
+
+<ion-header class="main-header" [class.header-scrolled]="isScrolled">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+        <ion-icon name="menu-outline"></ion-icon>
+      </ion-button>
+      <ion-title>
+        <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+      
+      </ion-title>
+    </ion-buttons>
+    
+    <ion-buttons slot="end" class="desktop-nav">
+      <ion-button routerLink="/account">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>Account</span>
+      </ion-button>
+      <ion-button routerLink="/products">
+        <ion-icon name="cube-outline"></ion-icon>
+        <span>Products</span>
+      </ion-button>
+      <ion-button routerLink="/Promotions">
+        <ion-icon name="gift-outline"></ion-icon>
+        <span>Promotions</span>
+      </ion-button>
+      <ion-button routerLink="/about-us">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>About Us</span>
+      </ion-button>
+      <ion-button routerLink="/contact">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span>Contact</span>
+      </ion-button>
+      <ion-button routerLink="/privacy-policy">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <span>Privacy</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content >
+
+  <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+    <ion-list>
+      <ion-item routerLink="/account" (click)="closeMenu()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>Account</ion-label>
+      </ion-item>
+      <ion-item routerLink="/products" (click)="closeMenu()">
+        <ion-icon name="cube-outline" slot="start"></ion-icon>
+        <ion-label>Products</ion-label>
+      </ion-item>
+      <ion-item routerLink="/Promotions" (click)="closeMenu()">
+        <ion-icon name="gift-outline" slot="start"></ion-icon>
+        <ion-label>Promotions</ion-label>
+      </ion-item>
+      <ion-item routerLink="/about-us" (click)="closeMenu()">
+        <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+        <ion-label>About Us</ion-label>
+      </ion-item>
+      <ion-item routerLink="/contact" (click)="closeMenu()">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label>Contact</ion-label>
+      </ion-item>
+      <ion-item routerLink="/privacy-policy" (click)="closeMenu()">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label>Privacy Policy</ion-label>
+      </ion-item>
+    </ion-list>
   </div>
-</div>
 
-  <ion-card [class.expand]="isRegister">
-    <!-- <div class="avatar-div"> -->
-      <div class="avatar"></div>
-   <!-- </div> -->
-    <ion-card-header>
-      <ion-card-title>{{ isRegister ? 'Register' : 'Login' }}</ion-card-title>
-      <ion-card-subtitle>{{ isRegister ? 'Fill the registration form' : 'Enter your login details' }}</ion-card-subtitle>
-    </ion-card-header>
 
-    <ion-card-content>
-      <!-- Fields for Login -->
-      <div *ngIf="!isRegister">
-        <div class="input-group email">
-          <ion-item>
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
-          <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="loginData.email"></ion-input>
-        </ion-item>
-        </div>
-
-        <div class="input-group password" >
-          <ion-item>
-            <ion-icon name="lock-closed-outline" slot="start"></ion-icon> 
-          <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="loginData.password" [type]="showLoginPassword ? 'text' : 'password'"></ion-input>
-          <ion-icon [name]="showLoginPassword ? 'eye-off-outline' : 'eye-outline'" 
-                    slot="end" (click)="togglePasswordVisibility('login')"></ion-icon>
-          </ion-item>
-        </div>
-      <div class="remember-forgot">
-        <ion-item lines="none">
-          <ion-checkbox slot="start">Remember me</ion-checkbox>
-        </ion-item>
-        <a href="forgot-password" class="forgot-password">Forgot Password?</a>
-      </div>
+  <div class="animated-background">
+    <div class="bubble" *ngFor="let bubble of bubbles" 
+         [ngStyle]="{'--size': bubble.size + 'px', 
+                    '--left': bubble.left + '%',
+                    '--delay': bubble.delay + 's',
+                    '--duration': bubble.duration + 's'}">
     </div>
+  </div>
 
-      <!-- Fields for Registration -->
-      <div *ngIf="isRegister">
-        <div class="input-group">
-          <ion-input label="Username" labelPlacement="floating" placeholder="Enter your username" [(ngModel)]="userData.username"></ion-input>
-        </div>
-        <div class="input-group">
-          <ion-input label="First Name" labelPlacement="floating" placeholder="Enter your first name" [(ngModel)]="userData.first_name"></ion-input>
-        </div>
-        <div class="input-group">
-          <ion-input label="Last Name" labelPlacement="floating" placeholder="Enter your last name" [(ngModel)]="userData.last_name"></ion-input>
-        </div>
-        <div class="input-group email">
-          <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="userData.email"></ion-input>
-        </div>
-        <div class="input-group password">
-          <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="userData.password" [type]="showRegisterPassword ? 'text' : 'password'"></ion-input>
-          <ion-icon [name]="showRegisterPassword ? 'eye-off-outline' : 'eye-outline'" 
-                    slot="end" (click)="togglePasswordVisibility('register')"></ion-icon>
-        </div>
-        <div class="input-group password">
-          <ion-input label="Confirm Password" labelPlacement="floating" placeholder="Confirm password" [(ngModel)]="userData.confirmPassword"  [type]="showRegisterConfirmPassword ? 'text' : 'password'"></ion-input>
-          <ion-icon [name]="showRegisterConfirmPassword ? 'eye-off-outline' : 'eye-outline'" 
-                    slot="end" (click)="togglePasswordVisibility('registerConfirm')"></ion-icon>
-        </div>
-      </div>
+  <div class="auth-container">
+    <ion-card [class.expand]="isRegister">
+      <div class="avatar"></div>
+      <ion-card-header>
+        <ion-card-title>{{ isRegister ? 'Register' : 'Login' }}</ion-card-title>
+        <ion-card-subtitle>{{ isRegister ? 'Create your account' : 'Welcome back' }}</ion-card-subtitle>
+      </ion-card-header>
 
-      <!-- Submit Button -->
-      <ion-button expand="block" (click)="submitForm()">{{ isRegister ? 'Register' : 'Login' }}</ion-button>
+      <ion-card-content>
+        <!-- Login form -->
+        <form *ngIf="!isRegister">
+          <!-- ... (login form content remains the same) ... -->
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="loginData.email" name="email"></ion-input>
+            </ion-item>
+          </div>
 
-      <!-- Checkbox to toggle between Login and Register -->
-      <div class="register">
-        <!-- <ion-label>Register</ion-label>
-        <ion-checkbox slot="end" [(ngModel)]="isRegister"></ion-checkbox>
-      </ion-item> -->
-      <ion-text>{{ isRegister ? 'Already have an account?' : 'Don\'t have an account?' }}</ion-text>
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon> 
+              <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="loginData.password" [type]="showLoginPassword ? 'text' : 'password'" name="password"></ion-input>
+              <ion-icon [name]="showLoginPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('login')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <div class="remember-forgot">
+            <ion-item lines="none">
+              <ion-checkbox slot="start">Remember me</ion-checkbox>
+            </ion-item>
+            <a href="forgot-password" class="forgot-password">Forgot Password?</a>
+          </div>
+
+          <ion-button expand="block" (click)="submitForm()">Login</ion-button>
+        </form>
+
+        <!-- Register form -->
+        <form *ngIf="isRegister">
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="Username" labelPlacement="floating" placeholder="Enter your username" [(ngModel)]="userData.username" name="username"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="First Name" labelPlacement="floating" placeholder="Enter your first name" [(ngModel)]="userData.first_name" name="firstName"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input label="Last Name" labelPlacement="floating" placeholder="Enter your last name" [(ngModel)]="userData.last_name" name="lastName"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-input label="Email" labelPlacement="floating" placeholder="Enter email" [(ngModel)]="userData.email" name="email"></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input label="Password" labelPlacement="floating" placeholder="Enter password" [(ngModel)]="userData.password" [type]="showRegisterPassword ? 'text' : 'password'" name="password"></ion-input>
+              <ion-icon [name]="showRegisterPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('register')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <div class="input-group">
+            <ion-item>
+              <ion-icon name="lock-closed-outline" slot="start" ></ion-icon>
+              <ion-input style="color:black" label="Confirm Password" labelPlacement="floating" placeholder="Confirm password" [(ngModel)]="userData.confirmPassword" [type]="showRegisterConfirmPassword ? 'text' : 'password'" name="confirmPassword"></ion-input>
+              <ion-icon [name]="showRegisterConfirmPassword ? 'eye-off-outline' : 'eye-outline'" 
+                        slot="end" (click)="togglePasswordVisibility('registerConfirm')"></ion-icon>
+            </ion-item>
+          </div>
+
+          <ion-button expand="block" (click)="submitForm()">Register</ion-button>
+        </form>
+
+        <div class="toggle-auth">
+          <ion-text>{{ isRegister ? 'Already have an account?' : 'Don\'t have an account?' }}</ion-text>
           <a (click)="isRegister = !isRegister">{{ isRegister ? 'Login' : 'Register' }}</a>
         </div>
-    </ion-card-content>
-  </ion-card>
-
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
+
+<style>
+:host {
+  --ion-color-primary: #e09d50;
+  --ion-color-secondary: #d48325;
+  --ion-background-color: #f4f5f8;
+  --color:black;
+}
+
+
+ion-content {
+  --background: transparent;
+}
+
+.animated-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #d4b189, #ee9a3a);
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  opacity: 0.6;
+  animation: float var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+  width: var(--size);
+  height: var(--size);
+  left: var(--left);
+  bottom: -100px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-100vh) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+
+  /* background:blue;
+  z-index:99; */
+}
+
+ion-card {
+  position: relative;
+  background: rgb(255, 255, 255) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border:5px solid #db7d11;
+  box-shadow: 0 4px 30px rgba(219, 125, 17, 0.2);
+  /* border: 1px solid rgba(226, 149, 61, 0.3); */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-top:75px;
+  transition: all 0.3s ease;
+
+  &.expand {
+    max-width: 450px;
+  }
+}
+
+.avatar {
+  background-color: var(--ion-color-secondary);
+  position: absolute;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 10px rgba(219, 125, 17, 0.3);
+ 
+}
+
+.avatar::after {
+  content: "\1F464";
+  color: white;
+  font-size: 40px;
+}
+
+ion-card-header {
+  text-align: center;
+  padding-top: 2rem;
+}
+
+ion-card-title {
+  color: #db7d11;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+ion-card-subtitle {
+  color: rgba(226, 149, 61, 0.8);
+  font-size: 16px;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+  border:1px solid black;
+  border-radius:10px;
+}
+
+ion-item {
+  color:var(--color);
+  --background: rgba(226, 149, 61, 0);
+  --border-radius: 8px;
+  --border-color: rgba(219, 125, 17, 0);
+  
+  --highlight-height: 0;
+
+  &::part(native) {
+    background: rgba(226, 149, 61, 0);
+    border-radius: 8px;
+  }
+
+  ion-label {
+    color: rgb(0, 0, 0) !important;
+  }
+
+  ion-input {
+    color: #db7d11 !important;
+    --placeholder-color: rgba(226, 149, 61, 0.6);
+  }
+
+  ion-icon {
+    color: rgba(219, 125, 17, 0.9);
+  }
+}
+
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  
+  ion-checkbox {
+    --background: rgba(226, 149, 61, 0.1);
+    --border-color: rgba(219, 125, 17, 0.3);
+    --checkbox-background-checked: var(--ion-color-secondary);
+  }
+  
+  ion-label, a {
+    color: rgba(219, 125, 17, 0.9);
+    font-size: 14px;
+  }
+}
+
+ion-button {
+  --background: var(--ion-color-secondary);
+  --background-hover: #c46f0f;
+  --background-activated: #c46f0f;
+  --border-radius: 8px;
+  margin: 1rem 0;
+  font-weight: bold;
+}
+
+.toggle-auth {
+  text-align: center;
+  margin-top: 1rem;
+  color: rgba(219, 125, 17, 0.9);
+  font-size: 14px;
+  
+  a {
+    color: var(--ion-color-primary);
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+}
+
+@media (max-width: 480px) {
+  ion-card {
+    padding: 1.5rem;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+  }
+
+  .avatar::after {
+    font-size: 30px;
+  }
+
+  ion-card-title {
+    font-size: 20px;
+  }
+
+  ion-card-subtitle {
+    font-size: 14px;
+  }
+}
+</style>
