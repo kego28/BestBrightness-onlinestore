@@ -142,3 +142,176 @@
     <ion-button expand="block" (click)="PlaceOrder()">Place Order</ion-button>
   </div>
 </ion-content>
+<!-- <ion-content class="ion-padding">
+  <section class="h-100 h-custom" style="background-color: #eee;">
+    <ion-grid class="h-100">
+      <ion-row class="d-flex justify-content-center align-items-center h-100">
+        <ion-col>
+          <ion-card>
+            <ion-card-content class="p-4">
+              <ion-row>
+                <ion-col size="12" size-lg="7">
+                  <h5 class="mb-3">
+                    <ion-button fill="clear" class="text-body" routerLink="/products">
+                      <ion-icon name="arrow-back" slot="start"></ion-icon>
+                      Continue shopping
+                    </ion-button>
+                  </h5>
+                  <ion-item-divider></ion-item-divider>
+
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                      <p class="mb-1">Shopping cart</p>
+                      <p class="mb-0">You have {{ cartItems.length }} items in your cart</p>
+                    </div>
+                    <div>
+                      <p class="mb-0">
+                        <ion-text color="medium">Sort by:</ion-text>
+                        <ion-button fill="clear" class="text-body">
+                          price <ion-icon name="chevron-down"></ion-icon>
+                        </ion-button>
+                      </p>
+                    </div>
+                  </div>
+
+                  <ion-card *ngFor="let item of cartItems" class="mb-3">
+                    <ion-card-content>
+                      <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-row align-items-center">
+                          <div>
+                            <ion-img [src]="item.image" style="width: 65px;"></ion-img>
+                          </div>
+                          <div class="ms-3">
+                            <h5>{{ item.name }}</h5>
+                            <p class="small mb-0">{{ item.description }}</p>
+                          </div>
+                        </div>
+                        <div class="d-flex flex-row align-items-center">
+                          <div style="width: 50px;">
+                            <h5 class="fw-normal mb-0">{{ item.quantity }}</h5>
+                          </div>
+                          <div style="width: 80px;">
+                            <h5 class="mb-0">{{ item.price | currency }}</h5>
+                          </div>
+                          <ion-button fill="clear" color="medium" (click)="removeItem(item)">
+                            <ion-icon name="trash"></ion-icon>
+                          </ion-button>
+                        </div>
+                      </div>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+
+                <ion-col size="12" size-lg="5">
+                  <ion-card class="bg-primary text-white rounded-3">
+                    <ion-card-content>
+                      <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">Card details</h5>
+                      </div>
+
+                      <p class="small mb-2">Card type</p>
+                      <ion-button fill="clear" class="text-white">
+                        <ion-icon name="logo-mastercard" class="fa-2x me-2"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" class="text-white">
+                        <ion-icon name="logo-visa" class="fa-2x me-2"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" class="text-white">
+                        <ion-icon name="card" class="fa-2x me-2"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" class="text-white">
+                        <ion-icon name="logo-paypal" class="fa-2x"></ion-icon>
+                      </ion-button>
+
+                      <ion-item class="bg-primary">
+                        <ion-label position="floating">Cardholder's Name</ion-label>
+                        <ion-input type="text" [(ngModel)]="cardholderName"></ion-input>
+                      </ion-item>
+
+                      <ion-item class="bg-primary">
+                        <ion-label position="floating">Card Number</ion-label>
+                        <ion-input type="text" [(ngModel)]="cardNumber" maxlength="19"></ion-input>
+                      </ion-item>
+
+                      <ion-row>
+                        <ion-col size="6">
+                          <ion-item class="bg-primary">
+                            <ion-label position="floating">Expiration</ion-label>
+                            <ion-input type="text" [(ngModel)]="expirationDate" placeholder="MM/YYYY"></ion-input>
+                          </ion-item>
+                        </ion-col>
+                        <ion-col size="6">
+                          <ion-item class="bg-primary">
+                            <ion-label position="floating">CVV</ion-label>
+                            <ion-input type="password" [(ngModel)]="cvv" maxlength="3"></ion-input>
+                          </ion-item>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-item-divider class="bg-primary"></ion-item-divider>
+
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">Subtotal</p>
+                        <p class="mb-2">{{ subtotal | currency }}</p>
+                      </div>
+
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">Shipping</p>
+                        <p class="mb-2">{{ shipping | currency }}</p>
+                      </div>
+
+                      <div class="d-flex justify-content-between mb-4">
+                        <p class="mb-2">Total (Incl. taxes)</p>
+                        <p class="mb-2">{{ total | currency }}</p>
+                      </div>
+
+                      <ion-button expand="block" class="btn-lg" (click)="checkout()">
+                        <div class="d-flex justify-content-between">
+                          <span>{{ total | currency }}</span>
+                          <span>Checkout <ion-icon name="arrow-forward" class="ms-2"></ion-icon></span>
+                        </div>
+                      </ion-button>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+</ion-content>
+
+<style>
+  .bg-primary {
+    --background: linear-gradient(135deg, #e2953d, #db7d11);
+    --color: white;
+  }
+
+  ion-item.bg-primary {
+    --background: transparent;
+    --color: white;
+  }
+
+  ion-button.text-white {
+    --color: white;
+  }
+
+  .h-custom {
+    height: 100vh !important;
+  }
+
+  @media (min-width: 1025px) {
+    .h-custom {
+      height: 100vh !important;
+    }
+  }
+
+  ion-item-divider {
+    min-height: 1px;
+    width: 100%;
+    background: rgba(255,255,255,0.2);
+    margin: 10px 0;
+  }
+</style> -->

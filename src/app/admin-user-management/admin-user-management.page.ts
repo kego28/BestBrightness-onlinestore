@@ -3,6 +3,7 @@ import { IonModal, LoadingController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ToastController, AlertController } from '@ionic/angular';
 
+import { ModalController, Platform } from '@ionic/angular';
 interface User {
   user_id: number;
   username: string;
@@ -39,16 +40,71 @@ export class AdminUserManagementPage implements OnInit {
   users: any[] = [];
   filteredUsers: any[] = [];
 
+
+  // searchQuery: string = '';
+  // selectedFilter: string = 'all';
+  // filteredUsers: any[] = [];
+  isHeaderScrolled: boolean = false;
+  isSmallScreen: boolean = false;
+  // addUserModal: any;
+  isMenuOpen: boolean = false;
+
   constructor(
     private http: HttpClient,
     private toastController: ToastController,
     private alertController: AlertController,
     private loadingController: LoadingController,
+
+
+    
+      private modalController: ModalController,
+      private platform: Platform
+    
   ) {}
 
   ngOnInit() {
     this.fetchUsers();
+    this.filterUsers();
+    this.isSmallScreen = this.platform.width() < 768;
+    this.platform.resize.subscribe(() => {
+      this.isSmallScreen = this.platform.width() < 768;
+    });
   }
+  onContentScroll(event: any) {
+    this.isHeaderScrolled = event.detail.scrollTop > 50;
+  }
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+  // filterUsers() {
+  //   this.filteredUsers = this.users.filter(user => {
+  //     const matchesSearch = user.first_name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+  //                           user.last_name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+  //                           user.email.toLowerCase().includes(this.searchQuery.toLowerCase());
+      
+  //     const matchesFilter = this.selectedFilter === 'all' || user.role === this.selectedFilter;
+      
+  //     return matchesSearch && matchesFilter;
+  //   });
+  // }
+  // async presentAddUserModal() {
+  //   this.addUserModal = await this.modalController.create({
+  //     component: AddUserModalComponent,
+  //     cssClass: 'add-user-modal'
+  //   });
+  //   await this.addUserModal.present();
+
+  //   const { data } = await this.addUserModal.onWillDismiss();
+  //   if (data) {
+  //     this.addNewUser(data);
+  //   }
+  // }
+
+  // dismissModal() {
+  //   if (this.addUserModal) {
+  //     this.addUserModal.dismiss();
+  //   }
+  // }
 
   // Method to open the modal
   async presentAddUserModal() {

@@ -1,57 +1,153 @@
-.policy-content {
+/* policy-page.scss */
+
+:host {
+  --ion-background-color: #f4f4f4;
+}
+
+.policy-hero {
+  background: linear-gradient(to right, #e2953d, #db7d11);
+  color: #ffffff;
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 30px;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+
+.policy-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.policy-card {
+  background-color: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  ion-card-header {
+    background-color: #f9f9f9;
+    text-align: center;
+    padding-top: 30px;
+  }
+
+  ion-card-title {
+    font-size: 1.3rem;
+    color: #333333;
+    margin-top: 10px;
+  }
+
+  ion-card-content {
+    font-size: 1rem;
+    color: #666666;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center items vertically */
+    line-height: 1.6;
   }
-  
-  .policy-card {
-    background-color: #e1f0fc;
-    margin-bottom: 20px;
-    width: 100%; /* Make card full width */
-    text-align: center; /* Center text in the card */
-  }
-  
-  .policy-card ion-card-title {
-    color: #84addd;
-  }
-  
-  .policy-card ion-card-content {
-    font-size: 18px;
-    color: #555;
-  }
-  
-  .icon-container {
-    display: flex;
-    justify-content: center; /* Center icon horizontally */
-  }
-  
-  .icon-animation {
-    font-size: 40px;
-    animation: fadeIn 3s infinite;
-  }
-  
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  /* Burger menu visibility for mobile */
-.burger-icon {
-  display: none;
 }
 
-.desktop-nav {
+.icon-container {
+  background-color: #ffffff;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  ion-icon {
+    font-size: 40px;
+    color: #db7d11;
+  }
 }
 
-@media (max-width: 768px) {
-  .burger-icon {
-    display: block;
-  }
+.icon-animation {
+  animation: pulse 2s infinite;
+}
 
-  .desktop-nav {
-    display: none;
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
-  
+.contact-section {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 40px auto 0;
+
+  h2 {
+    font-size: 2rem;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #666666;
+    margin-bottom: 20px;
+  }
+
+  ion-button {
+    --background: #db7d11;
+    --background-hover: #e2953d;
+    --background-activated: #c46e0f;
+    --background-focused: #c46e0f;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 767px) {
+  .policy-hero {
+    h1 {
+      font-size: 2rem;
+    }
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .policy-card {
+    ion-card-title {
+      font-size: 1.2rem;
+    }
+    ion-card-content {
+      font-size: 0.9rem;
+    }
+  }
+
+  .contact-section {
+    h2 {
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 1rem;
+    }
+  }
+}

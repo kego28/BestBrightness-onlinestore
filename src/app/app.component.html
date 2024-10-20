@@ -1,4 +1,4 @@
-<ion-app>
+<!-- <ion-app>
   <ion-menu contentId="main-content" type="overlay">
     <ion-content>
       <ion-list id="inbox-list">
@@ -24,4 +24,85 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
+</ion-app> -->
+
+<!-- app.component.html -->
+<!-- <ion-app>
+  <ion-header class="main-header" [class.header-scrolled]="isScrolled">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+          <ion-icon name="menu-outline"></ion-icon>
+        </ion-button>
+        <ion-title>
+          <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+        </ion-title>
+      </ion-buttons>
+      
+      <ion-buttons slot="end" class="desktop-nav" *ngIf="showAdminButtons">
+        <ion-button *ngFor="let p of adminPages" [routerLink]="[p.url]">
+          <ion-icon [name]="p.icon"></ion-icon>
+          <span>{{ p.title }}</span>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content [fullscreen]="true" [class.blur-content]="isMenuOpen">
+    <div class="mobile-menu" [class.show-menu]="isMenuOpen" *ngIf="showAdminButtons" >
+      <ion-list>
+        <ion-item *ngFor="let p of adminPages" [routerLink]="[p.url]" (click)="closeMenu()">
+          <ion-icon [name]="p.icon" slot="start"></ion-icon>
+          <ion-label>{{ p.title }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-content>
+</ion-app> -->
+<!-- app.component.html -->
+<ion-app>
+  <ng-container *ngIf="isAdminPage">
+    <ion-header class="main-header" [class.header-scrolled]="isScrolled">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+            <ion-icon name="menu-outline"></ion-icon>
+          </ion-button>
+          <ion-title>
+            <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+          </ion-title>
+        </ion-buttons>
+        
+        <ion-buttons slot="end" class="desktop-nav">
+          <ion-button *ngFor="let p of adminPages" [routerLink]="[p.url]">
+            <ion-icon [name]="p.icon"></ion-icon>
+            <span>{{ p.title }}</span>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content [fullscreen]="true" [class.blur-content]="isMenuOpen">
+      <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+        <ion-list>
+          <ion-item *ngFor="let p of adminPages" [routerLink]="[p.url]" (click)="closeMenu()">
+            <ion-icon [name]="p.icon" slot="start"></ion-icon>
+            <ion-label>{{ p.title }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <ion-router-outlet id="main-content"></ion-router-outlet>
+    </ion-content>
+  </ng-container>
+
+  <ng-container *ngIf="!isAdminPage">
+    <ion-content>
+      <ion-router-outlet></ion-router-outlet>
+    </ion-content>
+  </ng-container>
 </ion-app>
+
+<!-- app.component.ts -->
