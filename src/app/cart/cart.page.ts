@@ -67,7 +67,34 @@ export class CartPage implements OnInit {
      private loadingController: LoadingController,
      private firestore: AngularFirestore,
      private router: Router
-  ) {}
+  ) {
+
+  }
+ 
+    
+    showAddressPopup: boolean = false;
+    // savedAddresses: any[] = []; // Populate this with your saved addresses
+  
+    selectDeliveryMethod(method: string) {
+      this.deliveryMethod = method;
+    }
+  
+    openAddressPopup() {
+      this.showAddressPopup = true;
+    }
+  
+    closeAddressPopup() {
+      this.showAddressPopup = false;
+    }
+  
+    
+  
+    selectAddress(address: any) {
+      // Implement address selection logic
+      this.closeAddressPopup();
+    }
+  
+  
 
   ngOnInit() {
     const navigation = this.router.getCurrentNavigation();
