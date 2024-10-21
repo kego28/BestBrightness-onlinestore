@@ -106,7 +106,7 @@
             <ion-icon name="cart-outline"></ion-icon>
           </ion-button>
         </div>
-
+    
         <div class="product-info">
           <h3 class="product-name">{{ product.name }}</h3>
           <div class="product-details">
@@ -120,9 +120,13 @@
                 <ion-icon name="add-outline"></ion-icon>
               </ion-button>
             </div>
+            <div class="stock-status">
+              {{ getStockStatus(product) }}
+            </div>
           </div>
         </div>
       </div>
     </div>
+    
   </div>
 </ion-content>

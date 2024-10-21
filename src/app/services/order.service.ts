@@ -6,7 +6,15 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
     })
     export class OrderService {
+
+      private apiUrl = 'http://localhost/user_api/current_user.php'; // Updated endpoint
+
         constructor(private http: HttpClient) {}
+
+        getCurrentUser() {
+            return this.http.get<{ user_id: number; email: string; username: string; role: string }>(this.apiUrl);
+          }
+          
         placeOrder(orderDetails: any): Observable<any> {
             // Implement API call to place the order
             return this.http.post('/api/orders', orderDetails);
@@ -22,4 +30,7 @@ import { Observable } from 'rxjs';
                     return this.http.get(`/api/orders/${orderId.toString()}/status`);
        
                     }}
+
+
+    
                     

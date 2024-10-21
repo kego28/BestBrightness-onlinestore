@@ -8,13 +8,25 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, OnDestroy {
+  currentUser:any;
   isScrolled = false;
   // isScrolled = false;
   isMenuOpen = false;
   constructor(
     private menu: MenuController,
     private router: Router
-  ) {}
+  ) {
+
+    const navigation = this.router.getCurrentNavigation();
+
+    // Check if navigation and its state are defined
+    if (navigation?.extras.state) {
+      this.currentUser = navigation.extras.state['user'] || null; // Use bracket notation
+      console.log('Current User:', this.currentUser);
+    } else {
+      console.log('No user data found.');
+    }
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
@@ -42,7 +54,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   browseProducts() {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/products'], { state: { user: this.currentUser } }); // Pass user data in state
   }
 
   viewPromotions() {

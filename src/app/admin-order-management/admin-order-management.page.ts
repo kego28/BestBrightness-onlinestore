@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, IonModal } from '@ionic/angular';
 import { catchError, tap } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-admin-order-management',
@@ -12,8 +12,8 @@ import { Observable, of, throwError } from 'rxjs';
 export class AdminOrderManagementPage implements OnInit {
   @ViewChild('updateStatusModal') updateStatusModal!: IonModal;
   @ViewChild('viewOrderModal') viewOrderModal!: IonModal;
+
   currentOrderDetails: any = null;
-  
   orderData: any[] = [];
   selectedStatus: string = '';
   currentOrder: any = null;
@@ -26,7 +26,7 @@ export class AdminOrderManagementPage implements OnInit {
     private http: HttpClient,
     private alertController: AlertController,
     private toastController: ToastController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.fetchOrders();
@@ -34,15 +34,21 @@ export class AdminOrderManagementPage implements OnInit {
 
   fetchOrders() {
     this.http.get<{ orderData: any[] }>('http://localhost/user_api/orders.php')
-      .subscribe(
-        response => {
-          this.orderData = response.orderData;
-        },
-        error => {
+      .pipe(
+        tap(response => {
+          // Log the response for debugging
+          console.log('Fetched orders:', response.orderData);
+        }),
+        catchError(error => {
           console.error('Error fetching orders:', error);
           this.presentToast('Failed to fetch orders', 'danger');
-        }
-      );
+          return of({ orderData: [] }); // Return an empty array on error
+        })
+      )
+      .subscribe(response => {
+        this.orderData = response.orderData;
+        this.filteredOrderData = [...this.orderData]; // Initialize filtered data
+      });
   }
 
   applyFilters() {
@@ -84,11 +90,11 @@ export class AdminOrderManagementPage implements OnInit {
         catchError(error => {
           console.error('Error fetching order details:', error);
           this.presentToast('Failed to fetch order details', 'danger');
-          return throwError(() => error);
+          return of(null); // Return null on error
         })
       )
       .subscribe((response: any) => {
-        if (response.success) {
+        if (response && response.success) {
           this.currentOrderDetails = response.order;
           this.viewOrderModal.present();
         } else {
@@ -113,66 +119,31 @@ export class AdminOrderManagementPage implements OnInit {
       return;
     }
 
-    console.log('Attempting to update order:', {
-      orderId: this.currentOrder.order_id,
-      currentStatus: this.currentOrder.status,
-      newStatus: this.selectedStatus,
-      timestamp: new Date().toISOString()
-    });
+    const updateData = {
+      status: this.selectedStatus,
+      previousStatus: this.currentOrder.status
+    };
 
-    this.http.get<any>(`http://localhost/user_api/orders.php?id=${this.currentOrder.order_id}`)
+    this.http.put(`http://localhost/user_api/orders.php?id=${this.currentOrder.order_id}`, updateData)
       .pipe(
-        catchError(this.handleError<any>('fetchOrderDetails'))
+        tap(response => {
+          console.log('Update response:', response);
+        }),
+        catchError(error => {
+          console.error('Error updating order status:', error);
+          this.presentToast('Failed to update order status', 'danger');
+          return of(null); // Return null on error
+        })
       )
-      .subscribe((orderDetails: any) => {
-        if (orderDetails && orderDetails.success) {
-          const updateData = {
-            status: this.selectedStatus,
-            previousStatus: this.currentOrder.status
-          };
-
-          this.http.put(`http://localhost/user_api/orders.php?id=${this.currentOrder.order_id}`, updateData)
-            .pipe(
-              tap(response => {
-                console.log('Server Response:', {
-                  response,
-                  timestamp: new Date().toISOString()
-                });
-              }),
-              catchError(this.handleError<any>('updateOrderStatus'))
-            )
-            .subscribe({
-              next: (response: any) => {
-                if (response && response.success) {
-                  this.presentToast('Order status updated successfully', 'success');
-                  this.fetchOrders();
-                  this.updateStatusModal.dismiss();
-                } else {
-                  this.presentToast(response && response.message || 'Failed to update order status', 'danger');
-                }
-              }
-            });
+      .subscribe(response => {
+        if (response && response) {
+          this.presentToast('Order status updated successfully', 'success');
+          this.fetchOrders(); // Refresh the list of orders
+          this.updateStatusModal.dismiss();
         } else {
-          this.presentToast('Failed to fetch order details', 'danger');
+          this.presentToast(response && response || 'Failed to update order status', 'danger');
         }
       });
-  }
-
-  private calculateQuantityChanges(orderItems: any[], currentStatus: string, newStatus: string): any[] {
-    const changes = [];
-    const shouldSubtract = newStatus === 'order-processed';
-    const shouldRestore = (currentStatus === 'order-processed') && (newStatus === 'pending' || newStatus === 'payment-received');
-
-    if (shouldSubtract || shouldRestore) {
-      for (const item of orderItems) {
-        changes.push({
-          product_id: item.product_id,
-          quantity: shouldSubtract ? -item.quantity : item.quantity
-        });
-      }
-    }
-
-    return changes;
   }
 
   async deleteOrder(order: any) {
@@ -192,13 +163,13 @@ export class AdminOrderManagementPage implements OnInit {
                 catchError(error => {
                   console.error('Error deleting order:', error);
                   this.presentToast('Failed to delete order', 'danger');
-                  return throwError(() => error);
+                  return of(null); // Return null on error
                 })
               )
               .subscribe((response: any) => {
-                if (response.success) {
+                if (response && response.success) {
                   this.presentToast('Order deleted successfully', 'success');
-                  this.fetchOrders();
+                  this.fetchOrders(); // Refresh the list of orders
                 } else {
                   this.presentToast(response.message || 'Failed to delete order', 'danger');
                 }
@@ -219,13 +190,5 @@ export class AdminOrderManagementPage implements OnInit {
       position: 'bottom'
     });
     toast.present();
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      this.presentToast(`${operation} failed. Please try again.`, 'danger');
-      return of(result as T);
-    };
   }
 }

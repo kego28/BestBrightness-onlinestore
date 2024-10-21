@@ -4,6 +4,7 @@ import { ToastController, IonSearchbar } from '@ionic/angular';
 import { CartService } from '../services/cart.service';
 import { PromotionService } from '../services/promotion.service'; 
 import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 interface Product {
   product_id: number;
@@ -50,6 +51,7 @@ export class ProductsPage implements OnInit {
 
   isMenuOpen = false;
   isScrolled = false;
+  currentUser:any;
 
 
   // @HostListener('window:scroll', ['$event'])
@@ -74,12 +76,22 @@ export class ProductsPage implements OnInit {
     private navCtrl: NavController,
     private toastController: ToastController,
     private promotionService: PromotionService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.loadProducts();
     this.getUserId();
     this.loadPromotions();
+
+    const navigation = this.router.getCurrentNavigation();
+
+    if (navigation?.extras.state) {
+      this.currentUser = navigation.extras.state['user'] || null; // Access user data
+      console.log('Current User in Products:', this.currentUser);
+    } else {
+      console.log('No user data found in Products page.');
+    }
   }
   getStarRating(rating: number): string {
     const fullStar = '★';
@@ -106,6 +118,18 @@ export class ProductsPage implements OnInit {
     }
   }
 
+  getStockStatus(product: Product): string {
+    if (product.stock_quantity < 1) {
+      return 'Out of stock';
+    } else if (product.stock_quantity > 10) {
+      return 'In stock';
+    } else if (product.stock_quantity <  10 && product.stock_quantity > 0) {
+
+      return 'Running low on stock';
+    }
+    return '';
+  }
+  
 
   // Fetch products from MySQL
   loadProducts() {

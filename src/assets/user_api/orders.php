@@ -23,7 +23,6 @@ if ($conn->connect_error) {
 }
 
 // Handle POST request for inserting a new order
-// Handle POST request for inserting a new order
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = file_get_contents("php://input");
     $data = json_decode($input);
@@ -36,40 +35,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Received data: " . print_r($data, true));
 
     // Prepare and bind for ORDERS table
-    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
         die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
     }
 
-    $stmt->bind_param("idss", $data->user_id, $data->total_amount, $data->order_type, $data->status);
-
-    // Execute the statement
-    if ($stmt->execute()) {
-        $order_id = $conn->insert_id; // Capture the order_id
+    // Loop through items to insert into orders table
+    foreach ($data->items as $item) {
+        $stmt->bind_param("idsssdid", $data->user_id, $data->total_amount, $data->order_type, $data->status, $item->name, $item->price, $item->discounted_price, $item->quantity);
         
-        // Insert order items
-        $stmt_items = $conn->prepare("INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)");
-        if (!$stmt_items) {
-            error_log("Prepare items failed: " . $conn->error);
-            die(json_encode(array("success" => false, "message" => "Prepare items failed: " . $conn->error)));
+        // Execute the statement
+        if (!$stmt->execute()) {
+            error_log("Failed to place order: " . $stmt->error);
+            echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
+            exit; // Exit if execution fails
         }
-
-        foreach ($data->items as $item) {
-            $stmt_items->bind_param("iiid", $order_id, $item->product_id, $item->quantity, $item->price);
-            if (!$stmt_items->execute()) {
-                error_log("Execute items failed: " . $stmt_items->error);
-                die(json_encode(array("success" => false, "message" => "Execute items failed: " . $stmt_items->error)));
-            }
-        }
-        $stmt_items->close();
-        
-        // Return success message with order_id
-        echo json_encode(array("success" => true, "message" => "Order placed successfully", "order_id" => $order_id));
-    } else {
-        error_log("Failed to place order: " . $stmt->error);
-        echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
     }
+
+    $order_id = $conn->insert_id; // Capture the last inserted order_id
+
+    // Insert order items separately
+    $stmt_items = $conn->prepare("INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)");
+    if (!$stmt_items) {
+        error_log("Prepare items failed: " . $conn->error);
+        die(json_encode(array("success" => false, "message" => "Prepare items failed: " . $conn->error)));
+    }
+
+    foreach ($data->items as $item) {
+        $stmt_items->bind_param("iiid", $order_id, $item->product_id, $item->quantity, $item->price);
+        if (!$stmt_items->execute()) {
+            error_log("Execute items failed: " . $stmt_items->error);
+            die(json_encode(array("success" => false, "message" => "Execute items failed: " . $stmt_items->error)));
+        }
+    }
+
+    $stmt_items->close();
+
+    // Return success message with order_id
+    echo json_encode(array("success" => true, "message" => "Order placed successfully", "order_id" => $order_id));
 
     $stmt->close();
 }
@@ -90,7 +94,7 @@ else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } else if (isset($_GET['id'])) {
         // View a specific order
         $order_id = $_GET['id'];
-        $sql = "SELECT * FROM ORDERS WHERE order_id = ?";
+        $sql = "SELECT * FROM ORDERS WHERE user_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $order_id);
         $stmt->execute();

@@ -134,13 +134,20 @@ export class SignupPage implements OnInit {
               console.log("User ID: " + response.user_id);
               console.log("Username: " + response.username);
 
+              const userData = {
+                email: sessionStorage.getItem('userEmail'),
+                role: sessionStorage.getItem('userRole'),
+                userId: sessionStorage.getItem('userId'),
+                username: sessionStorage.getItem('username')
+            };
+
               // Navigate based on the role
               if (response.role === 'admin') {
-                this.router.navigate(['/admin-dashboard']); // Navigate to admin dashboard
+                this.router.navigate(['/admin-dashboard'] , { state: { user: userData } }); // Navigate to admin dashboard
               } else if (response.role === 'cashier') {
-                this.router.navigate(['/pos']); // Navigate to POS page
+                this.router.navigate(['/pos'],  { state: { user: userData } }); // Navigate to POS page
               } else {
-                this.router.navigate(['/home']); // Navigate to home page for all other roles
+                this.router.navigate(['/home'],  { state: { user: userData } }); // Navigate to home page for all other roles
               }
             } else {
               await this.presentToast('Login failed: ' + response.message, 'danger');
@@ -153,6 +160,9 @@ export class SignupPage implements OnInit {
         );
     }
   }
+
+ 
+
   
 
   validateForm(): boolean {

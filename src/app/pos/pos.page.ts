@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
+import { catchError, forkJoin, Observable, of, tap } from 'rxjs';
 import { PromotionService } from '../services/promotion.service'; 
 
 interface Product {
@@ -24,6 +24,16 @@ interface Product {
   hasPromotion?: boolean; // Add this property
   promotionName?: string; // Add this property
 }
+
+interface OrderItem {
+  product_id: number;
+  quantity: number;
+  price: number;
+  discounted_price?: number; // Optional, if applicable
+  name?: string; // Optional, for cart display
+}
+
+
 
 
 @Component({
@@ -49,7 +59,11 @@ export class POSPage implements OnInit {
   cartItems: any[] = [];
   userId: string | null = null;
   promotions: any[] = [];
+  filteredOrderData: any[] = [];
+  orderData: any[] = [];
 
+  orderIdInput: number =0; // New property for order ID input
+  fetchedOrder: any = null; // New property to store the fetched order
 
   constructor(private alertController: AlertController,
               private http: HttpClient,
@@ -292,6 +306,66 @@ resetCart() {
     this.filterProducts(searchTerm);
   }
 
+  searchWalkInProducts() {
+    // Convert orderIdInput to an integer
+    const orderId = parseInt(this.orderIdInput as any, 10);
+
+    if (!isNaN(orderId)) { // Check if it's a valid number
+        this.http.get<{ success: boolean; order: any }>(`http://localhost/user_api/orders.php?id=${orderId}`)
+            .subscribe({
+                next: (response) => {
+                    if (response.success && response.order) {
+                        this.fetchedOrder = response.order; // Update to match your response structure
+                        const orderDetails = `
+                        Order ID: ${this.fetchedOrder.order_id}
+                        User ID: ${this.fetchedOrder.user_id}
+                        Total Amount: $${this.fetchedOrder.total_amount}
+                        Order Type: ${this.fetchedOrder.order_type}
+                        Status: ${this.fetchedOrder.status}
+                        Created At: ${new Date(this.fetchedOrder.created_at).toLocaleString()}
+                    `;
+                        this.showAlert('Order found!', `Order ID: ${response.order.order_id}`);
+                        this.showAlert('Order Found!', orderDetails);
+                        this.populateCartFromFetchedOrder(); // Populate cart with the fetched order
+                    } else {
+                        this.showAlert('Order Not Found', 'No order found with this ID.');
+                    }
+                },
+                error: (error) => {
+                    console.error('Error fetching order:', error);
+                    this.showAlert('Error', 'Failed to fetch order.');
+                }
+            });
+    } else {
+        this.showAlert('Invalid Input', 'Please enter a valid order ID.');
+    }
+}
+
+
+
+populateCartFromFetchedOrder() {
+  if (!this.fetchedOrder || !this.fetchedOrder.items) {
+      console.error('Fetched order or items are undefined');
+      return; // Exit the method if the order or items are not available
+  }
+
+  // Populate the cart from fetched order items
+  this.cart = this.fetchedOrder.items.map((item: OrderItem) => ({
+      product_id: item.product_id,
+      name: this.fetchedOrder.name || '', // Default to an empty string if name is not provided
+      quantity: this.fetchedOrder.quantity,
+      price: this.fetchedOrder.price,
+      discountedPrice: this.fetchedOrder.discounted_price || item.price, // Use price if discounted_price is not available
+      hasPromotion: !!this.fetchedOrder.discounted_price, // True if discounted_price is present
+      promotionName: null // Set to null; adjust if you have promotion names
+  }));
+
+  this.updateCartWithPromotions(); // Update the cart with any applicable promotions
+}
+
+
+
+
   onCategoryChange() {
     this.filterProducts();
 }
@@ -521,6 +595,18 @@ addToCart(product: Product) {
     } else {
       this.onBarcodeEnter();     // Handle barcode entry
     }
+  }
+
+  getStockStatus(product: Product): string {
+    if (product.stock_quantity < 1) {
+      return 'Out of stock';
+    } else if (product.stock_quantity > 10) {
+      return 'In stock';
+    } else if (product.stock_quantity <  10 && product.stock_quantity > 0) {
+
+      return 'Running low on stock';
+    }
+    return '';
   }
   
 

@@ -24,6 +24,14 @@
       <div class="search-bar">
         <ion-searchbar placeholder="Search products or scan barcode" (ionChange)="searchProducts($event)"></ion-searchbar>
       </div>
+      <!-- Order ID Input for Walk In -->
+<div class="search-in-bar">
+  <ion-input
+    [(ngModel)]="orderIdInput"
+    placeholder="Type Order ID for Walk In"
+    (keyup.enter)="searchWalkInProducts()">
+  </ion-input>
+</div>
       <ion-segment [(ngModel)]="selectedCategory" (ionChange)="onCategoryChange()" scrollable>
         <ion-segment-button *ngFor="let category of categories" [value]="category.name">
           <ion-icon [name]="category.icon"></ion-icon>
@@ -40,6 +48,9 @@
               <span *ngIf="product.hasPromotion" class="discounted-price">R{{ product.discountedPrice!.toFixed(2) }}</span>
             </p>
             <span *ngIf="product.hasPromotion" class="promotion-tag">{{ product.promotionName }}</span>
+          </div>
+          <div class="stock-status">
+            {{ getStockStatus(product) }}
           </div>
         </div>
       </div>
