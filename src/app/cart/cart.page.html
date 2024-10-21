@@ -1,153 +1,12 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <ion-content class="ion-padding">
-  <div class="cart-container">
-    <table class="cart-table" *ngIf="cartItems.length > 0; else emptyCart">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of cartItems">
-          <td class="product-info">
-            <ion-img [src]="item.image_url"></ion-img>
-            <div>
-              <h3>{{ item.name }}</h3>
-              <p *ngIf="item.hasPromotion" class="promotion-tag">{{ item.promotionName }}</p>
-              <ion-button fill="clear" (click)="removeItem(item.product_id)">Remove</ion-button>
-            </div>
-          </td>
-          <td>
-            <div class="quantity-control">
-              <ion-button fill="clear" (click)="updateQuantity(item.product_id, item.quantity - 1)">-</ion-button>
-              <span>{{ item.quantity }}</span>
-              <ion-button fill="clear" (click)="updateQuantity(item.product_id, item.quantity + 1)">+</ion-button>
-              <ion-button fill="clear" (click)="enterCustomQuantity(item.product_id)">
-                <ion-icon name="create-outline"></ion-icon>
-              </ion-button>
-            </div>
-          </td>
-          <td>
-            <ng-container *ngIf="item.hasPromotion">
-              <span class="original-price">R{{ item.price }}</span>
-              <span class="discounted-price">R{{ item.discountedPrice }}</span>
-            </ng-container>
-            <ng-container *ngIf="!item.hasPromotion">
-              R{{ item.price }}
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="item.hasPromotion">
-              <span class="original-price">R{{ (item.price * item.quantity) }}</span>
-              <span class="discounted-price">R{{ (item.discountedPrice * item.quantity) }}</span>
-            </ng-container>
-            <ng-container *ngIf="!item.hasPromotion">
-              R{{ (item.price * item.quantity) }}
-            </ng-container>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <ng-template #emptyCart>
-      <div class="empty-cart-message">
-        <h3>Your cart is empty</h3>
-        <p>Add some items to your cart to see them here.</p>
-      </div>
-    </ng-template>
-    <div class="cart-total">
-      <table>
-        <tr>
-          <td>Original Subtotal</td>
-          <td>R{{ subtotal }}</td>
-        </tr>
-        <tr>
-          <td>Discounted Subtotal</td>
-          <td>R{{ discountedSubtotal }}</td>
-        </tr>
-        <tr>
-          <td>Tax</td>
-          <td>R{{ tax }}</td>
-        </tr>
-        <tr>
-          <td><strong>Original Total</strong></td>
-          <td><strong>R{{ total }}</strong></td>
-        </tr>
-        <tr>
-          <td><strong>Discounted Total</strong></td>
-          <td><strong>R{{ discountedTotal }}</strong></td>
-        </tr>
-      </table>
-    </div>
-
-
-    <ion-item-divider>
-      <ion-label>Delivery Method</ion-label>
-    </ion-item-divider>
-    <ion-radio-group [(ngModel)]="deliveryMethod">
-      <ion-item>
-        <ion-label>Delivery</ion-label>
-        <ion-radio value="delivery"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Walk-in Collection</ion-label>
-        <ion-radio value="walk-in"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-
-    <div *ngIf="deliveryMethod === 'delivery'">
-      <ion-item-divider>
-        <ion-label>Shipping Information</ion-label>
-      </ion-item-divider>
-      
-      <ion-card *ngFor="let address of savedAddresses">
-        <ion-card-content>
-          <ion-row>
-            <ion-col size="10">
-              <p>{{ address.address_line1 }}</p>
-              <p *ngIf="address.address_line2">{{ address.address_line2 }}</p>
-              <p>{{ address.city }}, {{ address.province }}</p>
-              <p>{{ address.postal_code }}</p>
-              <p>{{ address.country }}</p>
-            </ion-col>
-            <ion-col size="2">
-              <ion-button fill="clear" (click)="deleteAddress(address.id)">
-                <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-      </ion-card>
-    
-      <ion-button expand="block" (click)="addNewAddress()">Add New Address</ion-button>
-    </div>
-
-    <ion-item-divider>
-      <ion-label>Order Summary</ion-label>
-    </ion-item-divider>
-    <ion-item>
-      <ion-label>Subtotal</ion-label>
-      <ion-note slot="end">R{{ subtotal }}</ion-note>
-    </ion-item>
-    <ion-item>
-      <ion-label>Tax</ion-label>
-      <ion-note slot="end">R{{ tax }}</ion-note>
-    </ion-item>
-    <ion-item>
-      <ion-label>Total</ion-label>
-      <ion-note slot="end"><strong>R{{ total}}</strong></ion-note>
-    </ion-item>
-
-    <ion-button expand="block" (click)="PlaceOrder()">Place Order</ion-button>
-  </div>
-</ion-content>
-<!-- <ion-content class="ion-padding">
-  <section class="h-100 h-custom" style="background-color: #eee;">
-    <ion-grid class="h-100">
+  <section class="h-100 h-custom" style="background-color: #eeeeee00;">
+    <ion-grid class="h-50">
       <ion-row class="d-flex justify-content-center align-items-center h-100">
         <ion-col>
-          <ion-card>
+          <ion-card class="card-container">
             <ion-card-content class="p-4">
               <ion-row>
                 <ion-col size="12" size-lg="7">
@@ -165,109 +24,155 @@
                       <p class="mb-0">You have {{ cartItems.length }} items in your cart</p>
                     </div>
                     <div>
-                      <p class="mb-0">
+                      <!-- <p class="mb-0">
                         <ion-text color="medium">Sort by:</ion-text>
                         <ion-button fill="clear" class="text-body">
                           price <ion-icon name="chevron-down"></ion-icon>
                         </ion-button>
-                      </p>
+                      </p> -->
                     </div>
                   </div>
 
-                  <ion-card *ngFor="let item of cartItems" class="mb-3">
-                    <ion-card-content>
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <div>
-                            <ion-img [src]="item.image" style="width: 65px;"></ion-img>
+                  <ng-container *ngIf="cartItems.length > 0; else emptyCart">
+                    <ion-card *ngFor="let item of paginatedItems" class="mb-3">
+                      <ion-card-content>
+                        <div class="d-flex justify-content-between">
+                          <div class="d-flex flex-row align-items-center">
+                            <div>
+                              <ion-img [src]="item.image_url" style="width: 65px;"></ion-img>
+                            </div>
+                            <div class="ms-3">
+                              <h5>{{ item.name }}</h5>
+                              <p class="small mb-0">{{ item.description }}</p>
+                            </div>
                           </div>
-                          <div class="ms-3">
-                            <h5>{{ item.name }}</h5>
-                            <p class="small mb-0">{{ item.description }}</p>
+                          <div class="d-flex flex-row align-items-center">
+                            <div style="width: 200px;">
+                              <div class="quantity-control">
+                                <ion-button fill="clear" (click)="updateQuantity(item.product_id, item.quantity - 1)">-</ion-button>
+                                <span>{{ item.quantity }}</span>
+                                <ion-button fill="clear" (click)="updateQuantity(item.product_id, item.quantity + 1)">+</ion-button>
+                                <ion-button fill="clear" (click)="enterCustomQuantity(item.product_id)">
+                                  <ion-icon name="create-outline"></ion-icon>
+                                </ion-button>
+                              </div>
+                            </div>
+                            <div style="width: 80px;">
+                              <h5 class="mb-0">
+                                <ng-container *ngIf="item.hasPromotion; else regularPrice">
+                                  <span class="original-price">{{ item.price * item.quantity | currency }}</span>
+                                  <span class="discounted-price">{{ item.discountedPrice * item.quantity | currency }}</span>
+                                </ng-container>
+                                <ng-template #regularPrice>
+                                  {{ item.price * item.quantity | currency }}
+                                </ng-template>
+                              </h5>
+                            </div>
+                            <ion-button fill="clear" color="medium" style="color:red" (click)="updateQuantity(item.product_id, 0)">
+                              <ion-icon name="trash"></ion-icon>
+                            </ion-button>
                           </div>
                         </div>
-                        <div class="d-flex flex-row align-items-center">
-                          <div style="width: 50px;">
-                            <h5 class="fw-normal mb-0">{{ item.quantity }}</h5>
-                          </div>
-                          <div style="width: 80px;">
-                            <h5 class="mb-0">{{ item.price | currency }}</h5>
-                          </div>
-                          <ion-button fill="clear" color="medium" (click)="removeItem(item)">
-                            <ion-icon name="trash"></ion-icon>
-                          </ion-button>
-                        </div>
-                      </div>
-                    </ion-card-content>
-                  </ion-card>
+                      </ion-card-content>
+                    </ion-card>
+                    <div class="pagination-controls">
+                      <button class="pagination-button" (click)="previousPage()" [disabled]="currentPage === 1">
+                        Previous
+                      </button>
+                      <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+                      <button class="pagination-button" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                        Next
+                      </button>
+                    </div>
+                  </ng-container>
+
+                  <ng-template #emptyCart>
+                    <div class="empty-cart-message">
+                      <h3>Your cart is empty</h3>
+                      <p>Add some items to your cart to see them here.</p>
+                    </div>
+                  </ng-template>
                 </ion-col>
 
                 <ion-col size="12" size-lg="5">
-                  <ion-card class="bg-primary text-white rounded-3">
+                  <ion-card class="colors text-white rounded-3">
                     <ion-card-content>
-                      <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="mb-0">Card details</h5>
+<!--                         
+                      <h4>Total Amounts</h4>
+                      <ion-item-divider class="colors"></ion-item-divider> -->
+                      <!-- <div class="d-flex justify-content-between" *ngFor="let item of cartItems">
+                        <p class="mb-2">{{item.name}}</p>
+                        <p class="mb-2">{{ item.price*item.quantity | currency }}</p>
+                      </div> -->
+                      <div class="delivery-method-container">
+                        <ion-item-divider>
+                          <ion-label>Delivery Method</ion-label>
+                        </ion-item-divider>
+                        <div class="custom-radio" [class.selected]="deliveryMethod === 'delivery'" (click)="selectDeliveryMethod('delivery')">
+                          <input type="radio" id="delivery" name="deliveryMethod" [(ngModel)]="deliveryMethod" value="delivery">
+                          <label for="delivery">Delivery</label>
+                        </div>
+                        <div class="custom-radio" [class.selected]="deliveryMethod === 'walk-in'" (click)="selectDeliveryMethod('walk-in')">
+                          <input type="radio" id="walk-in" name="deliveryMethod" [(ngModel)]="deliveryMethod" value="walk-in">
+                          <label for="walk-in">Walk-in Collection</label>
+                        </div>
+                      </div>
+                      
+                      <div *ngIf="deliveryMethod === 'delivery'">
+                        <ion-button (click)="openAddressPopup()">Select Shipping Address</ion-button>
+                      </div>
+                      
+                      <div class="address-popup" *ngIf="showAddressPopup">
+                        <div class="address-popup-content">
+                          <span class="close-popup" (click)="closeAddressPopup()">&times;</span>
+                          <h2>Select Shipping Address</h2>
+                          <div class="address-card" *ngFor="let address of savedAddresses">
+                            <div class="delete-btn" (click)="deleteAddress(address.id)">
+                              <ion-icon name="trash-outline"></ion-icon>
+                            </div>
+                            <p>{{ address.address_line1 }}</p>
+                            <p *ngIf="address.address_line2">{{ address.address_line2 }}</p>
+                            <p>{{ address.city }}, {{ address.province }}</p>
+                            <p>{{ address.postal_code }}</p>
+                            <p>{{ address.country }}</p>
+                            <ion-button (click)="selectAddress(address)">Select</ion-button>
+                          </div>
+                          <ion-button (click)="addNewAddress()">Add New Address</ion-button>
+                        </div>
                       </div>
 
-                      <p class="small mb-2">Card type</p>
-                      <ion-button fill="clear" class="text-white">
-                        <ion-icon name="logo-mastercard" class="fa-2x me-2"></ion-icon>
-                      </ion-button>
-                      <ion-button fill="clear" class="text-white">
-                        <ion-icon name="logo-visa" class="fa-2x me-2"></ion-icon>
-                      </ion-button>
-                      <ion-button fill="clear" class="text-white">
-                        <ion-icon name="card" class="fa-2x me-2"></ion-icon>
-                      </ion-button>
-                      <ion-button fill="clear" class="text-white">
-                        <ion-icon name="logo-paypal" class="fa-2x"></ion-icon>
-                      </ion-button>
 
-                      <ion-item class="bg-primary">
-                        <ion-label position="floating">Cardholder's Name</ion-label>
-                        <ion-input type="text" [(ngModel)]="cardholderName"></ion-input>
-                      </ion-item>
-
-                      <ion-item class="bg-primary">
-                        <ion-label position="floating">Card Number</ion-label>
-                        <ion-input type="text" [(ngModel)]="cardNumber" maxlength="19"></ion-input>
-                      </ion-item>
-
-                      <ion-row>
-                        <ion-col size="6">
-                          <ion-item class="bg-primary">
-                            <ion-label position="floating">Expiration</ion-label>
-                            <ion-input type="text" [(ngModel)]="expirationDate" placeholder="MM/YYYY"></ion-input>
-                          </ion-item>
-                        </ion-col>
-                        <ion-col size="6">
-                          <ion-item class="bg-primary">
-                            <ion-label position="floating">CVV</ion-label>
-                            <ion-input type="password" [(ngModel)]="cvv" maxlength="3"></ion-input>
-                          </ion-item>
-                        </ion-col>
-                      </ion-row>
-
-                      <ion-item-divider class="bg-primary"></ion-item-divider>
-
+                      <ion-item-divider class="colors"></ion-item-divider>
                       <div class="d-flex justify-content-between">
-                        <p class="mb-2">Subtotal</p>
+                        <p class="mb-2">Original Subtotal</p>
                         <p class="mb-2">{{ subtotal | currency }}</p>
                       </div>
 
                       <div class="d-flex justify-content-between">
-                        <p class="mb-2">Shipping</p>
-                        <p class="mb-2">{{ shipping | currency }}</p>
+                        <p class="mb-2">Discounted Subtotal</p>
+                        <p class="mb-2">{{ discountedSubtotal | currency }}</p>
+                      </div>
+
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">Tax</p>
+                        <p class="mb-2">{{ tax  | currency }}</p>
+                      </div>
+
+                      
+
+                      <div class="d-flex justify-content-between mb-4">
+                        <p class="mb-2">Discounted Total</p>
+                        <p class="mb-2">{{ discountedTotal | currency }}</p>
                       </div>
 
                       <div class="d-flex justify-content-between mb-4">
                         <p class="mb-2">Total (Incl. taxes)</p>
-                        <p class="mb-2">{{ total | currency }}</p>
+                        <p class="mb-2">{{ discountedTotal | currency }}</p>
                       </div>
 
-                      <ion-button expand="block" class="btn-lg" (click)="checkout()">
+                      <ion-button expand="block" class="btn-lg" (click)="PlaceOrder()">
                         <div class="d-flex justify-content-between">
-                          <span>{{ total | currency }}</span>
+                          <!-- <span>{{ discountedTotal | currency }}</span> -->
                           <span>Checkout <ion-icon name="arrow-forward" class="ms-2"></ion-icon></span>
                         </div>
                       </ion-button>
@@ -283,24 +188,65 @@
   </section>
 </ion-content>
 
-<style>
-  .bg-primary {
-    --background: linear-gradient(135deg, #e2953d, #db7d11);
-    --color: white;
-  }
 
-  ion-item.bg-primary {
+
+<style>
+  .colors {
+    --background: linear-gradient(135deg, #e2953d, #db7d11);
+    --color: rgb(255, 255, 255);
+  }
+  ion-grid{
+    --background:rgba(255, 255, 255, 0.521);
+  }
+ion-content{
+  padding:200px;
+}
+  ion-item.colors {
     --background: transparent;
-    --color: white;
+    --color: rgb(255, 255, 255);
   }
 
   ion-button.text-white {
-    --color: white;
+    --color: rgb(255, 255, 255);
   }
 
   .h-custom {
     height: 100vh !important;
   }
+
+  .pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  gap: 10px;
+}
+
+.pagination-button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #db7d11;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.pagination-button[disabled] {
+  background-color: #b3b3b3;
+  cursor: not-allowed;
+}
+
+.pagination-button:hover:not([disabled]) {
+  background-color: #db7d11;
+}
+
+.page-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
 
   @media (min-width: 1025px) {
     .h-custom {
@@ -311,7 +257,90 @@
   ion-item-divider {
     min-height: 1px;
     width: 100%;
-    background: rgba(255,255,255,0.2);
+    background: rgb(255, 255, 255);
     margin: 10px 0;
+    border-radius:8px;
   }
-</style> -->
+.card-container{
+  background-color: rgba(255, 255, 255, 0.749);
+}
+  
+
+  .delivery-method-container {
+    margin-bottom: 20px;
+  }
+  
+  .custom-radio {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-radio:hover {
+    background-color: #f5f5f546;
+  }
+  
+  .custom-radio input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .custom-radio.selected {
+    background-color: #dedede87;
+    border-color: #c06001;
+  }
+  
+  .address-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .address-popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .address-card {
+    border: 1px solid #ddd;
+    color:rgb(56, 56, 56);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    position: relative;
+  }
+  
+  .address-card .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #f44336;
+    cursor: pointer;
+  }
+  
+  .close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+  }
+
+</style>

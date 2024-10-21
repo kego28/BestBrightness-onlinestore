@@ -50,6 +50,10 @@ export class AdminOrderManagementPage implements OnInit {
         this.filteredOrderData = [...this.orderData]; // Initialize filtered data
       });
   }
+  
+  getStatusClass(status: string): string {
+    return `status-${status.toLowerCase()}`;
+  }
 
   applyFilters() {
     this.filteredOrderData = this.orderData.filter(order => {

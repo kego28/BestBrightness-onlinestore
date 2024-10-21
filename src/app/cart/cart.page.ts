@@ -44,6 +44,17 @@ export class CartPage implements OnInit {
 
   private cartSubscription: Subscription | undefined;
 
+
+  cardholderName: string = 'John Doe';
+  cardNumber: string = '4111 1111 1111 1111';
+  expirationDate: string = '12/2025';
+  cvv: string = '123';
+
+  paginatedItems :any[] = [];
+  currentPage = 1;
+  itemsPerPage = 4;
+  totalPages = 1;
+
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
@@ -75,6 +86,30 @@ export class CartPage implements OnInit {
     this.getUserId();
     this.getUserEmail();
     this.loadSavedAddresses();
+
+   
+  }
+  updatePaginatedItems() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedItems = this.cartItems.slice(startIndex, endIndex);
+  }
+  calculateTotalPages() {
+    this.totalPages = Math.ceil(this.cartItems.length / this.itemsPerPage);
+    console.log('Total Pages:', this.totalPages);
+  }
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedItems();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedItems();
+    }
   }
 
   getUserId() {
@@ -109,8 +144,12 @@ export class CartPage implements OnInit {
         }));
         this.applyPromotions();
         console.log('Cart items:', this.cartItems);
+       
         if (this.cartItems.length === 0) {
           this.showToast('Your cart is empty');
+        } else {
+          this.calculateTotalPages(); // Calculate pages after loading items
+          this.updatePaginatedItems();
         }
       },
       error: (error) => {

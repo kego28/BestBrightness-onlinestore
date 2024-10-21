@@ -97,6 +97,48 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
   isLoadingActivities = false;
   activitiesError: string | null = null;
 
+  
+    // totalUsers: number = 1000;
+    // totalSalesAmount: number = 50000;
+    // pendingOrders: number = 75;
+  
+    // You'll need to define these values based on your business logic
+    maxUsers: number = 2000;
+    maxSales: number = 100000;
+    maxOrders: number = 200;
+    maxCount: number = 1000;
+    totalSalesCount: number = 0;
+    getUsersPercentage(): number {
+      return Math.round((this.totalUsers / this.maxUsers) * 100);
+    }
+    getCountSalesPercentage(): number {
+      return Math.round((this.totalSalesCount / this.maxCount) * 100);
+    }
+    getSalesPercentage(): number {
+      return Math.round((this.totalSalesAmount / this.maxSales) * 100);
+    }
+  
+    getOrdersPercentage(): number {
+      return Math.round((this.pendingOrders / this.maxOrders) * 100);
+    }
+  
+    getUsersProgressCircle(): string {
+      return this.getProgressCircleValue(this.getUsersPercentage());
+    }
+  
+    getSalesProgressCircle(): string {
+      return this.getProgressCircleValue(this.getSalesPercentage());
+    }
+  
+    getOrdersProgressCircle(): string {
+      return this.getProgressCircleValue(this.getOrdersPercentage());
+    }
+  
+    private getProgressCircleValue(percentage: number): string {
+      const value = percentage / 100;
+      return `${value * 100}, 100`;
+    }
+  
   constructor(private http: HttpClient, private router: Router,  private animationCtrl: AnimationController) { }
 
   ngOnInit() {
@@ -265,6 +307,8 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
         next: (response) => {
           this.salesData = response;
           console.log('Fetched sales data:', this.salesData);
+          this.totalSalesCount = this.salesData.length;
+          console.log(`Total Sales Count: ${this.totalSalesCount}`);
           this.updateChart();
         },
         error: (error) => {

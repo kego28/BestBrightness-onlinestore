@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController ,AlertController} from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PickerOptions } from '@ionic/core';
+
 
 interface Promotion {
   promotion_id?: number;
@@ -30,10 +32,19 @@ export class PromotionManagementComponent implements OnInit {
   editMode = false;
   currentPromotionId?: number;
 
+  dateForm: FormGroup | undefined;
+  minDate: string | undefined;
+  maxDate: string | undefined;
+  // startDate: string;
+  startDate: string | undefined; // Optional or uninitialized at first
+
+
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController,
+    private modalController: ModalController
   ) {
     this.promotionForm = this.fb.group({
       name: ['', Validators.required],
@@ -43,12 +54,34 @@ export class PromotionManagementComponent implements OnInit {
       end_date: ['', Validators.required],
       product_id: ['', Validators.required]
     });
+    this.initializeForm();
+    this.setMinMaxDates();
   }
 
   ngOnInit() {
     this.loadProducts();
     this.loadPromotions();
   }
+
+ // Initialize the form
+ initializeForm() {
+  this.dateForm = this.fb.group({
+    start_date: ['', Validators.required],
+    end_date: ['', Validators.required]
+  });
+}
+
+// Set min and max dates dynamically
+setMinMaxDates() {
+  const today = new Date();
+  this.minDate = today.toISOString().split('T')[0];  // Minimum date is today
+  this.maxDate = new Date(today.getFullYear() + 1, 11, 31).toISOString(); // Maximum date is end of next year
+}
+
+// Handle logic when the start date changes
+onStartDateChange(event: any) {
+  this.startDate = event.detail.value;
+}
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
@@ -136,6 +169,30 @@ export class PromotionManagementComponent implements OnInit {
     }
   }
 
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  confirmDeletePromotion(promotionId?: number) {
+    // Implement a confirmation dialog before deleting
+    // For example, using Ionic AlertController
+    this.alertController.create({
+      header: 'Confirm Deletion',
+      message: 'Are you sure you want to delete this promotion?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.deletePromotion(promotionId);
+          }
+        }
+      ]
+    }).then(alert => alert.present());
+  }
   resetForm() {
     this.editMode = false;
     this.currentPromotionId = undefined;

@@ -145,7 +145,7 @@
       </ion-toolbar>
     </ion-header>
     
-    <ion-content [fullscreen]="true">
+    <ion-content [fullscreen]="true" class="ion-padding">
       <div class="mobile-menu" [class.show-menu]="isMenuOpen">
         <ion-list>
           <ion-item routerLink="/admin-dashboard" (click)="closeMenu()">
@@ -182,7 +182,7 @@
 
    
       <!-- Dashboard Summary Cards -->
-      <ion-grid>
+      <!-- <ion-grid>
         <ion-row>
           <ion-col size="12" size-md="6" size-lg="4">
             <ion-card>
@@ -215,112 +215,222 @@
             </ion-card>
           </ion-col>
         </ion-row>
-      </ion-grid>
+      </ion-grid> -->
+      
+      
+      <div class="dashboard-cards">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">
+            <ion-icon name="people-outline"></ion-icon>
+            Total Users
+          </div>
+          <div class="dashboard-card-content">
+            <p class="dashboard-card-value">{{ totalUsers }}</p>
+            <div class="progress-circle">
+              <svg viewBox="0 0 36 36">
+                <path class="progress-circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path class="progress-circle-value"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  [attr.stroke-dasharray]="getUsersProgressCircle()"
+                />
+              </svg>
+              <div class="progress-circle-text">{{ getUsersPercentage() }}%</div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">
+            <ion-icon name="cash-outline"></ion-icon>
+            Total Number of Sales
+          </div>
+          <div class="dashboard-card-content">
+            <p class="dashboard-card-value">{{ totalSalesCount }}</p>
+            <div class="progress-circle">
+              <svg viewBox="0 0 36 36">
+                <path class="progress-circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path class="progress-circle-value"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  [attr.stroke-dasharray]="getSalesProgressCircle()"
+                />
+              </svg>
+              <div class="progress-circle-text">{{ getCountSalesPercentage() }}%</div>
+            </div>
+          </div>
+        </div>
 
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">
+            <ion-icon name="cash-outline"></ion-icon>
+            Total Sales Amount
+          </div>
+          <div class="dashboard-card-content">
+            <p class="dashboard-card-value">R{{ totalSalesAmount }}</p>
+            <div class="progress-circle">
+              <svg viewBox="0 0 36 36">
+                <path class="progress-circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path class="progress-circle-value"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  [attr.stroke-dasharray]="getSalesProgressCircle()"
+                />
+              </svg>
+              <div class="progress-circle-text">{{ getSalesPercentage() }}%</div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">
+            <ion-icon name="time-outline"></ion-icon>
+            Pending Orders
+          </div>
+          <div class="dashboard-card-content">
+            <p class="dashboard-card-value">{{ pendingOrders }}</p>
+            <div class="progress-circle">
+              <svg viewBox="0 0 36 36">
+                <path class="progress-circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path class="progress-circle-value"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                  [attr.stroke-dasharray]="getOrdersProgressCircle()"
+                />
+              </svg>
+              <div class="progress-circle-text">{{ getOrdersPercentage() }}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Statistics Charts -->
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Sales Overview</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div>
-            <canvas #salesChart></canvas>
-          </div>
-          <ion-segment (ionChange)="changeFilter($event)" [value]="currentFilter">
-            <ion-segment-button value="day">
-              <ion-label>Day</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="week">
-              <ion-label>Week</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="month">
-              <ion-label>Month</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="year">
-              <ion-label>Year</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-        </ion-card-content>
-      </ion-card>
+     
 
-    <!-- Recent Activity Card -->
-<ion-card class="recent-activity-card">
-  <ion-refresher slot="fixed" (ionRefresh)="refreshActivities($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+<div class="dashboard-container">
+  <ion-card class="sales-overview-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="bar-chart-outline" class="title-icon"></ion-icon>
+        Sales Overview
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div>
+        <canvas #salesChart></canvas>
+      </div>
+      <ion-segment (ionChange)="changeFilter($event)" [value]="currentFilter">
+        <ion-segment-button value="day">
+          <ion-label>Day</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="week">
+          <ion-label>Week</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="month">
+          <ion-label>Month</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="year">
+          <ion-label>Year</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-card-content>
+  </ion-card>
 
-  <ion-card-header>
-    <ion-card-title>
-      <ion-icon name="time-outline" class="title-icon"></ion-icon>
-      Recent Activity
-    </ion-card-title>
-  </ion-card-header>
+  <ion-card class="recent-activity-card">
+    <ion-refresher slot="fixed" (ionRefresh)="refreshActivities($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-  <ion-card-content>
-    <ion-list lines="none">
-      <!-- Loading State -->
-      <ion-item *ngIf="isLoadingActivities" class="loading-state">
-        <ion-label>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="time-outline" class="title-icon"></ion-icon>
+        Recent Activity
+      </ion-card-title>
+    </ion-card-header>
 
-      <!-- Error State -->
-      <ion-item *ngIf="activitiesError" class="error-item">
-        <ion-label color="danger" class="ion-text-center">
-          <ion-icon name="alert-circle-outline" size="large"></ion-icon>
-          <h2>{{ activitiesError }}</h2>
-          <ion-button fill="clear" (click)="refreshActivities($event)">
-            <ion-icon slot="start" name="refresh-outline"></ion-icon>
-            Retry
-          </ion-button>
-        </ion-label>
-      </ion-item>
-
-      <!-- Activities List -->
-      <ng-container *ngIf="!isLoadingActivities && !activitiesError">
-        <ion-item *ngFor="let activity of recentActivities" class="activity-item">
-          <div class="activity-timeline">
-            <div class="timeline-dot" [ngClass]="activity.type"></div>
-            <div class="timeline-line"></div>
-          </div>
-          <ion-icon
-            [name]="activity.type === 'order' ? 'cart-outline' : 'cash-outline'"
-            slot="start"
-            class="activity-icon"
-            [ngClass]="activity.type + '-icon'"
-          ></ion-icon>
-          <ion-label class="ion-text-wrap">
-            <h2>{{ activity.message }}</h2>
-            <h3 class="amount">R{{ activity.amount.toFixed(2) }}</h3>
-            <p class="details">
-              <ng-container *ngIf="activity.type === 'order' && activity.status">
-                <ion-badge [color]="getStatusColor(activity.status)">
-                  {{ activity.status }}
-                </ion-badge>
-              </ng-container>
-              <ng-container *ngIf="activity.type === 'sale' && activity.payment_method">
-                <ion-badge color="success">{{ activity.payment_method }}</ion-badge>
-              </ng-container>
-            </p>
+    <ion-card-content>
+      <ion-list lines="none">
+        <!-- Loading State -->
+        <ion-item *ngIf="isLoadingActivities" class="loading-state">
+          <ion-label>
+            <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
           </ion-label>
         </ion-item>
 
-        <!-- Empty State -->
-        <ion-item *ngIf="recentActivities.length === 0" class="no-activity-item">
-          <ion-label color="medium" class="ion-text-center">
-            <ion-icon name="notifications-outline" size="large"></ion-icon>
-            <h2>No Recent Activities</h2>
-            <p>New activities will appear here</p>
+        <!-- Error State -->
+        <ion-item *ngIf="activitiesError" class="error-item">
+          <ion-label color="danger" class="ion-text-center">
+            <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+            <h2>{{ activitiesError }}</h2>
+            <ion-button fill="clear" (click)="refreshActivities($event)">
+              <ion-icon slot="start" name="refresh-outline"></ion-icon>
+              Retry
+            </ion-button>
           </ion-label>
         </ion-item>
-      </ng-container>
-    </ion-list>
-  </ion-card-content>
-</ion-card>
 
-    </ion-content>
-  <!-- </div> -->
+        <!-- Activities List -->
+        <ng-container *ngIf="!isLoadingActivities && !activitiesError">
+          <ion-item *ngFor="let activity of recentActivities" class="activity-item">
+            <div class="activity-timeline">
+              <div class="timeline-dot" [ngClass]="activity.type"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <ion-icon
+              [name]="activity.type === 'order' ? 'cart-outline' : 'cash-outline'"
+              slot="start"
+              class="activity-icon"
+              [ngClass]="activity.type + '-icon'"
+            ></ion-icon>
+            <ion-label class="ion-text-wrap">
+              <h2>{{ activity.message }}</h2>
+              <h3 class="amount">R{{ activity.amount.toFixed(2) }}</h3>
+              <p class="details">
+                <ng-container *ngIf="activity.type === 'order' && activity.status">
+                  <ion-badge [color]="getStatusColor(activity.status)">
+                    {{ activity.status }}
+                  </ion-badge>
+                </ng-container>
+                <ng-container *ngIf="activity.type === 'sale' && activity.payment_method">
+                  <ion-badge color="success">{{ activity.payment_method }}</ion-badge>
+                </ng-container>
+              </p>
+            </ion-label>
+          </ion-item>
+
+          <!-- Empty State -->
+          <ion-item *ngIf="recentActivities.length === 0" class="no-activity-item">
+            <ion-label color="medium" class="ion-text-center">
+              <ion-icon name="notifications-outline" size="large"></ion-icon>
+              <h2>No Recent Activities</h2>
+              <p>New activities will appear here</p>
+            </ion-label>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</div>
+</ion-content>
 </ion-app>
