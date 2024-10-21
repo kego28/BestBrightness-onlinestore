@@ -44,6 +44,10 @@ export class AdminOrderManagementPage implements OnInit {
         }
       );
   }
+  
+  getStatusClass(status: string): string {
+    return `status-${status.toLowerCase()}`;
+  }
 
   applyFilters() {
     this.filteredOrderData = this.orderData.filter(order => {

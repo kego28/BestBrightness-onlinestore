@@ -35,7 +35,8 @@ export class AdminUserManagementPage implements OnInit {
 
   // Search and filter variables
   searchQuery: string = '';
-  selectedFilter: string = 'admin';
+  selectedFilter: string = this.roles[1].value;
+
 
   users: any[] = [];
   filteredUsers: any[] = [];

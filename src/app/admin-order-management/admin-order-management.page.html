@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Admin Order Management</ion-title>
   </ion-toolbar>
@@ -75,7 +75,7 @@
   </ion-content>
 </ion-content>
 
-<!-- Update Status Modal -->
+
 <ion-modal #updateStatusModal>
   <ng-template>
     <ion-header>
@@ -103,7 +103,8 @@
   </ng-template>
 </ion-modal>
 
-<!-- Update Order Modal -->
+
+
 <ion-modal #viewOrderModal>
   <ng-template>
     <ion-header>
@@ -152,6 +153,241 @@
           </ion-label>
         </ion-item>
       </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal> -->
+
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-title class="ion-text-left ion-padding-start">
+      <h1 class="text-xl font-bold">Admin Order Management</h1>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Search and Filter Section -->
+  <ion-grid>
+    <ion-row class="ion-align-items-center">
+      <ion-col size="12" size-md="4">
+        <ion-searchbar
+          animated="true"
+          placeholder="Search by Order ID"
+          class="custom-searchbar"
+          (ionChange)="onSearchChange($event)">
+        </ion-searchbar>
+      </ion-col>
+      
+      <ion-col size="12" size-md="4">
+        <!-- <ion-item class="custom-select"> -->
+          <ion-select 
+            interface="action-sheet" 
+            placeholder="Filter By"
+            (ionChange)="onFilterTypeChange($event)"
+            class="w-100">
+            <ion-select-option value="">None</ion-select-option>
+            <ion-select-option value="status">Status</ion-select-option>
+            <ion-select-option value="date">Date</ion-select-option>
+          </ion-select>
+        <!-- </ion-item> -->
+      </ion-col>
+
+      <ion-col size="12" size-md="4" *ngIf="filterType === 'status'">
+        <!-- <ion-item class="custom-select"> -->
+          <ion-select 
+            interface="action-sheet"
+            placeholder="Select Status"
+            (ionChange)="onFilterValueChange($event)"
+            class="w-100">
+            <ion-select-option value="pending">Pending</ion-select-option>
+            <ion-select-option value="payment-received">Payment Received</ion-select-option>
+            <ion-select-option value="shipped">Shipped</ion-select-option>
+            <ion-select-option value="delivered">Delivered</ion-select-option>
+          </ion-select>
+        <!-- </ion-item> -->
+      </ion-col>
+
+      <ion-col size="12" size-md="4" *ngIf="filterType === 'date'">
+        <ion-item class="custom-date">
+          <ion-datetime
+            presentation="date"
+            (ionChange)="onFilterValueChange($event)"
+            class="w-100">
+          </ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Orders Card -->
+  <ion-card class="orders-card">
+    <ion-card-header class="header-card">
+      <ion-card-title class="ion-padding-bottom">
+        <h2 class="text-lg font-semibold text_header">Order List</h2>
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content class="ion-no-padding">
+      <div class="table-container">
+        <ion-grid class="order-table" fixed>
+          <!-- Table Header -->
+          <ion-row class="header-row">
+            <ion-col size="1.5">Order ID</ion-col>
+            <ion-col size="1.5">User ID</ion-col>
+            <ion-col size="1">Amount</ion-col>
+            <ion-col size="2">Order Type</ion-col>
+            <ion-col size="2">Status</ion-col>
+            <ion-col size="2">Date</ion-col>
+            <ion-col size="2">Actions</ion-col>
+          </ion-row>
+
+          <!-- Table Content -->
+          <ion-row class="data-row" *ngFor="let order of filteredOrderData">
+            <ion-col size="1.5">{{ order.order_id }}</ion-col>
+            <ion-col size="1.5">{{ order.user_id }}</ion-col>
+            <ion-col size="1">{{ order.total_amount }}</ion-col>
+            <ion-col size="2">{{ order.order_type }}</ion-col>
+            <ion-col size="2">
+              <ion-badge [class]="getStatusClass(order.status)">
+                {{ order.status }}
+              </ion-badge>
+            </ion-col>
+            <ion-col size="2">{{ order.created_at }}</ion-col>
+            <ion-col size="2" class="ion-text-nowrap">
+              <ion-button fill="clear" (click)="viewOrderDetails(order)">
+                <ion-icon name="eye-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="success" (click)="openUpdateStatusModal(order)">
+                <ion-icon name="sync-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="deleteOrder(order)">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<!-- View Order Modal -->
+<ion-modal #viewOrderModal>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="light">
+        <ion-title>Order Details</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="viewOrderModal.dismiss()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list *ngIf="currentOrderDetails" class="order-details">
+        <ion-item-group>
+          <ion-item-divider color="light">
+            <ion-label>Order Information</ion-label>
+          </ion-item-divider>
+          
+          <ion-item lines="full">
+            <ion-label>
+              <h3>Order ID</h3>
+              <p>{{ currentOrderDetails.order_id }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label>
+              <h3>User ID</h3>
+              <p>{{ currentOrderDetails.user_id }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label>
+              <h3>Total Amount</h3>
+              <p>{{ currentOrderDetails.total_amount }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label>
+              <h3>Status</h3>
+              <ion-badge [class]="getStatusClass(currentOrderDetails.status)">
+                {{ currentOrderDetails.status }}
+              </ion-badge>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="full">
+            <ion-label>
+              <h3>Date</h3>
+              <p>{{ currentOrderDetails.created_at }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-item-group>
+
+        <ion-item-group>
+          <ion-item-divider color="light">
+            <ion-label>Order Items</ion-label>
+          </ion-item-divider>
+
+          <ion-item *ngFor="let item of currentOrderDetails.items" lines="full">
+            <ion-thumbnail slot="start">
+              <ion-img [src]="item.image_url" alt="Product image"></ion-img>
+            </ion-thumbnail>
+            <ion-label>
+              <h2>{{ item.product_name }}</h2>
+              <p>Product ID: {{ item.product_id }}</p>
+              <p>Quantity: {{ item.quantity }}</p>
+              <p>Price: {{ item.price }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-item-group>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Update Status Modal -->
+<ion-modal #updateStatusModal>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar color="light">
+        <ion-title>Update Order Status</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="updateStatusModal.dismiss()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item>
+          <ion-select
+            [(ngModel)]="selectedStatus"
+            placeholder="Select New Status"
+            interface="action-sheet"
+            class="w-100">
+            <ion-select-option value="pending">Pending</ion-select-option>
+            <ion-select-option value="payment-received">Payment Received</ion-select-option>
+            <ion-select-option value="order-processed">Processed</ion-select-option>
+            <ion-select-option value="shipped">Shipped</ion-select-option>
+            <ion-select-option value="delivered">Delivered</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <div class="ion-padding-top">
+        <ion-button expand="block" (click)="updateOrderStatus()">
+          Update Status
+        </ion-button>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>

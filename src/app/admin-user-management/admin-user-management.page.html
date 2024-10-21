@@ -125,7 +125,7 @@
   <div class="content-container" [ngClass]="{'blur-content': isMenuOpen}">
     <!-- Search and Filter Section -->
     <ion-card class="search-filter-card">
-      <!-- <ion-card-content> -->
+      <ion-card-content>
         <ion-searchbar [(ngModel)]="searchQuery" (ionChange)="filterUsers()" placeholder="Search users" class="custom-searchbar"></ion-searchbar>
         <ion-item lines="none">
           <ion-label>Filter By Role</ion-label>
@@ -135,7 +135,7 @@
             <ion-select-option value="cashier">Cashier</ion-select-option>
           </ion-select>
         </ion-item>
-      <!-- </ion-card-content> -->
+      </ion-card-content>
     </ion-card>
 
     <!-- User List for Small Screens -->

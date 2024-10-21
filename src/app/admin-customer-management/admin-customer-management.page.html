@@ -1,29 +1,27 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Admin Customer Management</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Collapsible Header -->
+ 
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Admin Customer Management</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <!-- Search Bar -->
-  <!-- Search Bar -->
+ 
 <ion-searchbar [(ngModel)]="searchQuery" (ionChange)="filterUsers()" placeholder="Search customers"></ion-searchbar>
 
 
-  <!-- Customer List -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>Customer List</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!-- Table Layout for Customers -->
+     
       <ion-grid>
         <ion-row>
           <ion-col>Customer ID</ion-col>
@@ -33,7 +31,6 @@
           <ion-col>Actions</ion-col>
         </ion-row>
 
-        <!-- Add customer rows here -->
         <ion-row *ngFor="let user of filteredUsers">
           <ion-col>{{ user.user_id }}</ion-col>
           <ion-col>{{ user.first_name }} {{ user.last_name }}</ion-col>
@@ -43,10 +40,10 @@
 
 
             <ion-button (click)="editUser(user)" fill="clear" color="primary">
-              <ion-icon name="eye-outline"></ion-icon> <!-- View Details icon -->
+              <ion-icon name="eye-outline"></ion-icon> 
             </ion-button>
             <ion-button (click)="deleteUser(user.user_id)" fill="clear" color="danger">
-              <ion-icon name="trash-outline"></ion-icon> <!-- Cancel Order icon -->
+              <ion-icon name="trash-outline"></ion-icon> 
             </ion-button>
           </ion-col>
         </ion-row>
@@ -54,4 +51,301 @@
     </ion-card-content>
   </ion-card>
 
+</ion-content> -->
+<!-- <ion-header class="ion-no-border">
+  <ion-toolbar class="gradient-toolbar">
+    <ion-title class="ion-text-center">
+      <ion-text color="light">
+        <strong>Customer Management Dashboard</strong>
+      </ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<ion-content class="ion-padding custom-background">
+  <!-- Stats Cards Row -->
+   <br><br><br>
+  <ion-grid class="ion-padding-bottom">
+    <ion-row>
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon">
+              <ion-icon name="people" color="primary"></ion-icon>
+            </div>
+            <h2>Total Customers</h2>
+            <h3>{{ filteredUsers?.length || 0 }}</h3>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon">
+              <ion-icon name="star" color="warning"></ion-icon>
+            </div>
+            <h2>Active Users</h2>
+            <h3>{{ getActiveUsers() }}</h3>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon">
+              <ion-icon name="trending-up" color="success"></ion-icon>
+            </div>
+            <h2>New This Month</h2>
+            <h3>{{ getNewUsers() }}</h3>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Enhanced Search Bar -->
+  <ion-card class="search-card">
+    <ion-card-content>
+      <ion-searchbar 
+        [(ngModel)]="searchQuery" 
+        (ionChange)="filterUsers()"
+        placeholder="Search by name, email, or ID..."
+        animated="true"
+        class="custom-searchbar">
+      </ion-searchbar>
+      
+      <ion-chip color="primary" outline="true" (click)="filterByRole('all')">
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>All</ion-label>
+      </ion-chip>
+      <ion-chip color="secondary" outline="true" (click)="filterByRole('admin')">
+        <ion-icon name="shield-outline"></ion-icon>
+        <ion-label>Admins</ion-label>
+      </ion-chip>
+      <ion-chip color="tertiary" outline="true" (click)="filterByRole('user')">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Users</ion-label>
+      </ion-chip>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Customer List Card -->
+  <ion-card class="customer-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="people-circle-outline" color="primary"></ion-icon>
+        Customer Directory
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>
+                <ion-text color="medium">ID</ion-text>
+              </th>
+              <th>
+                <ion-text color="medium">Customer</ion-text>
+              </th>
+              <th>
+                <ion-text color="medium">Email</ion-text>
+              </th>
+              <th>
+                <ion-text color="medium">Role</ion-text>
+              </th>
+              <th>
+                <ion-text color="medium">Actions</ion-text>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers" class="animate__animated animate__fadeIn">
+              <td>
+                <ion-badge color="light">#{{ user.user_id }}</ion-badge>
+              </td>
+              <td>
+                <div class="user-info">
+                  <!-- <ion-avatar class="small-avatar">
+                    <img [src]="user.avatar || 'assets/default-avatar.png'" />
+                  </ion-avatar> -->
+                  <div class="user-details">
+                    <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                    <!-- <small class="status" [class.active]="true">
+                      active
+                    </small> -->
+                  </div>
+                </div>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <ion-badge [color]="user.role === 'admin' ? 'primary' : 'secondary'" class="role-badge">
+                  {{ user.role }}
+                </ion-badge>
+              </td>
+              <td>
+                <ion-button fill="clear" (click)="editUser(user)" class="action-button">
+                  <ion-icon name="create-outline" slot="icon-only" color="primary"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" (click)="viewDetails(user)" class="action-button">
+                  <ion-icon name="eye-outline" slot="icon-only" color="success"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" (click)="deleteUser(user.user_id)" class="action-button">
+                  <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+
+<style>
+/* Gradient Toolbar */
+.gradient-toolbar {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+}
+
+/* Custom Background */
+.custom-background {
+  --background: #f5f7fa;
+}
+
+/* Stats Cards */
+.stat-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.stat-card h2 {
+  color: var(--ion-color-medium);
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.stat-card h3 {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 5px 0 0;
+  color: var(--ion-color-dark);
+}
+
+/* Search Card */
+.search-card {
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.custom-searchbar {
+  --box-shadow: none;
+  --background: #f8f9fa;
+  --border-radius: 10px;
+  padding: 0;
+}
+
+/* Customer Card */
+.customer-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.custom-table th {
+  padding: 16px;
+  font-weight: 500;
+  text-align: left;
+  border-bottom: 2px solid #eee;
+}
+
+.custom-table td {
+  padding: 16px;
+  vertical-align: middle;
+}
+
+.custom-table tbody tr {
+  background: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* User Info Styles */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.small-avatar {
+  width: 32px;
+  height: 32px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.status {
+  color: var(--ion-color-medium);
+}
+
+.status.active {
+  color: var(--ion-color-success);
+}
+
+/* Role Badge */
+.role-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+/* Action Buttons */
+.action-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-table {
+    font-size: 0.9em;
+  }
+  
+  .action-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+  }
+}
+
+/* Animation Classes */
+.animate__animated {
+  animation-duration: 0.5s;
+}
+</style>
