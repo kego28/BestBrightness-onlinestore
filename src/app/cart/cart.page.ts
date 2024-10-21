@@ -97,6 +97,14 @@ export class CartPage implements OnInit {
   
 
   ngOnInit() {
+
+    
+    this.loadCart();
+    this.loadPromotions();
+    this.getUserId();
+    this.getUserEmail();
+    this.loadSavedAddresses();
+
     const navigation = this.router.getCurrentNavigation();
 
     // Check if navigation and its state are defined
@@ -108,11 +116,11 @@ export class CartPage implements OnInit {
     }
 
   
-    this.loadCart();
-    this.loadPromotions();
-    this.getUserId();
-    this.getUserEmail();
-    this.loadSavedAddresses();
+    // this.loadCart();
+    // this.loadPromotions();
+    // this.getUserId();
+    // this.getUserEmail();
+    // this.loadSavedAddresses();
 
    
   }
@@ -604,151 +612,413 @@ async enterCustomQuantity(productId: number) {
     return {isValid, invalidItems};
   }
 
-  async PlaceOrder(): Promise<void> {
-    try {
-        // Check if the cart is empty
-        if (this.cartItems.length === 0) {
-            const alert = await this.alertController.create({
-                header: 'Empty Cart',
-                message: 'Your cart is empty. Add some items before placing an order.',
-                buttons: ['OK']
-            });
-            await alert.present();
-            return;
-        }
+//   async PlaceOrder(): Promise<void> {
+//     try {
+//         // Check if the cart is empty
+//         if (this.cartItems.length === 0) {
+//             const alert = await this.alertController.create({
+//                 header: 'Empty Cart',
+//                 message: 'Your cart is empty. Add some items before placing an order.',
+//                 buttons: ['OK']
+//             });
+//             await alert.present();
+//             return;
+//         }
 
-        // Check if the user email is available
-        if (!this.userEmail) {
-            this.showToast('User email not found. Please log in again.');
-            return;
-        }
+//         // Check if the user email is available
+//         if (!this.userEmail) {
+//             this.showToast('User email not found. Please log in again.');
+//             return;
+//         }
 
-        console.log('Starting order placement process');
+//         console.log('Starting order placement process');
 
-        // Check product quantities
-        const { isValid, invalidItems } = await this.checkProductQuantities();
-        if (!isValid) {
-            let message = 'The following items have insufficient quantity:\n';
-            invalidItems.forEach(item => {
-                message += `${item.name}: ${item.availableQuantity} available\n`;
-            });
-            const alert = await this.alertController.create({
-                header: 'Insufficient Quantity',
-                message: message,
-                buttons: ['OK']
-            });
-            await alert.present();
-            return;
-        }
+//         // Check product quantities
+//         const { isValid, invalidItems } = await this.checkProductQuantities();
+//         if (!isValid) {
+//             let message = 'The following items have insufficient quantity:\n';
+//             invalidItems.forEach(item => {
+//                 message += `${item.name}: ${item.availableQuantity} available\n`;
+//             });
+//             const alert = await this.alertController.create({
+//                 header: 'Insufficient Quantity',
+//                 message: message,
+//                 buttons: ['OK']
+//             });
+//             await alert.present();
+//             return;
+//         }
 
-        // Prepare the order data
-        const orderData = {
-            user_id: this.userId,
-            total_amount: this.total,
-            order_type: this.deliveryMethod,
-            status: 'pending',
-            items: this.cartItems.map(item => ({
-                product_id: item.product_id,
-                name: item.name,
-                quantity: item.quantity,
-                price: item.price,
-                discounted_price: item.discountedPrice
-            })),
-            created_at: new Date()
-        };
+// // Generate PDF
+// const pdf = new jsPDF() as jsPDFWithAutoTable;
+// const pageWidth = pdf.internal.pageSize.width;
 
-        console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
+// // Set font
+// pdf.setFont("helvetica", "normal");
 
-        // Display order details in an alert
-        const orderDetails = this.cartItems.map(item => {
-            return `Product ID: ${item.product_id}\n` +
-                   `Name: ${item.name}\n` +
-                   `Quantity: ${item.quantity}\n` +
-                   `Price: R${item.price.toFixed(2)}\n` +
-                   `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`;
-        }).join('\n');
+// // Add header
+// pdf.setFontSize(20);
+// pdf.text("Invoice", pageWidth / 2, 20, { align: "center" });
 
-        const confirmationAlert = await this.alertController.create({
-            header: 'Order Confirmation',
-            message: `You are about to place the following order:\n\n${orderDetails}`,
-            buttons: [
-                {
-                    text: 'Cancel',
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: () => {
-                        console.log('Order placement canceled');
-                    }
-                },
-                {
-                    text: 'Confirm',
-                    handler: async () => {
-                        // Send order data to server
-                        const response = await this.http.post<{ success: boolean, message: string }>(
-                            'http://localhost/user_api/orders.php', 
-                            orderData
-                        ).toPromise();
+// // Add order details
+// pdf.setFontSize(12);
+// const orderId = new Date().getTime().toString(); // Generate a unique order ID
+// pdf.text(`Order ID: ${orderId}`, 20, 40);
 
-                        if (response && response.success) {
-                            // Update stock for each item in the cart
-                            for (const item of this.cartItems) {
-                                try {
-                                    const currentStockResponse = await this.http.get<{ quantity: number }>(
-                                        `http://localhost/user_api/products.php?check_quantity=1&product_id=${item.product_id}`
-                                    ).toPromise();
+// // Add customer details
+// const customerName = sessionStorage.getItem('userName') || 'N/A';
+// const customerSurname = sessionStorage.getItem('userSurname') || 'N/A';
+// pdf.text(`Name: ${customerName} ${customerSurname}`, 20, 50);
+// pdf.text(`Email: ${this.userEmail}`, 20, 60);
 
-                                    if (currentStockResponse) {
-                                        const newQuantity = currentStockResponse.quantity - item.quantity;
+// // Add delivery address if applicable
+// let yPos = 70;
+// if (this.deliveryMethod === 'delivery' && this.selectedAddress) {
+//   pdf.text("Delivery Address:", 20, yPos);
+//   yPos += 10;
+//   pdf.text(this.selectedAddress.address_line1, 20, yPos);
+//   if (this.selectedAddress.address_line2) {
+//     yPos += 10;
+//     pdf.text(this.selectedAddress.address_line2, 20, yPos);
+//   }
+//   yPos += 10;
+//   pdf.text(`${this.selectedAddress.city}, ${this.selectedAddress.province} ${this.selectedAddress.postal_code}`, 20, yPos);
+//   yPos += 10;
+//   pdf.text(this.selectedAddress.country, 20, yPos);
+//   yPos += 20;
+// } else {
+//   yPos += 10;
+// }
 
-                                        await this.http.put<{ message: string }>(
-                                            'http://localhost/user_api/update_stock.php',
-                                            {
-                                                product_id: item.product_id,
-                                                quantity: newQuantity
-                                            }
-                                        ).toPromise();
-                                    } else {
-                                        console.error(`No stock information found for product ID: ${item.product_id}`);
-                                        this.showToast(`Failed to update stock for product ID: ${item.product_id}. No stock information available.`);
-                                    }
-                                } catch (stockError) {
-                                    console.error('Error updating stock for product:', item.product_id, stockError);
-                                    this.showToast('Failed to update stock for some items. Please check inventory.');
-                                }
-                            }
+// // Add order items table
+// pdf.setFontSize(14);
+// pdf.text("Order Items", 20, yPos);
+// yPos += 10;
 
-                            // Clear the cart after successful order placement
-                            try {
-                                await this.cartService.clearCart().toPromise();
-                            } catch (error) {
-                                console.error('Error clearing cart:', error);
-                            }
+// const columns = ["Item", "Quantity", "Price", "Total"];
+// const data = this.cartItems.map(item => [
+//   item.name,
+//   item.quantity.toString(),
+//   `R${item.price.toFixed(2)}`,
+//   `R${(item.price * item.quantity).toFixed(2)}`
+// ]);
 
-                            // Show success message
-                            const successAlert = await this.alertController.create({
-                                header: 'Order Placed',
-                                message: `Your order for R${this.total.toFixed(2)} has been placed successfully!`,
-                                buttons: ['OK']
-                            });
-                            await successAlert.present();
-                            this.cartItems = [];
-                            this.calculateTotals();
-                        } else {
-                            throw new Error('Server response indicates failure');
-                        }
-                    }
-                }
-            ]
-        });
+// pdf.autoTable({
+//   head: [columns],
+//   body: data,
+//   startY: yPos,
+//   theme: 'striped',
+//   headStyles: { fillColor: [66, 66, 66] },
+//   margin: { top: 20 },
+// });
 
-        await confirmationAlert.present();
-    } catch (error) {
-        console.error('Error in order placement process:', error);
-        this.showToast('An error occurred while placing your order. Please try again.');
-    }
-}
+// yPos = (pdf as any).lastAutoTable.finalY + 20;
 
+// // Add price details
+// pdf.setFontSize(12);
+// pdf.text(`Subtotal: R${this.subtotal.toFixed(2)}`, pageWidth - 70, yPos);
+// yPos += 10;
+// pdf.text(`Discounted Subtotal: R${this.discountedSubtotal.toFixed(2)}`, pageWidth - 70, yPos);
+// yPos += 10;
+// pdf.text(`Tax (15%): R${this.tax.toFixed(2)}`, pageWidth - 70, yPos);
+// yPos += 10;
+// pdf.setFontSize(14);
+// pdf.text(`Total: R${this.discountedTotal.toFixed(2)}`, pageWidth - 70, yPos);
+
+// console.log('PDF generated');
+
+// // Save PDF to a Blob
+// const pdfBlob = pdf.output('blob');
+
+
+//         // Prepare the order data
+//         const orderData = {
+//             user_id: this.userId,
+//             total_amount: this.total,
+//             order_type: this.deliveryMethod,
+//             status: 'pending',
+//             items: this.cartItems.map(item => ({
+//                 product_id: item.product_id,
+//                 name: item.name,
+//                 quantity: item.quantity,
+//                 price: item.price,
+//                 discounted_price: item.discountedPrice
+//             })),
+//             created_at: new Date()
+//         };
+
+//         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
+
+//         //  Send the email with PDF Blob
+//       await this.sendOrderEmail(this.userEmail, pdfBlob);
+//        // Send order data to server
+//        const response = await this.http.post<{ success: boolean, message: string }>(
+//         'http://localhost/user_api/orders.php', 
+//         orderData
+//       ).toPromise();
+      
   
+//         // Display order details in an alert
+//         const orderDetails = this.cartItems.map(item => {
+//             return `Product ID: ${item.product_id}\n` +
+//                    `Name: ${item.name}\n` +
+//                    `Quantity: ${item.quantity}\n` +
+//                    `Price: R${item.price.toFixed(2)}\n` +
+//                    `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`;
+//         }).join('\n');
+
+//         const confirmationAlert = await this.alertController.create({
+//             header: 'Order Confirmation',
+//             message: `You are about to place the following order:\n\n${orderDetails}`,
+//             buttons: [
+//                 {
+//                     text: 'Cancel',
+//                     role: 'cancel',
+//                     cssClass: 'secondary',
+//                     handler: () => {
+//                         console.log('Order placement canceled');
+//                     }
+//                 },
+//                 {
+//                     text: 'Confirm',
+//                     handler: async () => {
+//                         // Send order data to server
+//                         const response = await this.http.post<{ success: boolean, message: string }>(
+//                             'http://localhost/user_api/orders.php', 
+//                             orderData
+//                         ).toPromise();
+
+//                         if (response && response.success) {
+//                             // Update stock for each item in the cart
+//                             for (const item of this.cartItems) {
+//                                 try {
+//                                     const currentStockResponse = await this.http.get<{ quantity: number }>(
+//                                         `http://localhost/user_api/products.php?check_quantity=1&product_id=${item.product_id}`
+//                                     ).toPromise();
+
+//                                     if (currentStockResponse) {
+//                                         const newQuantity = currentStockResponse.quantity - item.quantity;
+
+//                                         await this.http.put<{ message: string }>(
+//                                             'http://localhost/user_api/update_stock.php',
+//                                             {
+//                                                 product_id: item.product_id,
+//                                                 quantity: newQuantity
+//                                             }
+//                                         ).toPromise();
+//                                     } else {
+//                                         console.error(`No stock information found for product ID: ${item.product_id}`);
+//                                         this.showToast(`Failed to update stock for product ID: ${item.product_id}. No stock information available.`);
+//                                     }
+//                                 } catch (stockError) {
+//                                     console.error('Error updating stock for product:', item.product_id, stockError);
+//                                     this.showToast('Failed to update stock for some items. Please check inventory.');
+//                                 }
+//                             }
+
+//                             // Clear the cart after successful order placement
+//                             try {
+//                                 await this.cartService.clearCart().toPromise();
+//                             } catch (error) {
+//                                 console.error('Error clearing cart:', error);
+//                             }
+
+//                             // Show success message
+//                             const successAlert = await this.alertController.create({
+//                                 header: 'Order Placed',
+//                                 message: `Your order for R${this.total.toFixed(2)} has been placed successfully!`,
+//                                 buttons: ['OK']
+//                             });
+//                             await successAlert.present();
+//                             this.cartItems = [];
+//                             this.calculateTotals();
+//                         } else {
+//                             throw new Error('Server response indicates failure');
+//                         }
+//                     }
+//                 }
+//             ]
+//         });
+
+//         await confirmationAlert.present();
+//     } catch (error) {
+//         console.error('Error in order placement process:', error);
+//         this.showToast('An error occurred while placing your order. Please try again.');
+//     }
+// }
+
+async PlaceOrder(): Promise<void> {
+  try {
+    if (this.cartItems.length === 0) {
+      const alert = await this.alertController.create({
+        header: 'Empty Cart',
+        message: 'Your cart is empty. Add some items before placing an order.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    if (!this.userEmail) {
+      this.showToast('User email not found. Please log in again.');
+      return;
+    }
+
+    console.log('Starting order placement process');
+
+    // Check product quantities
+    const {isValid, invalidItems} = await this.checkProductQuantities();
+    if (!isValid) {
+      let message = 'The following items have insufficient quantity:\n';
+      invalidItems.forEach(item => {
+        message += `${item.name}: ${item.availableQuantity} available\n`;
+      });
+      const alert = await this.alertController.create({
+        header: 'Insufficient Quantity',
+        message: message,
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // Generate PDF
+    const pdf = new jsPDF() as jsPDFWithAutoTable;
+  const pageWidth = pdf.internal.pageSize.width;
+
+  // Set font
+  pdf.setFont("helvetica", "normal");
+
+  // Add header
+  pdf.setFontSize(20);
+  pdf.text("Invoice", pageWidth / 2, 20, { align: "center" });
+
+  // Add order details
+  pdf.setFontSize(12);
+  const orderId = new Date().getTime().toString(); // Generate a unique order ID
+  pdf.text(`Order ID: ${orderId}`, 20, 40);
+
+  // Add customer details
+  const customerName = sessionStorage.getItem('userName') || 'N/A';
+  const customerSurname = sessionStorage.getItem('userSurname') || 'N/A';
+  pdf.text(`Name: ${customerName} ${customerSurname}`, 20, 50);
+  pdf.text(`Email: ${this.userEmail}`, 20, 60);
+
+  // Add delivery address if applicable
+  let yPos = 70;
+  if (this.deliveryMethod === 'delivery' && this.selectedAddress) {
+    pdf.text("Delivery Address:", 20, yPos);
+    yPos += 10;
+    pdf.text(this.selectedAddress.address_line1, 20, yPos);
+    if (this.selectedAddress.address_line2) {
+      yPos += 10;
+      pdf.text(this.selectedAddress.address_line2, 20, yPos);
+    }
+    yPos += 10;
+    pdf.text(`${this.selectedAddress.city}, ${this.selectedAddress.province} ${this.selectedAddress.postal_code}`, 20, yPos);
+    yPos += 10;
+    pdf.text(this.selectedAddress.country, 20, yPos);
+    yPos += 20;
+  } else {
+    yPos += 10;
+  }
+
+  // Add order items table
+  pdf.setFontSize(14);
+  pdf.text("Order Items", 20, yPos);
+  yPos += 10;
+
+  const columns = ["Item", "Quantity", "Price", "Total"];
+  const data = this.cartItems.map(item => [
+    item.name,
+    item.quantity.toString(),
+    `R${item.price.toFixed(2)}`,
+    `R${(item.price * item.quantity).toFixed(2)}`
+  ]);
+
+  pdf.autoTable({
+    head: [columns],
+    body: data,
+    startY: yPos,
+    theme: 'striped',
+    headStyles: { fillColor: [66, 66, 66] },
+    margin: { top: 20 },
+  });
+
+  yPos = (pdf as any).lastAutoTable.finalY + 20;
+
+  // Add price details
+  pdf.setFontSize(12);
+  pdf.text(`Subtotal: R${this.subtotal.toFixed(2)}`, pageWidth - 70, yPos);
+  yPos += 10;
+  pdf.text(`Discounted Subtotal: R${this.discountedSubtotal.toFixed(2)}`, pageWidth - 70, yPos);
+  yPos += 10;
+  pdf.text(`Tax (15%): R${this.tax.toFixed(2)}`, pageWidth - 70, yPos);
+  yPos += 10;
+  pdf.setFontSize(14);
+  pdf.text(`Total: R${this.discountedTotal.toFixed(2)}`, pageWidth - 70, yPos);
+
+  console.log('PDF generated');
+
+  // Save PDF to a Blob
+  const pdfBlob = pdf.output('blob');
+
+    // Prepare the order data
+    const orderData = {
+      user_id: this.userId,
+      total_amount: this.total,
+      discounted_amount: this.discountedTotal,
+      order_type: this.deliveryMethod,
+      status: 'pending',
+      items: this.cartItems,
+      created_at: new Date()
+    };
+
+    console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
+
+    // Send the email with PDF Blob
+    await this.sendOrderEmail(this.userEmail, pdfBlob);
+
+    // Send order data to server
+    const response = await this.http.post<{ success: boolean, message: string }>(
+      'http://localhost/user_api/orders.php', 
+      orderData
+    ).toPromise();
+
+    if (response && response.success) {
+      const firestoreOrderId = new Date().getTime().toString();
+      const firestoreOrderData = { ...orderData, firestore_order_id: firestoreOrderId };
+      await this.firestore.collection('orders').doc(firestoreOrderId).set(firestoreOrderData);
+
+
+      this.cartService.clearAllItems().subscribe({
+        next: () => {
+          console.log('Cart cleared successfully');
+          // The cart will be automatically updated via the subscription
+        },
+        error: (error) => {
+          console.error('Error clearing cart:', error);
+          this.showToast('Failed to clear cart. Please try again.');
+        }
+      });
+
+      const alert = await this.alertController.create({
+        header: 'Order Placed',
+        message: `Your order for R${this.total.toFixed(2)} has been placed successfully!`,
+        buttons: ['OK']
+      });
+      await alert.present();
+      this.cartService.clearCart();
+      this.cartItems = [];
+      this.calculateTotals();
+    } else {
+      throw new Error('Server response indicates failure');
+    }
+  } catch (error) {
+    console.error('Error in order placement process:', error);
+    this.showToast('An error occurred while placing your order. Please try again.');
+  }
+}
   
 // Function to send email with PDF order details
 async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
