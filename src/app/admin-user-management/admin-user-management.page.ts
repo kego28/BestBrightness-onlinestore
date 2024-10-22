@@ -129,7 +129,7 @@ export class AdminUserManagementPage implements OnInit {
         password: username,
         role: this.role
       };
-
+console.log(newUser.password);
       this.http.post<{status: number, message: string, user_id: number}>('http://localhost/user_api/register.php', newUser)
         .subscribe(async (response) => {
           if (response.status === 1) {

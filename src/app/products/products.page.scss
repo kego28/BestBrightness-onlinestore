@@ -192,7 +192,7 @@ ion-content{
   border-radius: 8px;
 }
 .product{
-  font-size: 40px;
+  font-size: 18px;
   font-weight: bolder;
   color:#db7d11;
 }
@@ -346,6 +346,54 @@ ion-searchbar {
   }
 
 
+  .promotion-info {
+    color: green; // Or any color that suits your design
+    font-weight: bold;
+  }
+  
+  .original-price {
+    text-decoration: line-through;
+    color: red; // For visual distinction of the original price
+  }
+  
+
+  .promotion-container {
+    position: relative;
+  }
+  
+  .promotion-container {
+    position: relative; /* This makes the tooltip position relative to the container */
+  }
+  
+  .promotion-button {
+    border-radius: 20px; /* Optional: style the button */
+    padding: 10px 15px; /* Optional: adjust padding */
+    background-color: #ffcc00; /* Optional: background color */
+    color: white; /* Optional: text color */
+    cursor: pointer; /* Optional: cursor pointer on hover */
+  }
+  
+  .tooltip-content {
+    position: absolute; /* Position tooltip relative to its parent */
+    top: -10px; /* Adjust as needed to position it */
+    left: -5px; /* Adjust as needed to position it */
+    background-color: white; /* Background color for the tooltip */
+    border: 1px solid #ccc; /* Border around the tooltip */
+    padding: 10px; /* Padding inside the tooltip */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Optional: shadow for depth */
+    z-index: 100; /* Make sure it appears above other elements */
+    border-radius: 5px; /* Optional: rounded corners */
+    width: 200px; /* Optional: fixed width */
+  }
+  
+  .tooltip-content h4 {
+    margin: 0; /* Remove margin */
+  }
+  
+  .tooltip-content p {
+    margin: 5px 0; /* Space between paragraphs */
+  }
+  
 
 
 
@@ -468,3 +516,275 @@ ion-searchbar {
 //   font-size: 1.2em;
 //   line-height: 1;
 // }
+
+
+.welcome-button {
+  --background: #ffffff;
+  --background-hover: #ee8f2a;
+  --background-activated: #b15f0c;
+  --color: #db7d11;
+  --border: 3px solid #db7d11;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+.welcome-button {
+border: var(--border); /* Use the border variable */
+background: var(--background); /* Apply background color */
+color: var(--color); /* Apply text color */
+}
+.welcome-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.295);
+  
+  border: var(--border); /* Use the border variable */
+background: var(--background); /* Apply background color */
+color: var(--color);
+}
+
+.welcome-button ion-icon {
+  font-size: 1.2em;
+  margin-right: 8px;
+}
+
+
+
+
+// Hero section - keeping your exact CSS
+.hero {
+  height: 50vh;
+  width: 100%;
+  border-radius: 10px;
+  background-image: url('/assets/hom1.jpg');
+ 
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  color: white;
+  padding: 50px 20px;
+
+
+  // Add overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+  }
+
+  .hero-content {
+    position: relative;
+    border-radius:10px;
+
+    z-index: 2;
+    color: white;
+    padding: 0 20px;
+    max-width: 800px;
+    
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    
+    .hero-buttons {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+}
+
+// Core Values section
+.core-values {
+  background-color: #db7d11;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  margin-top: -1px; // Fix any potential gaps
+
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 60;
+  }
+
+   p {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  .values-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .value-item {
+      flex-basis: calc(33.333% - 2rem);
+      margin: 1rem;
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      text-align: center;
+      ion-icon {
+        font-size: 40px;
+
+      &:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .value-number {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+
+        ion-icon {
+          font-size: 3rem;
+          color: white;
+        }
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  ion-header {
+    .burger-icon {
+      display: block;
+    }
+
+    .desktop-nav {
+      display: none;
+    }
+  }
+
+  .core-values {
+    padding: 2rem 1rem;
+
+    .values-grid .value-item {
+      flex-basis: calc(50% - 2rem);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    height: 50vh;
+
+    .hero-content {
+      h1 {
+        font-size: 2em;
+      }
+    }
+  }
+  .core-values {
+    .values-grid .value-item {
+      flex-basis: 100%;
+      margin: 1rem 0;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+
+
+
+// Rest of your styles remain the same
+.main-content {
+  padding: 40px 20px;
+  background: #f5f5f5;
+  
+  .animated-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      text-align: center;
+      
+      &:hover {
+        transform: translateY(-5px);
+      }
+      
+      ion-icon {
+        font-size: 48px;
+        color: #0054e9;
+        margin-bottom: 20px;
+      }
+      
+      h2 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+      
+      p {
+        color: #666;
+      }
+    }
+  }
+}
+
+// Mobile styles
+@media (max-width: 768px) {
+  .header {
+    .burger-icon {
+      display: block;
+    }
+    
+    .desktop-nav {
+      display: none;
+    }
+  }
+}
+
+}

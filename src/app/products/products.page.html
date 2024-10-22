@@ -11,7 +11,18 @@
     </ion-buttons>
     
     <ion-buttons slot="end" class="desktop-nav">
-      <ion-button routerLink="/home">
+      
+      <ion-button routerLink="/pos" *ngIf="isCashier">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>Cashier</span>
+      </ion-button>
+
+      <ion-button routerLink="/admin-dashboard" *ngIf="isAdmin">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Admin</span>
+      </ion-button>
+
+      <ion-button routerLink="/products">
         <ion-icon name="home-outline"></ion-icon>
         <span>Home</span>
       </ion-button>
@@ -19,11 +30,8 @@
         <ion-icon name="person-outline"></ion-icon>
         <span>Account</span>
       </ion-button>
-      <ion-button routerLink="/products">
-        <ion-icon name="cube-outline"></ion-icon>
-        <span>Products</span>
-      </ion-button>
-      <ion-button routerLink="/Promotions">
+      
+      <ion-button routerLink="/promotions">
         <ion-icon name="gift-outline"></ion-icon>
         <span>Promotions</span>
       </ion-button>
@@ -42,11 +50,21 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<!-- <ion-content class="contact-content"> -->
-  <ion-content class="ion-padding">
+
+  <!-- <ion-content class="ion-padding"> -->
+    <ion-content class="ion-padding">
   <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+
+    <ion-list routerLink="/pos" *ngIf="isCashier">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <ion-label>Cashier</ion-label>
+    </ion-list>
+    <ion-list routerLink="/admin-dashboard" *ngIf="isAdmin">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <ion-label>Cashier</ion-label>
+    </ion-list>
     <ion-list>
-      <ion-item routerLink="/home" (click)="closeMenu()">
+      <ion-item routerLink="/products" (click)="closeMenu()">
         <ion-icon name="house-outline" slot="start"></ion-icon>
         <ion-label>Home</ion-label>
       </ion-item>
@@ -54,11 +72,8 @@
         <ion-icon name="person-outline" slot="start"></ion-icon>
         <ion-label>Account</ion-label>
       </ion-item>
-      <ion-item routerLink="/products" (click)="closeMenu()">
-        <ion-icon name="cube-outline" slot="start"></ion-icon>
-        <ion-label>Products</ion-label>
-      </ion-item>
-      <ion-item routerLink="/Promotions" (click)="closeMenu()">
+    
+      <ion-item routerLink="/promotions" (click)="closeMenu()">
         <ion-icon name="gift-outline" slot="start"></ion-icon>
         <ion-label>Promotions</ion-label>
       </ion-item>
@@ -76,12 +91,31 @@
       </ion-item>
     </ion-list>
   </div>
+
+  <div class="hero">
+  <div class="hero-content">
+    <h1>Welcome to Best Brightness</h1>
+    <p>Offering high quality cleaning Equipment at affordable prices</p>
+    <div class="hero-buttons">
+      <span class="indicator active"></span>
+      <span class="indicator"></span>
+      <span class="indicator"></span>
+      <span class="indicator"></span>
+      
+      <ion-button expand="block" size="large" (click)="Signup()" class="welcome-button">
+        <ion-icon name="log-in-outline" slot="start"></ion-icon>
+        Get Started
+      </ion-button>
+    </div>
+  </div>
+</div>
 <div class="section_one">
   <div class="left">
     <h1 class="product">Our Products</h1>
   </div>
   <div class="right">
     <ion-button class="to_cart" routerLink="/cart">
+      <ion-badge color="danger" *ngIf="cartCount > 0">{{ cartCount }}</ion-badge>
       <ion-icon name="cart-outline"></ion-icon>
     </ion-button>
   </div>
@@ -107,17 +141,18 @@
         </ion-select>
       </ion-item>
       <!-- <ion-item  class="filter-item"> -->
-      <ion-searchbar  placeholder="Search here" [(ngModel)]="searchTerm" >
+      <ion-searchbar   [(ngModel)]="searchTerm"  (ionInput)="searchProducts()" placeholder="Search here...">
 
       </ion-searchbar>
     <!-- </ion-item> -->
     </div>
 
     <div class="product-container">
-      <div class="product-card" *ngFor="let product of filteredProducts">
+      <!-- <div class="product-card" *ngFor="let product of filteredProducts">
         <div class="product-image">
           <img [src]="product.image_url || product.image" [alt]="product.name" />
           <ion-button fill="clear" class="add-to-cart-btn" (click)="addToCart(product)">
+            
             <ion-icon name="cart-outline"></ion-icon>
           </ion-button>
         </div>
@@ -140,7 +175,49 @@
             </div>
           </div>
         </div>
+      </div> -->
+
+
+      <div class="product-container">
+        <div class="product-card" *ngFor="let product of filteredProducts">
+          <div class="product-image">
+            <img [src]="product.image_url || product.image" [alt]="product.name" />
+      
+            <div class="promotion-container" (mouseenter)="product.showTooltip = true" (mouseleave)="product.showTooltip = false">
+              <button class="promotion-button" ion-button *ngIf="product.hasPromotion">
+                {{ product.discount_percentage }}% off
+              </button>
+              <div *ngIf="product.showTooltip" class="tooltip-content">
+                <h4>{{ product.promotionName }}</h4>
+                <p class="original-price">Original Price: R{{ product.price | number:'1.2-2' }}</p>
+                <p>Discounted Price: R{{ product.discountedPrice | number:'1.2-2' }}</p>
+                <p>Details: {{ product.description }}</p>
+              </div>
+            </div>
+            
+            <ion-button fill="clear" class="add-to-cart-btn" (click)="addToCart(product)">
+              <ion-icon name="cart-outline"></ion-icon>
+            </ion-button>
+          </div>
+      
+          <div class="product-info">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <div class="product-details">
+              <span class="product-price">
+                R{{ (product.discountedPrice ? product.discountedPrice : product.price) | number:'1.2-2' }}
+                <span *ngIf="product.hasPromotion" class="original-price">R{{ product.price | number:'1.2-2' }}</span>
+              </span>
+              
+              <div class="stock-status">
+                {{ getStockStatus(product) }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      
+      
     </div>
     
   </div>

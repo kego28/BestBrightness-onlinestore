@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AlertController, ToastController, IonModal } from '@ionic/angular';
 import { catchError, tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-admin-order-management',
@@ -94,12 +94,15 @@ export class AdminOrderManagementPage implements OnInit {
         catchError(error => {
           console.error('Error fetching order details:', error);
           this.presentToast('Failed to fetch order details', 'danger');
-          return of(null); // Return null on error
+          return throwError(()=> error); // Return null on error
         })
       )
       .subscribe((response: any) => {
-        if (response && response.success) {
+        // alert("here");
+        if (response.success) {
+          
           this.currentOrderDetails = response.order;
+          alert(JSON.stringify(this.currentOrderDetails));
           this.viewOrderModal.present();
         } else {
           this.presentToast(response.message || 'Failed to fetch order details', 'danger');
@@ -127,7 +130,7 @@ export class AdminOrderManagementPage implements OnInit {
       status: this.selectedStatus,
       previousStatus: this.currentOrder.status
     };
-
+// SIMILAR BUT NOT THE SAME
     this.http.put(`http://localhost/user_api/orders.php?id=${this.currentOrder.order_id}`, updateData)
       .pipe(
         tap(response => {
@@ -196,3 +199,4 @@ export class AdminOrderManagementPage implements OnInit {
     toast.present();
   }
 }
+// viewOrderDetails(order)

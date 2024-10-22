@@ -22,6 +22,9 @@ interface Product {
   hasPromotion?: boolean;
   promotionName?: string;
   discountedPrice?: number;
+  discount_percentage?: number;
+  // description?: string; // Assuming you have a description
+  showTooltip?: boolean; 
   rating: number;
 }
 
@@ -53,7 +56,10 @@ export class ProductsPage implements OnInit {
   isScrolled = false;
   currentUser:any;
 
-
+  isCashier: boolean = false;
+  isAdmin: boolean = false;
+  showTooltip: boolean = false;
+  cartCount: number = 0;
   // @HostListener('window:scroll', ['$event'])
   onScroll() {
     this.isScrolled = window.scrollY > 50;
@@ -61,6 +67,11 @@ export class ProductsPage implements OnInit {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  
+  Signup() {
+    this.router.navigate(['/signup']);
   }
 
   closeMenu() {
@@ -84,6 +95,9 @@ export class ProductsPage implements OnInit {
     this.getUserId();
     this.loadPromotions();
 
+    this.applyPromotions();
+
+  
     const navigation = this.router.getCurrentNavigation();
 
     if (navigation?.extras.state) {
@@ -118,6 +132,31 @@ export class ProductsPage implements OnInit {
     }
   }
 
+
+
+getUserRole() {
+  const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
+  if (role === 'admin') {
+    this.isAdmin = true;
+  } else if (role === 'cashier') {
+    this.isCashier = true;
+  }
+}
+
+// ngOnInit() {
+//   this.getUserId();
+//   this.getUserRole(); // Retrieve and set role
+
+//   const navigation = this.router.getCurrentNavigation();
+//   if (navigation?.extras.state) {
+//     this.currentUser = navigation.extras.state['user'] || null; // Access user data
+//     console.log('Current User in Products:', this.currentUser);
+//   } else {
+//     console.log('No user data found in Products page.');
+//   }
+// }
+
+
   getStockStatus(product: Product): string {
     if (product.stock_quantity < 1) {
       return 'Out of stock';
@@ -137,6 +176,7 @@ export class ProductsPage implements OnInit {
       next: (data: Product[]) => {
         this.products = data.map(product => ({ ...product, quantity: 1 }));
         this.filteredProducts = this.products;
+        this.showTooltip =  false;
         this.applyFilters();
         this.loadPromotions();
         this.extractCategories();
@@ -308,7 +348,9 @@ export class ProductsPage implements OnInit {
       product_id: product.product_id,
       quantity: product.quantity
     };
-  
+    
+    this.cartCount++;
+
     console.log('Sending request to add to cart:', payload);
   
     const headers = new HttpHeaders().set('Content-Type', 'application/json');

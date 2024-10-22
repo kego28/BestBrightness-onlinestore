@@ -94,7 +94,7 @@ else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } else if (isset($_GET['id'])) {
         // View a specific order
         $order_id = $_GET['id'];
-        $sql = "SELECT * FROM ORDERS WHERE user_id = ?";
+        $sql = "SELECT * FROM ORDERS WHERE order_id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $order_id);
         $stmt->execute();

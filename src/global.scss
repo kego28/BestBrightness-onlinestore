@@ -83,26 +83,6 @@
 
     --background: linear-gradient(to right, #e2953d, #db7d11); /* Corrected the typo */
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ion-content {
     --background: #f4f5f8;
   }
@@ -232,6 +212,49 @@
     line-height: 22px;
     color: #8c8c8c;
     margin: 0;
+  }
+
+
+
+  ion-modal {
+    --height: 90vh;
+    // --width: 110%;
+    --max-width: 600px;
+    --border-radius: 8px;
+    
+    ion-header {
+      ion-toolbar {
+        --background: rgba(219, 125, 17, 0.9);
+      }
+    }
+  
+    .order-details {
+      ion-item-divider {
+        --background: #f8f9fa;
+        --padding-start: 16px;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        margin-top: 16px;
+      }
+  
+      ion-item {
+        --padding-start: 16px;
+        
+        h3 {
+          color: var(--ion-color-medium);
+          font-size: 0.9rem;
+          margin-bottom: 4px;
+        }
+        
+        p {
+          color: var(--ion-color-dark);
+          font-size: 1rem;
+          font-weight: 500;
+        }
+      }
+    }
   }
   // .logo {
   //   // filter: drop-shadow(2px 4px 6px white); /* Uses CSS variable */
