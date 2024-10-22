@@ -155,8 +155,8 @@
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar>
-    <ion-segment [(ngModel)]="paymentType" color="primary">
+  <!-- <ion-toolbar> -->
+    <!-- <ion-segment [(ngModel)]="paymentType" color="primary">
       <ion-segment-button value="cash">
         <ion-icon name="cash-outline"></ion-icon>
         <ion-label>Cash</ion-label>
@@ -165,9 +165,9 @@
         <ion-icon name="card-outline"></ion-icon>
         <ion-label>Card</ion-label>
       </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-  <ion-toolbar>
+    </ion-segment> -->
+  <!-- </ion-toolbar>
+  <ion-toolbar> -->
     <ion-row>
       <ion-col size="9">
         <ion-button expand="block" (click)="checkout()" [disabled]="!paymentType || cart.length === 0">
@@ -175,11 +175,18 @@
           Checkout
         </ion-button>
       </ion-col>
+      <!-- <ion-col size="3">
+        <ion-button expand="block" (click)="checkout()" [disabled]="!paymentType || cart.length === 0">
+          <ion-icon name="cart-outline" slot="start"></ion-icon>
+          Checkout
+        </ion-button>
+      </ion-col> -->
       <ion-col size="3">
-        <ion-button expand="block" fill="outline" (click)="printReceipt()" [disabled]="!isCheckoutComplete">
+        <ion-button expand="block" fill="outline" (click)="printReceipt()"  [disabled]="!isCheckoutComplete">
           <ion-icon name="print-outline" slot="icon-only"></ion-icon>
+          print
         </ion-button>
       </ion-col>
     </ion-row>
-  </ion-toolbar>
+  <!-- </ion-toolbar> -->
 </ion-footer>
