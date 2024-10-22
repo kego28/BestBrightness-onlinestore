@@ -261,6 +261,7 @@ export class AdminInventoryManagementPage implements OnInit {
       .subscribe(
         data => {
           this.products = data;
+          this.filteredProducts = this.products;
           this.updateProductLists();
         },
         (error: HttpErrorResponse) => {
@@ -271,6 +272,7 @@ export class AdminInventoryManagementPage implements OnInit {
   }
 
   updateProductLists() {
+    
     const sortedProducts = [...this.products].sort((a, b) => b.stock_quantity - a.stock_quantity);
     this.fastMoving = sortedProducts.slice(0, 5);
     this.slowMoving = sortedProducts.slice(-5).reverse();

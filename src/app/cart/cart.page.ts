@@ -10,11 +10,13 @@ import { ModalController } from '@ionic/angular';
 import { catchError, map, Observable, of, Subscription, throwError } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { UserOptions } from 'jspdf-autotable';
 import { LoadingController} from '@ionic/angular';
 import { OrderService } from '../services/order.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 // import { AddressModalComponent } from './address-modal.component';
 
 interface jsPDFWithAutoTable extends jsPDF {
@@ -44,7 +46,9 @@ export class CartPage implements OnInit {
 
   private cartSubscription: Subscription | undefined;
 
-
+  receiptData: any = null; // To hold receipt details
+  receiptVisible: boolean = false; // To control receipt visibility
+  
   cardholderName: string = 'John Doe';
   cardNumber: string = '4111 1111 1111 1111';
   expirationDate: string = '12/2025';
@@ -604,8 +608,26 @@ async enterCustomQuantity(productId: number) {
     return {isValid, invalidItems};
   }
 
+  hideReceipt() {
+    this.receiptVisible = false; // Hide the receipt
+}
+
+generateOrderNumber(): string {
+  const prefix = 'BB'; // Optional prefix
+  const randomNumber = Math.floor(100000 + Math.random() * 900000); // Generates a random number between 100000 and 999999
+  return `${prefix}-${randomNumber}`; // Example format: ORD-123456
+}
+
+
+  getTax() {
+    return this.roundToTwo(this.total * 0.15); // Assuming 15% VAT
+  }
+
   async PlaceOrder(): Promise<void> {
     try {
+        // Generate order number
+        const orderNumber = this.generateOrderNumber();
+
         // Check if the cart is empty
         if (this.cartItems.length === 0) {
             const alert = await this.alertController.create({
@@ -643,6 +665,7 @@ async enterCustomQuantity(productId: number) {
 
         // Prepare the order data
         const orderData = {
+            orderNumber: orderNumber,
             user_id: this.userId,
             total_amount: this.total,
             order_type: this.deliveryMethod,
@@ -656,6 +679,14 @@ async enterCustomQuantity(productId: number) {
             })),
             created_at: new Date()
         };
+
+        this.receiptData = {
+          orderNumber: orderNumber,
+          items: this.cartItems,
+          subtotal: this.total, // Adjust as necessary
+          tax: this.getTax(), // Implement this method as needed
+          total: this.total // Adjust as necessary
+      };
 
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
 
@@ -685,7 +716,7 @@ async enterCustomQuantity(productId: number) {
                     handler: async () => {
                         // Send order data to server
                         const response = await this.http.post<{ success: boolean, message: string }>(
-                            'http://localhost/user_api/orders.php', 
+                            'http://localhost/user_api/orders.php',
                             orderData
                         ).toPromise();
 
@@ -724,6 +755,19 @@ async enterCustomQuantity(productId: number) {
                                 console.error('Error clearing cart:', error);
                             }
 
+                            // Store receipt data, including the order number
+                            this.receiptData = {
+                                orderNumber: orderNumber,
+                                items: this.cartItems,
+                                subtotal: this.total, // Adjust as necessary
+                                tax: this.getTax(), // Implement this method as needed
+                                total: this.total // Adjust as necessary
+                            };
+
+                            // Show the receipt
+                            this.receiptVisible = true;
+                            this.generatePDF();
+
                             // Show success message
                             const successAlert = await this.alertController.create({
                                 header: 'Order Placed',
@@ -748,7 +792,6 @@ async enterCustomQuantity(productId: number) {
     }
 }
 
-  
   
 // Function to send email with PDF order details
 async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
@@ -781,6 +824,53 @@ async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
         }
     );
 }
+
+async generatePDF() {
+  const receiptData = this.receiptData; // Use the stored receipt data
+  const pdf = new jsPDF('p', 'mm', 'a4');
+
+  // Title
+  pdf.setFontSize(18);
+  pdf.text('Receipt', 14, 20);
+  pdf.setFontSize(14);
+  pdf.text('BEST BRIGHTNESS STORE', 14, 30);
+  pdf.text('123 Main St, City, Country', 14, 40);
+  pdf.text('Tel: (555) 123-4567', 14, 50);
+  
+  // Items Header
+  pdf.setFontSize(12);
+  pdf.text('Items:', 14, 65);
+  
+  let yPosition = 75; // Starting y position for items
+  receiptData.items.forEach((item: { price: number; quantity: number; name: any; }) => {
+    const itemTotal = item.price * item.quantity;
+    pdf.text(`${item.name} - ${item.quantity} x R${item.price.toFixed(2)} = R${itemTotal.toFixed(2)}`, 14, yPosition);
+    yPosition += 10; // Move down for next item
+  });
+
+  // Subtotal, Tax, and Total
+  pdf.text(`Subtotal: R${receiptData.subtotal.toFixed(2)}`, 14, yPosition);
+  yPosition += 10;
+  pdf.text(`Tax (15%): R${receiptData.tax.toFixed(2)}`, 14, yPosition);
+  yPosition += 10;
+  pdf.setFontSize(14);
+  pdf.text(`Total: R${receiptData.total.toFixed(2)}`, 14, yPosition);
+  yPosition += 10;
+
+  // Thank You Message
+  pdf.setFontSize(12);
+  pdf.text('THANK YOU FOR SHOPPING WITH US!', 14, yPosition);
+  yPosition += 10;
+
+  // Order Number
+  pdf.text(`#Order Number: ${receiptData.orderNumber}`, 14, yPosition);
+
+  // Save the PDF
+  pdf.save(`receipt_${receiptData.orderNumber}.pdf`);
+}
+
+
+
 
   
 }

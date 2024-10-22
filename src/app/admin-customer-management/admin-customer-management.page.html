@@ -1,66 +1,4 @@
-<!-- <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Admin Customer Management</ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content [fullscreen]="true">
- 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Admin Customer Management</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
- 
-<ion-searchbar [(ngModel)]="searchQuery" (ionChange)="filterUsers()" placeholder="Search customers"></ion-searchbar>
-
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Customer List</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-     
-      <ion-grid>
-        <ion-row>
-          <ion-col>Customer ID</ion-col>
-          <ion-col>Name</ion-col>
-          <ion-col>Email</ion-col>
-          <ion-col>Role</ion-col>
-          <ion-col>Actions</ion-col>
-        </ion-row>
-
-        <ion-row *ngFor="let user of filteredUsers">
-          <ion-col>{{ user.user_id }}</ion-col>
-          <ion-col>{{ user.first_name }} {{ user.last_name }}</ion-col>
-          <ion-col>{{ user.email }}</ion-col>
-          <ion-col>{{ user.role }}</ion-col>
-          <ion-col>
-
-
-            <ion-button (click)="editUser(user)" fill="clear" color="primary">
-              <ion-icon name="eye-outline"></ion-icon> 
-            </ion-button>
-            <ion-button (click)="deleteUser(user.user_id)" fill="clear" color="danger">
-              <ion-icon name="trash-outline"></ion-icon> 
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
-
-</ion-content> -->
-<!-- <ion-header class="ion-no-border">
-  <ion-toolbar class="gradient-toolbar">
-    <ion-title class="ion-text-center">
-      <ion-text color="light">
-        <strong>Customer Management Dashboard</strong>
-      </ion-text>
-    </ion-title>
-  </ion-toolbar>
-</ion-header> -->
 
 <ion-content class="ion-padding custom-background">
   <!-- Stats Cards Row -->
@@ -113,19 +51,7 @@
         animated="true"
         class="custom-searchbar">
       </ion-searchbar>
-      
-      <ion-chip color="primary" outline="true" (click)="filterByRole('all')">
-        <ion-icon name="people-outline"></ion-icon>
-        <ion-label>All</ion-label>
-      </ion-chip>
-      <ion-chip color="secondary" outline="true" (click)="filterByRole('admin')">
-        <ion-icon name="shield-outline"></ion-icon>
-        <ion-label>Admins</ion-label>
-      </ion-chip>
-      <ion-chip color="tertiary" outline="true" (click)="filterByRole('user')">
-        <ion-icon name="person-outline"></ion-icon>
-        <ion-label>Users</ion-label>
-      </ion-chip>
+    
     </ion-card-content>
   </ion-card>
 

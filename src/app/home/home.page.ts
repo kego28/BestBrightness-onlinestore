@@ -1,4 +1,4 @@
-import { MenuController } from '@ionic/angular';
+import { MenuController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 
@@ -10,11 +10,14 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 export class HomePage implements OnInit, OnDestroy {
   currentUser:any;
   isScrolled = false;
+  userId: string | null = null;
+  isLoggedIn: boolean = false;
   // isScrolled = false;
   isMenuOpen = false;
   constructor(
     private menu: MenuController,
-    private router: Router
+    private router: Router,
+    private toastController: ToastController,
   ) {
 
     const navigation = this.router.getCurrentNavigation();
@@ -49,6 +52,21 @@ export class HomePage implements OnInit, OnDestroy {
     this.isMenuOpen = false;
   }
 
+  async getUserId() {
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId) {
+      this.router.navigate(['/account']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in to view your account', 'warning');
+    
+    }
+  }
+
   Signup() {
     this.router.navigate(['/signup']);
   }
@@ -61,16 +79,27 @@ export class HomePage implements OnInit, OnDestroy {
     this.router.navigate(['/promotions']);
   }
 
-  viewAccount() {
-    this.router.navigate(['/account']);
+  async viewAccount() {
+    await this.getUserId();
   }
 
   ngOnInit() {
     // Initial check for scroll position
     this.onWindowScroll();
+    this.userId = sessionStorage.getItem('userId');
   }
 
   ngOnDestroy() {
     // No need to remove listener as @HostListener handles cleanup
+  }
+
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }
