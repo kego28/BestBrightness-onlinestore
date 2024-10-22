@@ -1,413 +1,475 @@
-<!-- <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Account</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div *ngIf="loading" class="ion-text-center ion-padding">
-    <ion-spinner></ion-spinner>
-    <p>Loading user information...</p>
-  </div>
-
-  <div *ngIf="!loading">
-    <div *ngIf="error" class="ion-text-center ion-padding">
-      <ion-text color="danger">
-        <p>{{ error }}</p>
-      </ion-text>
-    </div>
-
-    <ion-card *ngIf="currentUser">
-      <ion-card-header>
-        <ion-card-title>Profile Information</ion-card-title>
-      </ion-card-header>
-      
-      <ion-card-content>
-        <ion-list>
-          <ion-item>
-            <ion-label>
-              <h2>Name</h2>
-              <p>{{currentUser.first_name}} {{currentUser.last_name}}</p>
-            </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>
-              <h2>Username</h2>
-              <p>{{currentUser.username}}</p>
-            </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>
-              <h2>Email</h2>
-              <p>{{currentUser.email}}</p>
-            </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>
-              <h2>Role</h2>
-              <p>{{currentUser.role}}</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-
-        <ion-button expand="block" color="primary" class="ion-margin-top" (click)="logout()">
-          Logout
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-
-    <Orders Section -->
-    <!-- <ion-card *ngIf="allOrders.length > 0">
-      <ion-card-header>
-        <ion-card-title>Your Orders</ion-card-title>
-      </ion-card-header> -->
-      
-      <!-- <ion-card-content>
-        <ion-select [(ngModel)]="selectedStatus" (ionChange)="onStatusChange()">
-          <ion-select-option value="all">All</ion-select-option>
-          <ion-select-option value="pending">Pending</ion-select-option>
-          <ion-select-option value="order-processed">Processed</ion-select-option>
-          <ion-select-option value="checked-out">Checked Out</ion-select-option>
-        </ion-select> -->
-
-        <!-- <ion-list>
-          <ion-item *ngFor="let order of displayedOrders">
-            <ion-label>
-              <h2>Order #{{ order.order_id }} - {{ order.status }}</h2>
-              <p>Type: {{ order.order_type }}</p>
-              <p>Amount: R{{ order.total_amount }}</p>
-              <p>Created At: {{ order.created_at | date:'short' }}</p>
-            </ion-label>
-          </ion-item>
-        </ion-list> -->
-
-        <!-- <ion-button *ngIf="!showAllOrders && allOrders.length > 3" expand="block" fill="clear" (click)="toggleShowAllOrders()">
-          Show More
-        </ion-button>
-        <ion-button *ngIf="showAllOrders" expand="block" fill="clear" (click)="toggleShowAllOrders()">
-          Show Less
-        </ion-button>
-      </ion-card-content>
-    </ion-card> -->
-
-    <!-- No Orders Found -->
-    <!-- <div *ngIf="allOrders.length === 0 && !ordersLoading && !ordersError" class="ion-text-center ion-padding">
-      <h2>No Orders Found</h2>
-      <p>You haven't placed any orders yet.</p>
-    </div> -->
-
-    <!-- Error Section -->
-    <!-- <div *ngIf="ordersError" class="ion-text-center ion-padding">
-      <ion-text color="danger">
-        <p>{{ ordersError }}</p>
-      </ion-text>
-    </div> -->
-
-    <!-- Loading Spinner -->
-    <!-- <ion-spinner *ngIf="ordersLoading" class="ion-padding"></ion-spinner>
-  </div>
-</ion-content>  
-
-<ion-content>
-
-<div *ngIf="loading" class="loading-container">
-  <ion-spinner></ion-spinner>
-  <p>Loading user information...</p>
-</div>
-
-<div *ngIf="!loading && currentUser">
-  <div class="hero-section">
-    <h1 class="hero-title">MY ACCOUNT</h1>
-  </div>
-  <div class="nav-cards">
-    <div class="nav-card" (click)="viewOrders()">
-      <ion-icon name="cart-outline"></ion-icon>
-      <span>ORDERS</span>
-    </div>
-
-    <div class="nav-card" (click)="editAccount()">
-      <ion-icon name="person-outline"></ion-icon>
-      <span>EDIT ACCOUNT</span>
-    </div>
-
-    <div class="nav-card" (click)="viewAddress()">
-      <ion-icon name="home-outline"></ion-icon>
-      <span>ADDRESS</span>
-    </div>
-
-    <div class="nav-card" (click)="logout()">
-      <ion-icon name="log-out-outline" ></ion-icon>
-      <span>LOGOUT</span>
-    </div>
-  </div>
+<style>
+  :root {
+    --primary-color: #db7d11;
+    --primary-light: #fdf4eb;
+    --text-dark: #2d3748;
+    --text-light: #4a5568;
+    --white: #ffffff;
+    --gray-100: #f7fafc;
+    --gray-200: #edf2f7;
+    --success: #48bb78;
+    --warning: #ed8936;
+    --error: #f56565;
+  }
   
-  <div class="orders-section" *ngIf="activeSection === 'orders'">
-    <div *ngIf="ordersLoading" class="loading-container">
-      <ion-spinner></ion-spinner>
-        <p>Loading orders...</p>
-      </div>
-
-      <div *ngIf="!ordersLoading">
-        <ion-select [(ngModel)]="selectedStatus" (ionChange)="onStatusChange()" class="status-select">
-          <ion-select-option value="all">All Orders</ion-select-option>
-          <ion-select-option value="pending">Pending</ion-select-option>
-          <ion-select-option value="order-processed">Processed</ion-select-option>
-          <ion-select-option value="checked-out">Checked Out</ion-select-option>
-        </ion-select>
-
-    <div class="orders-table" *ngIf="displayedOrders.length > 0">
-<table>
-      <thead>
-        <tr>
-          <th>Order</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of displayedOrders">
-          <td>#{{order.order_id}}</td>
-          <td>{{order.created_at | date:'mediumDate'}}</td>
-          <td>{{order.status}}</td>
-          <td>R{{order.total_amount}}</td>
-          <td>{{order.order_type}}</td>
-            <!--
-        </tr>
-      </tbody>
-    </table>
+  .account-page {
+    background: var(--gray-100);
+    min-height: 100vh;
+    padding: 2rem;
+  }
   
-    <ion-button *ngIf="!showAllOrders && allOrders.length > 3"expand="block" fill="clear" (click)="toggleShowAllOrders()">Show More
-    </ion-button>
-    <ion-button *ngIf="showAllOrders" expand="block" fill="clear" (click)="toggleShowAllOrders()">
-Show Less</ion-button>
-</div>
-<div *ngIf="displayedOrders.length === 0" class="no-orders">
-  <p>No orders found</p>
-</div>
-</div>
-</div>
-
-  <div class="edit-account-section" *ngIf="activeSection === 'edit'">
-    <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
-      <ion-item>
-        <ion-label position="floating">First Name</ion-label>
-        <ion-input formControlName="firstName" type="text"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Last Name</ion-label>
-        <ion-input formControlName="lastName" type="text"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input formControlName="email" type="email"></ion-input>
-      </ion-item>
-
-      <ion-button expand="block" type="submit" [disabled]="!accountForm.valid">
-        Save Changes
-      </ion-button>
-    </form>
-  </div>
-
-  <div class="address-section" *ngIf="activeSection === 'address'">
-    <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
-      <ion-item>
-        <ion-label position="floating">Street Address</ion-label>
-        <ion-input formControlName="street" type="text"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">City</ion-label>
-        <ion-input formControlName="city" type="text"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Postal Code</ion-label>
-        <ion-input formControlName="postalCode" type="text"></ion-input>
-      </ion-item>
-
-      <ion-button expand="block" type="submit" [disabled]="!addressForm.valid">
-        Update Address
-      </ion-button>
-    </form>
-  </div>
-  <div *ngIf="error" class="error-container">
-    <ion-text color="danger">
-      <p>{{ error }}</p>
-    </ion-text>
-  </div>
-</div>
-</ion-content>-->
-
-<ion-content class="account-page">
-  <!-- Loading Overlay -->
-  <div *ngIf="loading" class="loading-overlay">
-    <ion-spinner name="circles"></ion-spinner>
-  </div>
-
-  <div *ngIf="!loading && currentUser" class="page-content">
-    <!-- Profile Header -->
-    <div class="profile-header">
-      <!-- <div class="profile-image">
-        <img [src]="currentUser.profileImage || 'assets/default-avatar.png'" alt="Profile Picture">
-      </div> -->
-      <h1>{{ currentUser.first_name }} {{ currentUser.last_name }}</h1>
-      <p>{{ currentUser.email }}</p>
+  .profile-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-color);
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .profile-avatar ion-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+  }
+  
+  .profile-info h1 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin: 0;
+  }
+  
+  .profile-info p {
+    color: var(--text-light);
+    margin: 0.25rem 0 0 0;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-box {
+    background: var(--primary-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  
+  .stat-box:hover {
+    transform: translateY(-2px);
+  }
+  
+  .stat-box ion-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-dark);
+  }
+  
+  .stat-label {
+    color: var(--text-light);
+    font-size: 0.875rem;
+  }
+  
+  ion-segment {
+    background: var(--white);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    --background: var(--white);
+  }
+  
+  ion-segment-button {
+    --background-checked: var(--primary-color);
+    --color-checked: var(--white);
+    --indicator-color: var(--primary-color);
+    min-height: 48px;
+  }
+  
+  .section-content {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  ion-searchbar {
+    --background: var(--gray-100);
+    --border-radius: 12px;
+    --box-shadow: none;
+    --placeholder-color: var(--text-light);
+    margin-bottom: 1rem;
+  }
+  
+  .order-item {
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --background: var(--white);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+  }
+  
+  ion-badge {
+    --padding-start: 0.75rem;
+    --padding-end: 0.75rem;
+    --padding-top: 0.25rem;
+    --padding-bottom: 0.25rem;
+    border-radius: 999px;
+  }
+  
+  ion-badge.success {
+    --background: var(--success);
+    --color: var(--white);
+  }
+  
+  ion-badge.warning {
+    --background: var(--warning);
+    --color: var(--white);
+  }
+  
+  ion-badge.error {
+    --background: var(--error);
+    --color: var(--white);
+  }
+  
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --background: transparent;
+  }
+  
+  ion-input, ion-select {
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --background: var(--gray-100);
+    --border-radius: 8px;
+    margin-top: 0.5rem;
+  }
+  
+  .save-button {
+    --background: var(--primary-color);
+    --border-radius: 12px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .logout-button {
+    --background: transparent;
+    --color: var(--primary-color);
+    --border-color: var(--primary-color);
+    --border-style: solid;
+    --border-width: 2px;
+    --border-radius: 12px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    margin-top: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .account-page {
+      padding: 1rem;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+  </style>
+  <ion-header class="main-header" [class.header-scrolled]="isScrolled">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+          <ion-icon name="menu-outline"></ion-icon>
+        </ion-button>
+        <ion-title>
+          <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+        
+        </ion-title>
+      </ion-buttons>
+      
+      <ion-buttons slot="end" class="desktop-nav">
+        
+        <ion-button routerLink="/pos" *ngIf="isCashier">
+          <ion-icon name="cash-outline"></ion-icon>
+          <span>Cashier</span>
+        </ion-button>
+  
+        <ion-button routerLink="/admin-dashboard" *ngIf="isAdmin">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Admin</span>
+        </ion-button>
+  
+        <ion-button routerLink="/products">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Home</span>
+        </ion-button>
+        <ion-button (click)="viewAccount()">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Account</span>
+        </ion-button>
+        
+        <ion-button routerLink="/promotions">
+          <ion-icon name="gift-outline"></ion-icon>
+          <span>Promotions</span>
+        </ion-button>
+        <ion-button routerLink="/about-us">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>About Us</span>
+        </ion-button>
+        <ion-button routerLink="/contact">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>Contact</span>
+        </ion-button>
+        <ion-button routerLink="/privacy-policy">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>Privacy</span>
+        </ion-button>
+  
+        <ion-button (click)="logout()">
+          <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+          <ion-icon name="log-out-outline"></ion-icon>
+          <!-- <span>Privacy</span> -->
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+    <!-- <ion-content class="ion-padding"> -->
+      <!-- <ion-content class="ion-padding"> -->
+        <ion-content class="account-page">
+    <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+  
+      <ion-list (click)="cashier()" *ngIf="isCashier">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <ion-label>Cashier</ion-label>
+      </ion-list>
+      <ion-list (click)="admin()" *ngIf="isAdmin">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <ion-label>Cashier</ion-label>
+      </ion-list>
+      <ion-list>
+        <ion-item routerLink="/products" (click)="closeMenu()">
+          <ion-icon name="house-outline" slot="start"></ion-icon>
+          <ion-label>Home</ion-label>
+        </ion-item>
+        <ion-item (click)="viewAccount()" (click)="closeMenu()">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-label>Account</ion-label>
+        </ion-item>
+      
+        <ion-item routerLink="/promotions" (click)="closeMenu()">
+          <ion-icon name="gift-outline" slot="start"></ion-icon>
+          <ion-label>Promotions</ion-label>
+        </ion-item>
+        <ion-item routerLink="/about-us" (click)="closeMenu()">
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          <ion-label>About Us</ion-label>
+        </ion-item>
+        <ion-item routerLink="/contact" (click)="closeMenu()">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label>Contact</ion-label>
+        </ion-item>
+        <ion-item routerLink="/privacy-policy" (click)="closeMenu()">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-label>Privacy Policy</ion-label>
+        </ion-item>
+        <ion-button (click)="logout()">
+          <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Log-out</span>
+        </ion-button>
+      </ion-list>
     </div>
-
-    <!-- Quick Stats -->
-    <ion-grid class="quick-stats">
-      <ion-row>
-        <ion-col>
+  
+    <div *ngIf="loading" class="loading-overlay">
+      <ion-spinner name="circles"></ion-spinner>
+    </div>
+  
+    <div *ngIf="!loading && currentUser" class="page-content">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="profile-info">
+            <h1>{{ currentUser.first_name }} {{ currentUser.last_name }}</h1>
+            <p>{{ currentUser.email }}</p>
+          </div>
+        </div>
+  
+        <div class="stats-grid">
           <div class="stat-box">
             <ion-icon name="cart"></ion-icon>
             <span class="stat-value">{{ totalOrders }}</span>
             <span class="stat-label">Orders</span>
           </div>
-        </ion-col>
-        <ion-col>
           <div class="stat-box">
             <ion-icon name="star"></ion-icon>
             <span class="stat-value">{{ loyaltyPoints }}</span>
             <span class="stat-label">Points</span>
           </div>
-        </ion-col>
-        <ion-col>
           <div class="stat-box">
             <ion-icon name="heart"></ion-icon>
             <span class="stat-value">{{ wishlistItems }}</span>
             <span class="stat-label">Wishlist</span>
           </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-    <!-- Main Navigation -->
-    <ion-segment (ionChange)="segmentChanged($event)" value="orders" class="main-nav">
-      <ion-segment-button value="orders">
-        <ion-label>Orders</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="account">
-        <ion-label>Account</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="address">
-        <ion-label>Address</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-    <!-- Orders Section -->
-    <div *ngIf="activeSection === 'orders'" class="section-content">
-      <ion-searchbar placeholder="Search orders" (ionInput)="searchOrders($event)"></ion-searchbar>
-      
-      <ion-list>
-        <ion-item *ngFor="let order of displayedOrders" class="order-item">
-          <!-- <ion-thumbnail slot="start">
-            <img [src]="order.productImage || 'assets/default-product.png'" alt="Product">
-          </ion-thumbnail> -->
-          <ion-label>
-            <h2>Order #{{ order.order_id }}</h2>
-            <p>{{ order.created_at | date:'mediumDate' }}</p>
-            <ion-badge [color]="getStatusColor(order.status)">{{ order.status }}</ion-badge>
-          </ion-label>
-          <ion-note slot="end">
-            <strong>R{{ order.total_amount }}</strong>
-            <!-- (click)="viewOrderDetails(order)" -->
-            <!-- <ion-button fill="clear" slot="end">
-              View
-            </ion-button> -->
-          </ion-note>
-        </ion-item>
-      </ion-list>
-
-      <ion-infinite-scroll (ionInfinite)="loadMoreOrders($event)">
-        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more orders...">
-        </ion-infinite-scroll-content>
-      </ion-infinite-scroll>
-    </div>
-
-    <!-- Account Section -->
-    <div *ngIf="activeSection === 'account'" class="section-content">
-      <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
-        <ion-list lines="full" class="ion-no-margin ion-no-padding">
-          <ion-item>
-            <ion-label position="stacked">Username</ion-label>
-            <ion-input formControlName="username" type="text" placeholder="Enter your username"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">First Name</ion-label>
-            <ion-input formControlName="firstName" type="text" placeholder="Enter your first name"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Last Name</ion-label>
-            <ion-input formControlName="lastName" type="text" placeholder="Enter your last name"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Email</ion-label>
-            <ion-input formControlName="email" type="email" placeholder="Enter your email"></ion-input>
-          </ion-item>
-        </ion-list>
-        <div class="ion-padding">
-          <ion-button expand="block" type="submit" [disabled]="!accountForm.valid" class="save-button">
-            Save Changes
-          </ion-button>
         </div>
-      </form>
-    </div>
-
-    <!-- Address Section -->
-    <div *ngIf="activeSection === 'address'" class="section-content">
-      <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
-        <ion-list lines="full" class="ion-no-margin ion-no-padding">
-          <ion-item>
-            <ion-label position="stacked">Street Address</ion-label>
-            <ion-input formControlName="street" type="text" placeholder="Enter your street address"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">City</ion-label>
-            <ion-input formControlName="city" type="text" placeholder="Enter your city"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">State/Province</ion-label>
-            <ion-input formControlName="state" type="text" placeholder="Enter your state or province"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Postal Code</ion-label>
-            <ion-input formControlName="postalCode" type="text" placeholder="Enter your postal code"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-label position="stacked">Country</ion-label>
-            <ion-select formControlName="country" placeholder="Select your country">
-              <ion-select-option value="za">South Africa</ion-select-option>
-              <!-- Add more countries as needed -->
-            </ion-select>
-          </ion-item>
-        </ion-list>
-        <div class="ion-padding">
-          <ion-button expand="block" type="submit" [disabled]="!addressForm.valid" class="save-button">
-            Update Address
-          </ion-button>
+  
+        <ion-segment (ionChange)="segmentChanged($event)" value="orders" class="main-nav">
+          <ion-segment-button value="orders">
+            <ion-label>Orders</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="account">
+            <ion-label>Account</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="address">
+            <ion-label>Address</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+  
+        <div *ngIf="activeSection === 'orders'" class="section-content">
+          <ion-searchbar placeholder="Search orders" (ionInput)="searchOrders($event)"></ion-searchbar>
+          
+          <ion-list>
+            <ion-item *ngFor="let order of displayedOrders" class="order-item">
+              <ion-label>
+                <h2>Order #{{ order.order_id }}</h2>
+                <p>{{ order.created_at | date:'mediumDate' }}</p>
+                <ion-badge [class]="getStatusColor(order.status)">{{ order.status }}</ion-badge>
+              </ion-label>
+              <ion-note slot="end">
+                <strong>R{{ order.total_amount }}</strong>
+              </ion-note>
+            </ion-item>
+          </ion-list>
+  
+          <ion-infinite-scroll (ionInfinite)="loadMoreOrders($event)">
+            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more orders...">
+            </ion-infinite-scroll-content>
+          </ion-infinite-scroll>
         </div>
-      </form>
+  
+        <div *ngIf="activeSection === 'account'" class="section-content">
+          <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
+            <ion-list lines="full">
+              <ion-item>
+                <ion-label position="stacked">Username</ion-label>
+                <ion-input formControlName="username" type="text" placeholder="Enter your username"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">First Name</ion-label>
+                <ion-input formControlName="firstName" type="text" placeholder="Enter your first name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Last Name</ion-label>
+                <ion-input formControlName="lastName" type="text" placeholder="Enter your last name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Email</ion-label>
+                <ion-input formControlName="email" type="email" placeholder="Enter your email"></ion-input>
+              </ion-item>
+            </ion-list>
+            <ion-button expand="block" type="submit" [disabled]="!accountForm.valid" class="save-button">
+              Save Changes
+            </ion-button>
+          </form>
+        </div>
+  
+        <div *ngIf="activeSection === 'address'" class="section-content">
+          <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
+            <ion-list lines="full">
+              <ion-item>
+                <ion-label position="stacked">Street Address</ion-label>
+                <ion-input formControlName="street" type="text" placeholder="Enter your street address"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">City</ion-label>
+                <ion-input formControlName="city" type="text" placeholder="Enter your city"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">State/Province</ion-label>
+                <ion-input formControlName="state" type="text" placeholder="Enter your state or province"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Postal Code</ion-label>
+                <ion-input formControlName="postalCode" type="text" placeholder="Enter your postal code"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Country</ion-label>
+                <ion-select formControlName="country" placeholder="Select your country">
+                  <ion-select-option value="za">South Africa</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-list>
+            <ion-button expand="block" type="submit" [disabled]="!addressForm.valid" class="save-button">
+              Update Address
+            </ion-button>
+          </form>
+        </div>
+      </div>
+  
+      <ion-button expand="block" (click)="logout()" class="logout-button">
+        Logout
+      </ion-button>
     </div>
-  </div>
-
-  <!-- Logout Button -->
-  <ion-button expand="block" (click)="logout()" class="logout-button">
-    Logout
-  </ion-button>
-
-  <!-- Error Toast -->
-  <ion-toast
-    [isOpen]="error !== null"
-    [message]="error"
-    [duration]="3000"
-    position="bottom"
-    color="danger"
-  ></ion-toast>
-</ion-content>
+  
+    <ion-toast
+      [isOpen]="error !== null"
+      [message]="error"
+      [duration]="3000"
+      position="bottom"
+      color="danger"
+    ></ion-toast>
+  </ion-content>

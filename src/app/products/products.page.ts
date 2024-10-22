@@ -140,6 +140,46 @@ export class ProductsPage implements OnInit {
   async viewAccount() {
     await this.toAccount();
   }
+  getUserRole() {
+    const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
+    if (role === 'admin') {
+      this.isAdmin = true;
+    } else if (role === 'cashier') {
+      this.isCashier = true;
+    }
+  }
+
+  async cashier() {
+    const role = sessionStorage.getItem('userRole');
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId && role ==='cashier') {
+      this.router.navigate(['/pos']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to login as cashier to access this page', 'warning');
+    
+    }
+  }
+
+  async admin() {
+    this.userId = sessionStorage.getItem('userId');
+    const role = sessionStorage.getItem('userRole');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId && role === 'admin') {
+      this.router.navigate(['/admin-dashboard']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in as admin to view admin pages', 'warning');
+    
+    }
+  }
   async toAccount() {
     this.userId = sessionStorage.getItem('userId');
     console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
@@ -172,14 +212,7 @@ export class ProductsPage implements OnInit {
     }
   }
 
-getUserRole() {
-  const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
-  if (role === 'admin') {
-    this.isAdmin = true;
-  } else if (role === 'cashier') {
-    this.isCashier = true;
-  }
-}
+
 
 // ngOnInit() {
 //   this.getUserId();
@@ -438,7 +471,15 @@ getUserRole() {
     await toast.present();
   }
   // Navigate to cart page
-  navigateToCart() {
-    this.navCtrl.navigateForward('/cart');
+  // navigateToCart() {
+  //   this.navCtrl.navigateForward('/cart');
+  // }
+
+  async logout() {
+    sessionStorage.removeItem('userId');
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    await this.presentToast('You have logged out successfully', 'success');
+    this.router.navigate(['/products']);
   }
 }

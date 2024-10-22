@@ -233,13 +233,7 @@
 //   }
   
 
-//   async logout() {
-//     sessionStorage.removeItem('userId');
-//     this.isLoggedIn = false;
-//     this.currentUser = null;
-//     await this.presentToast('You have logged out successfully', 'success');
-//     this.router.navigate(['/login']);
-//   }
+
 
 //   async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
 //     const toast = await this.toastController.create({
@@ -298,8 +292,8 @@ export class AccountPage implements OnInit {
   showAllOrders: boolean = false;
 
   totalOrders: number = 0;
-  loyaltyPoints: number = 0;
-  wishlistItems: number = 0;
+  loyaltyPoints: number = 53;
+  wishlistItems: number = 16;
 
   private apiUrl = 'http://localhost/user_api/login.php';
   private ordersApiUrl = 'http://localhost/user_api/orders.php';
@@ -326,9 +320,102 @@ export class AccountPage implements OnInit {
       country: ['', Validators.required]
     });
   }
+  isMenuOpen = false;
+  isScrolled = false;
+  // currentUser:any;
+
+  isCashier: boolean = false;
+  isAdmin: boolean = false;
+  showTooltip: boolean = false;
+  cartCount: number = 0;
+  // @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  
+  Signup() {
+    this.router.navigate(['/signup']);
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
 
   ngOnInit() {
     this.getUserId();
+  }
+
+  async viewAccount() {
+    await this.toAccount();
+  }
+
+  async cashier() {
+    const role = sessionStorage.getItem('userRole');
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId && role ==='cashier') {
+      this.router.navigate(['/pos']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to login as cashier to access this page', 'warning');
+    
+    }
+  }
+
+  async admin() {
+    this.userId = sessionStorage.getItem('userId');
+    const role = sessionStorage.getItem('userRole');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId && role === 'admin') {
+      this.router.navigate(['/admin-dashboard']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in as admin to view admin pages', 'warning');
+    
+    }
+  }
+  async toAccount() {
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId) {
+      this.router.navigate(['/account']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in to view your account', 'warning');
+    
+    }
+  }
+  async viewCart(){
+ await  this.tocart();
+  }
+  async tocart() {
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId) {
+      this.router.navigate(['/cart']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in to view your account', 'warning');
+    
+    }
   }
 
   async getUserId() {
@@ -519,7 +606,7 @@ export class AccountPage implements OnInit {
     this.isLoggedIn = false;
     this.currentUser = null;
     await this.presentToast('You have logged out successfully', 'success');
-    this.router.navigate(['/home']);
+    this.router.navigate(['/products']);
   }
 
   async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {

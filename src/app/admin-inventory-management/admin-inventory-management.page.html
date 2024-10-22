@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+  <ion-toolbar color="warning">
     <ion-title>Admin Inventory Management</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -19,7 +19,7 @@
             </ion-searchbar>
           </ion-col>
           <ion-col size="12" size-md="6">
-            <ion-segment [(ngModel)]="selectedFilter" color="primary">
+            <ion-segment [(ngModel)]="selectedFilter" color="warning">
               <ion-segment-button value="category">
                 <ion-label>Category</ion-label>
               </ion-segment-button>
@@ -69,13 +69,13 @@
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="6">
-        <ion-button expand="block" (click)="openCategoryManagementModal()" class="custom-button">
+        <ion-button expand="block" (click)="openCategoryManagementModal()" class="custom-button" color="warning">
           <ion-icon name="folder-outline" slot="start"></ion-icon>
           Manage Categories
         </ion-button>
       </ion-col>
       <ion-col size="12" size-md="6">
-        <ion-button expand="block" (click)="openPromotionManagementModal()" class="custom-button">
+        <ion-button expand="block" (click)="openPromotionManagementModal()" class="custom-button"color="warning">
           <ion-icon name="pricetag-outline" slot="start"></ion-icon>
           Manage Promotions
         </ion-button>
@@ -214,7 +214,7 @@
 
   <!-- Add Item FAB -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="presentAddItemModal()" color="primary">
+    <ion-fab-button (click)="presentAddItemModal()" color="warning">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
@@ -224,7 +224,7 @@
 <ion-modal #addItemModal class="custom-modal">
   <ng-template>
     <ion-header>
-      <ion-toolbar color="primary">
+      <ion-toolbar color="warning">
         <ion-title>Add New Item</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="dismissModal()">
@@ -305,7 +305,7 @@
           </ion-grid>
         </ion-item>
 
-        <ion-button expand="block" type="submit" class="submit-button">Add Item</ion-button>
+        <ion-button expand="block" type="submit" class="submit-button" color="warning">Add Item</ion-button>
       </form>
     </ion-content>
   </ng-template>

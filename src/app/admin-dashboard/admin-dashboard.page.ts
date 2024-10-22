@@ -150,7 +150,7 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
     this.totalSalesCount = this.salesData.length;
     console.log(`Total Sales Count: ${this.totalSalesCount}`);
 
-
+    // getOrdersPercentage
   }
   isMenuOpen = false;
   isScrolled = false;

@@ -87,13 +87,13 @@
 
 <ion-content class="ion-padding">
   <div class="container mx-auto">
-    <ion-text color="primary">
+    <ion-text color="warning">
       <h2 class="text-2xl font-bold mb-4">Promotion Management</h2>
     </ion-text>
     
     <ion-card class="promotion-form-card">
-      <ion-card-header>
-        <ion-card-title>{{ editMode ? 'Edit' : 'Create' }} Promotion</ion-card-title>
+      <ion-card-header color="warning">
+        <ion-card-title style="font-weight: bold;">{{ editMode ? 'Edit' : 'Create' }} Promotion</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <form [formGroup]="promotionForm" (ngSubmit)="onSubmit()" class="mb-4">
@@ -161,7 +161,7 @@
             </ion-item>
           </ion-list>
           
-          <ion-button expand="block" type="submit" [disabled]="!promotionForm.valid" class="mt-4">
+          <ion-button color="warning" expand="block" type="submit" [disabled]="!promotionForm.valid" class="mt-4">
             <ion-icon name="{{ editMode ? 'save-outline' : 'add-outline' }}" slot="start"></ion-icon>
             {{editMode ? 'Update' : 'Create'}} Promotion
           </ion-button>
@@ -170,7 +170,7 @@
     </ion-card>
 
     <ion-card class="promotion-list-card mt-6">
-      <ion-card-header>
+      <ion-card-header  color="warning">
         <ion-card-title>Active Promotions</ion-card-title>
       </ion-card-header>
       <ion-card-content>
@@ -191,7 +191,7 @@
             <ion-col>{{formatDate(promotion.start_date)}}</ion-col>
             <ion-col>{{formatDate(promotion.end_date)}}</ion-col>
             <ion-col>
-              <ion-button fill="clear" (click)="editPromotion(promotion)">
+              <ion-button fill="clear" (click)="editPromotion(promotion)" >
                 <ion-icon name="create-outline" slot="icon-only"></ion-icon>
               </ion-button>
               <ion-button fill="clear" color="danger" (click)="confirmDeletePromotion(promotion.promotion_id)">
@@ -249,7 +249,7 @@
   }
 
   ion-card-header {
-    background-color: var(--ion-color-primary);
+    background-color: #db7d11;
     color: white;
   }
 
@@ -269,7 +269,7 @@
 
   ion-button[type="submit"] {
     margin-top: 20px;
-    --background: var(--ion-color-primary);
+    --background: #db7d11;
     font-weight: bold;
   }
 

@@ -47,6 +47,12 @@
         <ion-icon name="lock-closed-outline"></ion-icon>
         <span>Privacy</span>
       </ion-button>
+
+      <ion-button (click)="logout()">
+        <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+        <ion-icon name="log-out-outline"></ion-icon>
+        <!-- <span>Privacy</span> -->
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -55,11 +61,11 @@
     <ion-content class="ion-padding">
   <div class="mobile-menu" [class.show-menu]="isMenuOpen">
 
-    <ion-list routerLink="/pos" *ngIf="isCashier">
+    <ion-list (click)="cashier()" *ngIf="isCashier">
       <ion-icon name="lock-closed-outline"></ion-icon>
       <ion-label>Cashier</ion-label>
     </ion-list>
-    <ion-list routerLink="/admin-dashboard" *ngIf="isAdmin">
+    <ion-list (click)="admin()" *ngIf="isAdmin">
       <ion-icon name="lock-closed-outline"></ion-icon>
       <ion-label>Cashier</ion-label>
     </ion-list>
@@ -89,6 +95,11 @@
         <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
         <ion-label>Privacy Policy</ion-label>
       </ion-item>
+      <ion-button (click)="logout()">
+        <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Log-out</span>
+      </ion-button>
     </ion-list>
   </div>
 
@@ -202,6 +213,15 @@
       
           <div class="product-info">
             <h3 class="product-name">{{ product.name }}</h3>
+            <div class="quantity-control">
+              <ion-button fill="clear" size="small" (click)="decreaseQuantity(product)">
+                <ion-icon name="remove-outline"></ion-icon>
+              </ion-button>
+              <span>{{ product.quantity || 1 }}</span>
+              <ion-button fill="clear" size="small" (click)="increaseQuantity(product)">
+                <ion-icon name="add-outline"></ion-icon>
+              </ion-button>
+            </div>
             <div class="product-details">
               <span class="product-price">
                 R{{ (product.discountedPrice ? product.discountedPrice : product.price) | number:'1.2-2' }}

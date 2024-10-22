@@ -94,7 +94,7 @@
 //   }
 // }
 import { Component, HostListener } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { MenuController, ToastController } from '@ionic/angular';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
@@ -111,13 +111,16 @@ export class AppComponent {
     { title: 'Inventory Management', url: '/admin-inventory-management', icon: 'cube-outline' },
     { title: 'Order Management', url: '/admin-order-management', icon: 'cart-outline' },
     { title: 'Sales Report', url: '/admin-sales-report', icon: 'bar-chart-outline' }
+    // { title: '', url: '/admin-sales-report', icon: 'bar-chart-outline' }
   ];
 
   public isMenuOpen = false;
   public isScrolled = false;
   public isAdminPage = false;
+  isLoggedIn: boolean =true;
+  // currentUser: null | undefined;
 
-  constructor(private menu: MenuController, private router: Router) {
+  constructor(private menu: MenuController, private router: Router, private toastController: ToastController,) {
     this.initializeApp();
   }
 
@@ -136,6 +139,23 @@ export class AppComponent {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  async logout() {
+    sessionStorage.removeItem('userId');
+    this.isLoggedIn = false;
+    // this.currentUser = null;
+    await this.presentToast('You have logged out successfully', 'success');
+    this.router.navigate(['/products']);
+  }
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 
   closeMenu() {

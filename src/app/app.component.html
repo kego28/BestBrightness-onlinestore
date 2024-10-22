@@ -80,6 +80,12 @@
             <ion-icon [name]="p.icon"></ion-icon>
             <span>{{ p.title }}</span>
           </ion-button>
+
+          <ion-button (click)="logout()">
+            <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+            <ion-icon name="log-out-outline"></ion-icon>
+            <!-- <span>Privacy</span> -->
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
