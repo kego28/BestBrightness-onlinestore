@@ -8,13 +8,13 @@ import { OrderSummaryPage } from './pages/checkout/order-summary/order-summary.p
 import { ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
-  },
+  // {
+  //   path: 'home',
+  //   loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+  // },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'products',
     pathMatch: 'full'
   },
   {
@@ -49,10 +49,10 @@ const routes: Routes = [
     path: 'pos',
     loadChildren: () => import('./pos/pos.module').then( m => m.POSPageModule)
   },
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
-  },
+  // {
+  //   path: 'home',
+  //   loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
+  // },
   {
     path: 'products',
     loadChildren: () => import('./products/products.module').then(m => m.ProductsPageModule)

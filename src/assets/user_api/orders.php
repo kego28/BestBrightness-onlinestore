@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:8100");
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Max-Age: 3600");
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Received data: " . print_r($data, true));
 
     // Prepare and bind for ORDERS table
-    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
         die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
@@ -43,8 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Loop through items to insert into orders table
     foreach ($data->items as $item) {
-        $stmt->bind_param("idsssdid", $data->user_id, $data->total_amount, $data->order_type, $data->status, $item->name, $item->price, $item->discounted_price, $item->quantity);
-        
+        $stmt->bind_param("idsssdids", 
+            $data->user_id, 
+            $data->total_amount, 
+            $data->order_type, 
+            $data->status, 
+            $item->name, 
+            $item->price, 
+            $item->discounted_price, 
+            $item->quantity, 
+            $data->orderNumber // Using orderNumber as column name
+        );
+
         // Execute the statement
         if (!$stmt->execute()) {
             error_log("Failed to place order: " . $stmt->error);
@@ -78,62 +88,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
+
 // Handle GET request
-else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Check if count=true parameter is passed
-    if (isset($_GET['count']) && $_GET['count'] === 'true') {
-        // Count the total number of orders
-        $sql = "SELECT COUNT(*) AS order_count FROM ORDERS"; 
-        $result = $conn->query($sql);
-
-        if ($result && $row = $result->fetch_assoc()) {
-            echo json_encode(['order_count' => $row['order_count']]);
-        } else {
-            echo json_encode(['order_count' => 0]);
+else if (isset($_GET['orderNumber'])) {
+    // View all orders that match the orderNumber
+    $order_number = $_GET['orderNumber'];
+    $sql = "SELECT * FROM ORDERS WHERE orderNumber = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $order_number); // Bind as string
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $orders = [];
+    if ($result->num_rows > 0) {
+        while ($order = $result->fetch_assoc()) {
+            $orders[] = $order;
         }
-    } else if (isset($_GET['id'])) {
-        // View a specific order
-        $order_id = $_GET['id'];
-        $sql = "SELECT * FROM ORDERS WHERE order_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $order_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            $order = $result->fetch_assoc();
-            
-            // Fetch order items
-            $items_sql = "SELECT * FROM ORDER_ITEMS WHERE order_id = ?";
-            $items_stmt = $conn->prepare($items_sql);
-            $items_stmt->bind_param("i", $order_id);
-            $items_stmt->execute();
-            $items_result = $items_stmt->get_result();
-            
-            $order['items'] = [];
-            while ($item = $items_result->fetch_assoc()) {
-                $order['items'][] = $item;
-            }
-            
-            echo json_encode(array("success" => true, "order" => $order));
-        } else {
-            echo json_encode(array("success" => false, "message" => "Order not found"));
-        }
+        echo json_encode(array("success" => true, "orders" => $orders));
     } else {
-        // Return all orders data (original functionality)
-        $sql = "SELECT * FROM ORDERS"; 
-        $result = $conn->query($sql);
-
-        $data = [];
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
-            }
-        }
-
-        echo json_encode(['orderData' => $data]);
+        echo json_encode(array("success" => false, "message" => "No orders found"));
     }
 }
+
+
+
+
 // Handle PUT request for updating an order
 else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $input = file_get_contents("php://input");

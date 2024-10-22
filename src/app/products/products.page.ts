@@ -80,20 +80,25 @@ export class ProductsPage implements OnInit {
 
   onSubmit(){}
 
+  // userId: string | null = null;
 
+  isLoggedIn: boolean = false;
   constructor(
     private http: HttpClient,
     private cartService: CartService,
     private navCtrl: NavController,
     private toastController: ToastController,
     private promotionService: PromotionService,
-    private router: Router
+    private router: Router,
+    // private router: Router,
+    // private toastController: ToastController,
   ) {}
 
   ngOnInit() {
     this.loadProducts();
     this.getUserId();
     this.loadPromotions();
+    this.getUserRole();
 
     this.applyPromotions();
 
@@ -132,7 +137,40 @@ export class ProductsPage implements OnInit {
     }
   }
 
-
+  async viewAccount() {
+    await this.toAccount();
+  }
+  async toAccount() {
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId) {
+      this.router.navigate(['/account']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in to view your account', 'warning');
+    
+    }
+  }
+  async viewCart(){
+ await  this.tocart();
+  }
+  async tocart() {
+    this.userId = sessionStorage.getItem('userId');
+    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
+    if (this.userId) {
+      this.router.navigate(['/cart']);
+      this.isLoggedIn = false;
+        
+      return;
+    }
+    else{
+      await this.presentToast('You need to log in to view your account', 'warning');
+    
+    }
+  }
 
 getUserRole() {
   const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
@@ -390,7 +428,15 @@ getUserRole() {
     }
   }
 
-
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
   // Navigate to cart page
   navigateToCart() {
     this.navCtrl.navigateForward('/cart');

@@ -335,9 +335,10 @@ export class AccountPage implements OnInit {
     this.userId = sessionStorage.getItem('userId');
     console.log('Stored userId in sessionStorage:', this.userId);
     if (!this.userId) {
+      this.router.navigate(['/products']);
       this.isLoggedIn = false;
       await this.presentToast('You need to log in to view your account', 'warning');
-      this.router.navigate(['/login']);
+      // this.router.navigate(['/login']);
       return;
     }
     

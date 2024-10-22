@@ -26,7 +26,7 @@
         <ion-icon name="home-outline"></ion-icon>
         <span>Home</span>
       </ion-button>
-      <ion-button routerLink="/account">
+      <ion-button (click)="viewAccount()">
         <ion-icon name="person-outline"></ion-icon>
         <span>Account</span>
       </ion-button>
@@ -68,7 +68,7 @@
         <ion-icon name="house-outline" slot="start"></ion-icon>
         <ion-label>Home</ion-label>
       </ion-item>
-      <ion-item routerLink="/account" (click)="closeMenu()">
+      <ion-item (click)="viewAccount()" (click)="closeMenu()">
         <ion-icon name="person-outline" slot="start"></ion-icon>
         <ion-label>Account</ion-label>
       </ion-item>
@@ -114,7 +114,7 @@
     <h1 class="product">Our Products</h1>
   </div>
   <div class="right">
-    <ion-button class="to_cart" routerLink="/cart">
+    <ion-button class="to_cart"  (click)="viewCart()">
       <ion-badge color="danger" *ngIf="cartCount > 0">{{ cartCount }}</ion-badge>
       <ion-icon name="cart-outline"></ion-icon>
     </ion-button>

@@ -143,11 +143,11 @@ export class SignupPage implements OnInit {
 
               // Navigate based on the role
               if (response.role === 'admin') {
-                this.router.navigate(['/product'] , { state: { user: userData } }); // Navigate to admin dashboard
+                this.router.navigate(['/products'] , { state: { user: userData } }); // Navigate to admin dashboard
               } else if (response.role === 'cashier') {
-                this.router.navigate(['/product'],  { state: { user: userData } }); // Navigate to POS page
+                this.router.navigate(['/products'],  { state: { user: userData } }); // Navigate to POS page
               } else {
-                this.router.navigate(['/product'],  { state: { user: userData } }); // Navigate to home page for all other roles
+                this.router.navigate(['/products'],  { state: { user: userData } }); // Navigate to home page for all other roles
               }
             } else {
               await this.presentToast('Login failed: ' + response.message, 'danger');

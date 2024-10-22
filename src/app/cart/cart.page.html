@@ -60,7 +60,7 @@
                             <div style="width: 80px;">
                               <h5 class="mb-0">
                                 <ng-container *ngIf="item.hasPromotion; else regularPrice">
-                                  <span class="original-price">{{ item.price * item.quantity | currency }}</span>
+                                  <span class="original-price">R{{ item.price * item.quantity }}</span>
                                   <span class="discounted-price">{{ item.discountedPrice * item.quantity | currency }}</span>
                                 </ng-container>
                                 <ng-template #regularPrice>
@@ -185,6 +185,33 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+
+    <div class="receipt-overlay" *ngIf="receiptVisible">
+      <div class="receipt-container">
+        <h2>Receipt</h2>
+        <div class="receipt-content">
+          <h3>BEST BRIGHTNESS STORE</h3>
+          <p>123 Main St, City, Country</p>
+          <p>Tel: (555) 123-4567</p>
+          <h4>Items:</h4>
+          <ul>
+            <li *ngFor="let item of receiptData?.items">
+              {{ item.name }} - {{ item.quantity }} x {{ item.price | currency:'R' }} = {{ item.price * item.quantity | currency:'R' }}
+            </li>
+          </ul>
+          <hr>
+          <p><strong>Subtotal:</strong> {{ receiptData?.subtotal | currency:'R' }}</p>
+          <p><strong>Tax (15%):</strong> {{ receiptData?.tax | currency:'R' }}</p>
+          <hr>
+          <p class="total"><strong>Total: {{ receiptData?.total | currency:'R' }}</strong></p>
+          <p class="thank-you">THANK YOU FOR SHOPPING WITH US!</p><br>
+          <p><strong>#Order Number:</strong> {{ receiptData?.orderNumber }}</p>
+
+        </div>
+        <ion-button expand="block" (click)="hideReceipt()">Close Receipt</ion-button>
+      </div>
+    </div>
+    
   </section>
 </ion-content>
 

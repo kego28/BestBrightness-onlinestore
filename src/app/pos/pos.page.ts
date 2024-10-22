@@ -307,61 +307,80 @@ resetCart() {
   }
 
   searchWalkInProducts() {
-    // Convert orderIdInput to an integer
-    const orderId = parseInt(this.orderIdInput as any, 10);
+    const orderNumber = this.orderIdInput;
 
-    if (!isNaN(orderId)) { // Check if it's a valid number
-        this.http.get<{ success: boolean; order: any }>(`http://localhost/user_api/orders.php?id=${orderId}`)
+    if (orderNumber) {
+        this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/orders.php?orderNumber=${orderNumber}`)
             .subscribe({
                 next: (response) => {
-                    if (response.success && response.order) {
-                        this.fetchedOrder = response.order; // Update to match your response structure
-                        const orderDetails = `
-                        Order ID: ${this.fetchedOrder.order_id}
-                        User ID: ${this.fetchedOrder.user_id}
-                        Total Amount: $${this.fetchedOrder.total_amount}
-                        Order Type: ${this.fetchedOrder.order_type}
-                        Status: ${this.fetchedOrder.status}
-                        Created At: ${new Date(this.fetchedOrder.created_at).toLocaleString()}
-                    `;
-                        this.showAlert('Order found!', `Order ID: ${response.order.order_id}`);
-                        this.showAlert('Order Found!', orderDetails);
-                        this.populateCartFromFetchedOrder(); // Populate cart with the fetched order
+                    if (response.success && response.orders.length > 0) {
+                        this.fetchedOrder = response.orders; // Store all fetched orders
+                        let orderDetails = response.orders.map(order => `
+                            Order Number: ${order.orderNumber}
+                            User ID: ${order.user_id}
+                            Total Amount: $${order.total_amount}
+                            Price: ${order.price}
+                            Order Type: ${order.order_type}
+                            Status: ${order.status}
+                            Created At: ${new Date(order.created_at).toLocaleString()}
+                        `).join('\n');
+
+                        this.showAlert('Orders found!', `Found ${response.orders.length} orders with this number.`);
+                        this.showAlert('Order Details', orderDetails);
+                        this.populateCartFromFetchedOrder(); // Populate cart with the fetched orders
                     } else {
-                        this.showAlert('Order Not Found', 'No order found with this ID.');
+                        this.showAlert('No Orders Found', 'No orders found with this number.');
                     }
                 },
                 error: (error) => {
-                    console.error('Error fetching order:', error);
-                    this.showAlert('Error', 'Failed to fetch order.');
+                    console.error('Error fetching orders:', error);
+                    this.showAlert('Error', 'Failed to fetch orders.');
                 }
             });
     } else {
-        this.showAlert('Invalid Input', 'Please enter a valid order ID.');
+        this.showAlert('Invalid Input', 'Please enter a valid order number.');
     }
 }
 
 
 
 populateCartFromFetchedOrder() {
-  if (!this.fetchedOrder || !this.fetchedOrder.items) {
-      console.error('Fetched order or items are undefined');
-      return; // Exit the method if the order or items are not available
+  if (!this.fetchedOrder || this.fetchedOrder.length === 0) {
+    console.error('No fetched orders available');
+    return; // Exit if no orders are fetched
   }
 
-  // Populate the cart from fetched order items
-  this.cart = this.fetchedOrder.items.map((item: OrderItem) => ({
-      product_id: item.product_id,
-      name: this.fetchedOrder.name || '', // Default to an empty string if name is not provided
-      quantity: this.fetchedOrder.quantity,
-      price: this.fetchedOrder.price,
-      discountedPrice: this.fetchedOrder.discounted_price || item.price, // Use price if discounted_price is not available
-      hasPromotion: !!this.fetchedOrder.discounted_price, // True if discounted_price is present
-      promotionName: null // Set to null; adjust if you have promotion names
-  }));
+  console.log('Fetched Orders:', this.fetchedOrder); // Debugging line
+  this.cart = [];
+
+  this.fetchedOrder.forEach((order: any) => {
+    // Directly use order properties to populate the cart
+    this.cart.push({
+      product_id: order.order_id, // Assuming you want to use order_id as product_id
+      name: order.name || '', // Use order name
+      quantity: order.quantity,
+      price: order.price,
+      discountedPrice: order.discounted_price || order.price, // Use discounted price if available
+      hasPromotion: !!order.discounted_price, // True if discounted_price is present
+      promotionName: undefined, // Set to undefined
+      id: undefined, // If you have an ID, set it here
+      description: '', // Add description if needed
+      stock_quantity: 0, // Set stock quantity if available
+      category: '', // Set category if applicable
+      barcode: '', // Set barcode if available
+      image_url: '', // Set image URL if available
+      total_ratings: 0, // Set total ratings if available
+      average_rating: 0, // Set average rating if available
+      created_at: order.created_at || '',
+      updated_at: order.updated_at || ''
+    });
+  });
 
   this.updateCartWithPromotions(); // Update the cart with any applicable promotions
 }
+
+
+
 
 
 
@@ -609,7 +628,6 @@ addToCart(product: Product) {
     return '';
   }
   
-
   private async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
