@@ -109,22 +109,19 @@
     <!-- Loading Spinner -->
     <!-- <ion-spinner *ngIf="ordersLoading" class="ion-padding"></ion-spinner>
   </div>
-</ion-content>  -->
+</ion-content>  
 
 <ion-content>
-<!-- Loading Spinner -->
+
 <div *ngIf="loading" class="loading-container">
   <ion-spinner></ion-spinner>
   <p>Loading user information...</p>
 </div>
 
 <div *ngIf="!loading && currentUser">
-  <!-- Hero Section with Mountain Background -->
   <div class="hero-section">
     <h1 class="hero-title">MY ACCOUNT</h1>
   </div>
-
-  <!-- Navigation Cards -->
   <div class="nav-cards">
     <div class="nav-card" (click)="viewOrders()">
       <ion-icon name="cart-outline"></ion-icon>
@@ -146,8 +143,7 @@
       <span>LOGOUT</span>
     </div>
   </div>
-
-  <!-- Orders Section -->
+  
   <div class="orders-section" *ngIf="activeSection === 'orders'">
     <div *ngIf="ordersLoading" class="loading-container">
       <ion-spinner></ion-spinner>
@@ -180,9 +176,7 @@
           <td>{{order.status}}</td>
           <td>R{{order.total_amount}}</td>
           <td>{{order.order_type}}</td>
-            <!-- <ion-button fill="clear" size="small" (click)="viewOrderDetails(order)">
-              View -->
-            <!-- </ion-button> -->
+            <!--
         </tr>
       </tbody>
     </table>
@@ -198,7 +192,6 @@ Show Less</ion-button>
 </div>
 </div>
 
-  <!-- Edit Account Section -->
   <div class="edit-account-section" *ngIf="activeSection === 'edit'">
     <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
       <ion-item>
@@ -222,7 +215,6 @@ Show Less</ion-button>
     </form>
   </div>
 
-  <!-- Address Section -->
   <div class="address-section" *ngIf="activeSection === 'address'">
     <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
       <ion-item>
@@ -251,4 +243,171 @@ Show Less</ion-button>
     </ion-text>
   </div>
 </div>
+</ion-content>-->
+
+<ion-content class="account-page">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <ion-spinner name="circles"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && currentUser" class="page-content">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <!-- <div class="profile-image">
+        <img [src]="currentUser.profileImage || 'assets/default-avatar.png'" alt="Profile Picture">
+      </div> -->
+      <h1>{{ currentUser.first_name }} {{ currentUser.last_name }}</h1>
+      <p>{{ currentUser.email }}</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <ion-grid class="quick-stats">
+      <ion-row>
+        <ion-col>
+          <div class="stat-box">
+            <ion-icon name="cart"></ion-icon>
+            <span class="stat-value">{{ totalOrders }}</span>
+            <span class="stat-label">Orders</span>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="stat-box">
+            <ion-icon name="star"></ion-icon>
+            <span class="stat-value">{{ loyaltyPoints }}</span>
+            <span class="stat-label">Points</span>
+          </div>
+        </ion-col>
+        <ion-col>
+          <div class="stat-box">
+            <ion-icon name="heart"></ion-icon>
+            <span class="stat-value">{{ wishlistItems }}</span>
+            <span class="stat-label">Wishlist</span>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Main Navigation -->
+    <ion-segment (ionChange)="segmentChanged($event)" value="orders" class="main-nav">
+      <ion-segment-button value="orders">
+        <ion-label>Orders</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="account">
+        <ion-label>Account</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="address">
+        <ion-label>Address</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Orders Section -->
+    <div *ngIf="activeSection === 'orders'" class="section-content">
+      <ion-searchbar placeholder="Search orders" (ionInput)="searchOrders($event)"></ion-searchbar>
+      
+      <ion-list>
+        <ion-item *ngFor="let order of displayedOrders" class="order-item">
+          <!-- <ion-thumbnail slot="start">
+            <img [src]="order.productImage || 'assets/default-product.png'" alt="Product">
+          </ion-thumbnail> -->
+          <ion-label>
+            <h2>Order #{{ order.order_id }}</h2>
+            <p>{{ order.created_at | date:'mediumDate' }}</p>
+            <ion-badge [color]="getStatusColor(order.status)">{{ order.status }}</ion-badge>
+          </ion-label>
+          <ion-note slot="end">
+            <strong>R{{ order.total_amount }}</strong>
+            <!-- (click)="viewOrderDetails(order)" -->
+            <!-- <ion-button fill="clear" slot="end">
+              View
+            </ion-button> -->
+          </ion-note>
+        </ion-item>
+      </ion-list>
+
+      <ion-infinite-scroll (ionInfinite)="loadMoreOrders($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more orders...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+
+    <!-- Account Section -->
+    <div *ngIf="activeSection === 'account'" class="section-content">
+      <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
+        <ion-list lines="full" class="ion-no-margin ion-no-padding">
+          <ion-item>
+            <ion-label position="stacked">Username</ion-label>
+            <ion-input formControlName="username" type="text" placeholder="Enter your username"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">First Name</ion-label>
+            <ion-input formControlName="firstName" type="text" placeholder="Enter your first name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Last Name</ion-label>
+            <ion-input formControlName="lastName" type="text" placeholder="Enter your last name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input formControlName="email" type="email" placeholder="Enter your email"></ion-input>
+          </ion-item>
+        </ion-list>
+        <div class="ion-padding">
+          <ion-button expand="block" type="submit" [disabled]="!accountForm.valid" class="save-button">
+            Save Changes
+          </ion-button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Address Section -->
+    <div *ngIf="activeSection === 'address'" class="section-content">
+      <form [formGroup]="addressForm" (ngSubmit)="updateAddress()">
+        <ion-list lines="full" class="ion-no-margin ion-no-padding">
+          <ion-item>
+            <ion-label position="stacked">Street Address</ion-label>
+            <ion-input formControlName="street" type="text" placeholder="Enter your street address"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">City</ion-label>
+            <ion-input formControlName="city" type="text" placeholder="Enter your city"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">State/Province</ion-label>
+            <ion-input formControlName="state" type="text" placeholder="Enter your state or province"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Postal Code</ion-label>
+            <ion-input formControlName="postalCode" type="text" placeholder="Enter your postal code"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Country</ion-label>
+            <ion-select formControlName="country" placeholder="Select your country">
+              <ion-select-option value="za">South Africa</ion-select-option>
+              <!-- Add more countries as needed -->
+            </ion-select>
+          </ion-item>
+        </ion-list>
+        <div class="ion-padding">
+          <ion-button expand="block" type="submit" [disabled]="!addressForm.valid" class="save-button">
+            Update Address
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Logout Button -->
+  <ion-button expand="block" (click)="logout()" class="logout-button">
+    Logout
+  </ion-button>
+
+  <!-- Error Toast -->
+  <ion-toast
+    [isOpen]="error !== null"
+    [message]="error"
+    [duration]="3000"
+    position="bottom"
+    color="danger"
+  ></ion-toast>
 </ion-content>

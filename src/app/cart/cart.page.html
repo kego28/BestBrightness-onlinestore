@@ -60,7 +60,7 @@
                             <div style="width: 80px;">
                               <h5 class="mb-0">
                                 <ng-container *ngIf="item.hasPromotion; else regularPrice">
-                                  <span class="original-price">{{ item.price * item.quantity | currency }}</span>
+                                  <span class="original-price">R{{ item.price * item.quantity }}</span>
                                   <span class="discounted-price">{{ item.discountedPrice * item.quantity | currency }}</span>
                                 </ng-container>
                                 <ng-template #regularPrice>

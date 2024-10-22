@@ -146,6 +146,11 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
     this.fetchTotalSalesAmount();
     this.fetchPendingOrdersCount();
     this.fetchSalesData(this.currentFilter);
+
+    this.totalSalesCount = this.salesData.length;
+    console.log(`Total Sales Count: ${this.totalSalesCount}`);
+
+
   }
   isMenuOpen = false;
   isScrolled = false;
@@ -307,8 +312,7 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
         next: (response) => {
           this.salesData = response;
           console.log('Fetched sales data:', this.salesData);
-          this.totalSalesCount = this.salesData.length;
-          console.log(`Total Sales Count: ${this.totalSalesCount}`);
+     
           this.updateChart();
         },
         error: (error) => {
