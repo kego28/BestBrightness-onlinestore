@@ -641,29 +641,109 @@ generateOrderNumber(): string {
         }
 
         // Check if the user email is available
-        if (!this.userEmail) {
-            this.showToast('User email not found. Please log in again.');
-            return;
-        }
+       if (!this.userEmail) {
+      this.showToast('User email not found. Please log in again.');
+      return;
+    }
 
         console.log('Starting order placement process');
 
         // Check product quantities
-        const { isValid, invalidItems } = await this.checkProductQuantities();
+        const {isValid, invalidItems} = await this.checkProductQuantities();
         if (!isValid) {
-            let message = 'The following items have insufficient quantity:\n';
-            invalidItems.forEach(item => {
-                message += `${item.name}: ${item.availableQuantity} available\n`;
-            });
-            const alert = await this.alertController.create({
-                header: 'Insufficient Quantity',
-                message: message,
-                buttons: ['OK']
-            });
-            await alert.present();
-            return;
+          let message = 'The following items have insufficient quantity:\n';
+          invalidItems.forEach(item => {
+            message += `${item.name}: ${item.availableQuantity} available\n`;
+          });
+          const alert = await this.alertController.create({
+            header: 'Insufficient Quantity',
+            message: message,
+            buttons: ['OK']
+          });
+          await alert.present();
+          return;
         }
-
+    
+        // Generate PDF
+        const pdf = new jsPDF() as jsPDFWithAutoTable;
+      const pageWidth = pdf.internal.pageSize.width;
+    
+      // Set font
+      pdf.setFont("helvetica", "normal");
+    
+      // Add header
+      pdf.setFontSize(20);
+      pdf.text("Invoice", pageWidth / 2, 20, { align: "center" });
+    
+      // Add order details
+      pdf.setFontSize(12);
+      const orderId = new Date().getTime().toString(); // Generate a unique order ID
+      pdf.text(`Order ID: ${orderId}`, 20, 40);
+    
+      // Add customer details
+      const customerName = sessionStorage.getItem('userName') || 'N/A';
+      const customerSurname = sessionStorage.getItem('userSurname') || 'N/A';
+      pdf.text(`Name: ${customerName} ${customerSurname}`, 20, 50);
+      pdf.text(`Email: ${this.userEmail}`, 20, 60);
+    
+      // Add delivery address if applicable
+      let yPos = 70;
+      if (this.deliveryMethod === 'delivery' && this.selectedAddress) {
+        pdf.text("Delivery Address:", 20, yPos);
+        yPos += 10;
+        pdf.text(this.selectedAddress.address_line1, 20, yPos);
+        if (this.selectedAddress.address_line2) {
+          yPos += 10;
+          pdf.text(this.selectedAddress.address_line2, 20, yPos);
+        }
+        yPos += 10;
+        pdf.text(`${this.selectedAddress.city}, ${this.selectedAddress.province} ${this.selectedAddress.postal_code}`, 20, yPos);
+        yPos += 10;
+        pdf.text(this.selectedAddress.country, 20, yPos);
+        yPos += 20;
+      } else {
+        yPos += 10;
+      }
+    
+      // Add order items table
+      pdf.setFontSize(14);
+      pdf.text("Order Items", 20, yPos);
+      yPos += 10;
+    
+      const columns = ["Item", "Quantity", "Price", "Total"];
+      const data = this.cartItems.map(item => [
+        item.name,
+        item.quantity.toString(),
+        `R${item.price.toFixed(2)}`,
+        `R${(item.price * item.quantity).toFixed(2)}`
+      ]);
+    
+      pdf.autoTable({
+        head: [columns],
+        body: data,
+        startY: yPos,
+        theme: 'striped',
+        headStyles: { fillColor: [66, 66, 66] },
+        margin: { top: 20 },
+      });
+    
+      yPos = (pdf as any).lastAutoTable.finalY + 20;
+    
+      // Add price details
+      pdf.setFontSize(12);
+      pdf.text(`Subtotal: R${this.subtotal.toFixed(2)}`, pageWidth - 70, yPos);
+      yPos += 10;
+      pdf.text(`Discounted Subtotal: R${this.discountedSubtotal.toFixed(2)}`, pageWidth - 70, yPos);
+      yPos += 10;
+      pdf.text(`Tax (15%): R${this.tax.toFixed(2)}`, pageWidth - 70, yPos);
+      yPos += 10;
+      pdf.setFontSize(14);
+      pdf.text(`Total: R${this.discountedTotal.toFixed(2)}`, pageWidth - 70, yPos);
+    
+      console.log('PDF generated');
+    
+      // Save PDF to a Blob
+      const pdfBlob = pdf.output('blob');
         // Prepare the order data
         const orderData = {
             orderNumber: orderNumber,
@@ -690,6 +770,7 @@ generateOrderNumber(): string {
       };
 
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
+        await this.sendOrderEmail(this.userEmail, pdfBlob);
 
         // Display order details in an alert
         const orderDetails = this.cartItems.map(item => {
@@ -715,9 +796,10 @@ generateOrderNumber(): string {
                 {
                     text: 'Confirm',
                     handler: async () => {
+                      
                         // Send order data to server
                         const response = await this.http.post<{ success: boolean, message: string }>(
-                            'http://localhost/user_api/orders.php',
+                            'http://localhost/user_api/virtualOrder.php',
                             orderData
                         ).toPromise();
 
@@ -797,36 +879,35 @@ generateOrderNumber(): string {
   
 // Function to send email with PDF order details
 async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
-    const loader = await this.loadingController.create({
-        message: 'Sending Email...',
-        cssClass: 'custom-loader-class'
-    });
-    await loader.present();
+  const loader = await this.loadingController.create({
+      message: 'Sending Email...',
+      cssClass: 'custom-loader-class'
+  });
+  await loader.present();
 
-    const url = "http://localhost/Bestbrightness/src/send_email.php";
-    const subject = "Order Details";
-    const body = "Please find the attached order details PDF.";
-    
-    // Create FormData to send as POST request
-    const formData = new FormData();
-    formData.append('recipient', email);
-    formData.append('subject', subject);
-    formData.append('body', body);
-    formData.append('pdf', pdfBlob, `Order_${new Date().getTime()}.pdf`); // Attach the PDF blob
+  const url = "http://localhost/Bestbrightness/src/send_email.php";
+  const subject = "Order Details";
+  const body = "Please find the attached order details PDF.";
+  
+  // Create FormData to send as POST request
+  const formData = new FormData();
+  formData.append('recipient', email);
+  formData.append('subject', subject);
+  formData.append('body', body);
+  formData.append('pdf', pdfBlob, `Order_${new Date().getTime()}.pdf`); // Attach the PDF blob
 
-    this.http.post(url, formData).subscribe(
-        async (response) => {
-            loader.dismiss();
-            this.showToast('Email sent successfully!');
-        },
-        (error) => {
-            loader.dismiss();
-            console.error('Error sending email:', error);
-            this.showToast('Failed to send email. Please try again.');
-        }
-    );
+  this.http.post(url, formData).subscribe(
+      async (response) => {
+          loader.dismiss();
+          this.showToast('Email sent successfully!');
+      },
+      (error) => {
+          loader.dismiss();
+          console.error('Error sending email:', error);
+          this.showToast('Failed to send email. Please try again.');
+      }
+  );
 }
-
 async generatePDF() {
   const receiptData = this.receiptData; // Use the stored receipt data
   const pdf = new jsPDF('p', 'mm', 'a4');

@@ -60,7 +60,7 @@ export class POSPage implements OnInit {
   userId: string | null = null;
   promotions: any[] = [];
   filteredOrderData: any[] = [];
-  orderData: any[] = [];
+  CheckOutData: any[] = [];
 
   orderIdInput: number =0; // New property for order ID input
   fetchedOrder: any = null; // New property to store the fetched order
@@ -84,6 +84,7 @@ calculateChange(): number {
     }
     return 0;
   }
+  
   getUserId() {
     this.userId = sessionStorage.getItem('userId');
     if (!this.userId) {
@@ -181,23 +182,27 @@ async purchaseProducts() {
       return;
     }
 
-    const orderData = {
+  
+    const CheckOutData = {
       user_id: this.userId,
       total_amount: this.getTotal(),
       discounted_amount: this.getSubtotal(),
-      order_type: "walk-in",
-      status: 'checked-out',
+      levels: "done",
+      order_type: "walk in",
+      status: "checked-out", // Ensure this value is set correctly
       items: this.cart.map(item => ({
         product_id: item.product_id,
         quantity: item.quantity,
+        name: item.name,
         price: item.price,
         discounted_price: item.discountedPrice
       }))
     };
-
+    
+alert(CheckOutData.status);
     const orderResponse = await this.http.post<{ success: boolean, message: string, order_id: number }>(
       'http://localhost/user_api/orders.php',
-      orderData
+      CheckOutData
     ).toPromise();
 
     if (!orderResponse || !orderResponse.success || !orderResponse.order_id) {
@@ -308,83 +313,86 @@ resetCart() {
 
   searchWalkInProducts() {
     const orderNumber = this.orderIdInput;
-
     if (orderNumber) {
-        this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/orders.php?orderNumber=${orderNumber}`)
-            .subscribe({
-                next: (response) => {
-                    if (response.success && response.orders.length > 0) {
-                        this.fetchedOrder = response.orders; // Store all fetched orders
-                        let orderDetails = response.orders.map(order => `
-                            Order Number: ${order.orderNumber}
-                            User ID: ${order.user_id}
-                            Total Amount: $${order.total_amount}
-                            Price: ${order.price}
-                            Order Type: ${order.order_type}
-                            Status: ${order.status}
-                            Created At: ${new Date(order.created_at).toLocaleString()}
-                        `).join('\n');
-
-                        this.showAlert('Orders found!', `Found ${response.orders.length} orders with this number.`);
-                        this.showAlert('Order Details', orderDetails);
-                        this.populateCartFromFetchedOrder(); // Populate cart with the fetched orders
-                    } else {
-                        this.showAlert('No Orders Found', 'No orders found with this number.');
-                    }
-                },
-                error: (error) => {
-                    console.error('Error fetching orders:', error);
-                    this.showAlert('Error', 'Failed to fetch orders.');
-                }
-            });
+      this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}`)
+        .subscribe({
+          next: (response) => {
+            if (response.success && response.orders.length > 0) {
+              this.fetchedOrder = response.orders; // Store all fetched orders
+              
+              this.showAlert('Orders found!', `Found ${response.orders.length} orders with this number.`);
+              
+              // Populate cart with the fetched orders
+              this.populateCartFromFetchedOrder();
+            } else {
+              this.showAlert('No Orders Found', 'No orders found with this number.');
+            }
+          },
+          error: (error) => {
+            console.error('Error fetching orders:', error);
+            this.showAlert('Error', 'Failed to fetch orders.');
+          }
+        });
     } else {
-        this.showAlert('Invalid Input', 'Please enter a valid order number.');
+      this.showAlert('Invalid Input', 'Please enter a valid order number.');
     }
-}
-
-
-
-populateCartFromFetchedOrder() {
-  if (!this.fetchedOrder || this.fetchedOrder.length === 0) {
-    console.error('No fetched orders available');
-    return; // Exit if no orders are fetched
   }
 
-  console.log('Fetched Orders:', this.fetchedOrder); // Debugging line
-  this.cart = [];
+  populateCartFromFetchedOrder() {
+    if (!this.fetchedOrder || this.fetchedOrder.length === 0) {
+      console.error('No fetched orders available');
+      return; // Exit if no orders are fetched
+    }
+  
+    console.log('Fetched Orders:', this.fetchedOrder); // Debugging line
+    this.cart = []; // Clear existing cart
+  
+    this.fetchedOrder.forEach((order: any) => {
+      const product = this.allProducts.find(p => p.product_id.toString().trim() === order.product_id.toString().trim());
 
-  this.fetchedOrder.forEach((order: any) => {
-    // Directly use order properties to populate the cart
-    this.cart.push({
-      product_id: order.order_id, // Assuming you want to use order_id as product_id
-      name: order.name || '', // Use order name
-      quantity: order.quantity,
-      price: order.price,
-      discountedPrice: order.discounted_price || order.price, // Use discounted price if available
-      hasPromotion: !!order.discounted_price, // True if discounted_price is present
-      promotionName: undefined, // Set to undefined
-      id: undefined, // If you have an ID, set it here
-      description: '', // Add description if needed
-      stock_quantity: 0, // Set stock quantity if available
-      category: '', // Set category if applicable
-      barcode: '', // Set barcode if available
-      image_url: '', // Set image URL if available
-      total_ratings: 0, // Set total ratings if available
-      average_rating: 0, // Set average rating if available
-      created_at: order.created_at || '',
-      updated_at: order.updated_at || ''
+      if (product) {
+        console.log('Adding product to cart:', product); // Debugging line
+        this.addToCart({ ...product, quantity: order.quantity }); // Use addToCart method
+      } else {
+        console.log('All Products:', this.allProducts); // Debugging line
+        console.warn(`Product with ID ${order.product_id} not found in allProducts`); // Warn if product not found
+      }
     });
-  });
+  
+    this.updateCartWithPromotions(); // Update the cart with any applicable promotions
+  }
+  
 
-  this.updateCartWithPromotions(); // Update the cart with any applicable promotions
-}
-
-
-
-
-
-
-
+  addToCart(product: Product | Product[]) {
+    // If a single product is passed
+    if (Array.isArray(product)) {
+      product.forEach(p => this.addToCart(p)); // Recursively call addToCart for each product
+      return;
+    }
+  
+    if (isNaN(product.price)) {
+      console.warn(`Product ${product.name} has an invalid price`);
+      this.showAlert('Invalid Price', `${product.name} has an invalid price.`);
+      return;
+    }
+  
+    // Proceed with adding to the cart if price is valid
+    const cartItem = this.cart.find(item => item.product_id === product.product_id);
+    if (cartItem) {
+      if (cartItem.quantity! < product.stock_quantity) {
+        cartItem.quantity!++;
+      } else {
+        this.showAlert('Out of Stock', 'Not enough stock available.');
+      }
+    } else {
+      if (product.stock_quantity > 0) {
+        this.cart.push({ ...product, quantity: 1 });
+      } else {
+        this.showAlert('Out of Stock', 'Product is out of stock.');
+      }
+    }
+  }
+  
   onCategoryChange() {
     this.filterProducts();
 }
@@ -397,29 +405,29 @@ populateCartFromFetchedOrder() {
 }
 
 
-addToCart(product: Product) {
-  if (isNaN(product.price)) {
-      console.warn(`Product ${product.name} has an invalid price`);
-      this.showAlert('Invalid Price', `${product.name} has an invalid price.`);
-      return;
-  }
+// addToCart(product: Product) {
+//   if (isNaN(product.price)) {
+//       console.warn(`Product ${product.name} has an invalid price`);
+//       this.showAlert('Invalid Price', `${product.name} has an invalid price.`);
+//       return;
+//   }
 
-  // Proceed with adding to the cart if price is valid
-  const cartItem = this.cart.find(item => item.product_id === product.product_id);
-  if (cartItem) {
-      if (cartItem.quantity! < product.stock_quantity) {
-          cartItem.quantity!++;
-      } else {
-          this.showAlert('Out of Stock', 'Not enough stock available.');
-      }
-  } else {
-      if (product.stock_quantity > 0) {
-          this.cart.push({ ...product, quantity: 1 });
-      } else {
-          this.showAlert('Out of Stock', 'Product is out of stock.');
-      }
-  }
-}
+//   // Proceed with adding to the cart if price is valid
+//   const cartItem = this.cart.find(item => item.product_id === product.product_id);
+//   if (cartItem) {
+//       if (cartItem.quantity! < product.stock_quantity) {
+//           cartItem.quantity!++;
+//       } else {
+//           this.showAlert('Out of Stock', 'Not enough stock available.');
+//       }
+//   } else {
+//       if (product.stock_quantity > 0) {
+//           this.cart.push({ ...product, quantity: 1 });
+//       } else {
+//           this.showAlert('Out of Stock', 'Product is out of stock.');
+//       }
+//   }
+// }
 
 
   removeFromCart(item: Product) {
@@ -554,14 +562,7 @@ addToCart(product: Product) {
       change: change
     };
   }
-  
-
-  // hideReceipt() {
-  //   this.receiptVisible = false;
-  //   this.receiptData = null;
-  // }
-
-
+ 
   onBarcodeEnter() {
     const product = this.allProducts.find(p => p.barcode === this.barcodeInput);
     if (product) {

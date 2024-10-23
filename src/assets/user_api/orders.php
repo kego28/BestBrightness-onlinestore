@@ -34,34 +34,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     error_log("Received data: " . print_r($data, true));
 
-    // Prepare and bind for ORDERS table
-    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        error_log("Prepare failed: " . $conn->error);
-        die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
-    }
+  // Prepare and bind for ORDERS table
+$stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+if (!$stmt) {
+    error_log("Prepare failed: " . $conn->error);
+    die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
+}
 
-    // Loop through items to insert into orders table
-    foreach ($data->items as $item) {
-        $stmt->bind_param("idsssdids", 
-            $data->user_id, 
-            $data->total_amount, 
-            $data->order_type, 
-            $data->status, 
-            $item->name, 
-            $item->price, 
-            $item->discounted_price, 
-            $item->quantity, 
-            $data->orderNumber // Using orderNumber as column name
-        );
+// Loop through items to insert into orders table
+foreach ($data->items as $item) {
+    $stmt->bind_param("idsssdids", 
+        $data->user_id, 
+        $data->total_amount, 
+        $data->order_type, 
+        $data->status, 
+        $item->name, 
+        $item->price, 
+        $item->discounted_price, 
+        $item->quantity, 
+        $data->orderNumber
+    );
 
-        // Execute the statement
-        if (!$stmt->execute()) {
-            error_log("Failed to place order: " . $stmt->error);
-            echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
-            exit; // Exit if execution fails
-        }
+    // Log the binding parameters including the status
+    error_log("Binding parameters: user_id={$data->user_id}, total_amount={$data->total_amount}, order_type={$data->order_type}, status={$data->status}, name={$item->name}, price={$item->price}, discounted_price={$item->discounted_price}, quantity={$item->quantity}, orderNumber={$data->orderNumber}");
+    
+    // Log the status specifically for clarity
+    error_log("Order status: {$data->status}");
+
+    // Execute the statement
+    if (!$stmt->execute()) {
+        error_log("Failed to place order: " . $stmt->error);
+        echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
+        exit; // Exit if execution fails
     }
+}
 
     $order_id = $conn->insert_id; // Capture the last inserted order_id
 
@@ -89,27 +95,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-// Handle GET request
-else if (isset($_GET['orderNumber'])) {
-    // View all orders that match the orderNumber
-    $order_number = $_GET['orderNumber'];
-    $sql = "SELECT * FROM ORDERS WHERE orderNumber = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $order_number); // Bind as string
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $orders = [];
-    if ($result->num_rows > 0) {
-        while ($order = $result->fetch_assoc()) {
-            $orders[] = $order;
-        }
-        echo json_encode(array("success" => true, "orders" => $orders));
-    } else {
-        echo json_encode(array("success" => false, "message" => "No orders found"));
-    }
-}
 
+
+
+// Handle GET request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = file_get_contents("php://input");
+    $data = json_decode($input);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        error_log("Invalid JSON: " . json_last_error_msg());
+        die(json_encode(array("success" => false, "message" => "Invalid JSON: " . json_last_error_msg())));
+    }
+
+    error_log("Received data: " . print_r($data, true));
+
+    // Prepare and bind for VIRTUALORDER table
+    $stmt = $conn->prepare("INSERT INTO VIRTUALORDER (user_id, product_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
+    }
+
+    // Loop through items to insert into VIRTUALORDER table
+    foreach ($data->items as $item) {
+        $stmt->bind_param("idsssdids", 
+            $data->user_id, 
+            $item->product_id,
+            $data->total_amount, 
+            $data->order_type, 
+            $data->status, 
+            $item->name, 
+            $item->price, 
+            $item->discounted_price, 
+            $item->quantity, 
+            $data->orderNumber
+        );
+
+        // Log the binding parameters
+        error_log("Binding parameters: user_id={$data->user_id}, product_id={$item->product_id}, total_amount={$data->total_amount}, order_type={$data->order_type}, status={$data->status}, name={$item->name}, price={$item->price}, discounted_price={$item->discounted_price}, quantity={$item->quantity}, orderNumber={$data->orderNumber}");
+        
+        // Execute the statement
+        if (!$stmt->execute()) {
+            error_log("Failed to place order: " . $stmt->error);
+            echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
+            exit; // Exit if execution fails
+        }
+    }
+
+    $order_id = $conn->insert_id; // Capture the last inserted order_id
+
+    // Insert order items separately
+    $stmt_items = $conn->prepare("INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)");
+    if (!$stmt_items) {
+        error_log("Prepare items failed: " . $conn->error);
+        die(json_encode(array("success" => false, "message" => "Prepare items failed: " . $conn->error)));
+    }
+
+    foreach ($data->items as $item) {
+        $stmt_items->bind_param("iiid", $order_id, $item->product_id, $item->quantity, $item->price);
+        if (!$stmt_items->execute()) {
+            error_log("Execute items failed: " . $stmt_items->error);
+            die(json_encode(array("success" => false, "message" => "Execute items failed: " . $stmt_items->error)));
+        }
+    }
+
+    $stmt_items->close();
+    $stmt->close();
+
+    // Return success message with order_id
+    echo json_encode(array("success" => true, "message" => "Order placed successfully", "order_id" => $order_id));
+}
 
 
 
@@ -186,6 +242,8 @@ else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         echo json_encode(array("success" => false, "message" => "Failed to update order: " . $e->getMessage()));
     }
 }
+
+
 // Handle DELETE request for deleting an order
 else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $order_id = isset($_GET['id']) ? $_GET['id'] : null;

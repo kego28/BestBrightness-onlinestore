@@ -250,6 +250,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 interface User {
   user_id: number;
@@ -296,7 +297,8 @@ export class AccountPage implements OnInit {
   wishlistItems: number = 16;
 
   private apiUrl = 'http://localhost/user_api/login.php';
-  private ordersApiUrl = 'http://localhost/user_api/orders.php';
+  private ordersUrl = 'http://localhost/user_api/orders.php';
+  private ordersVirtualUrl = 'http://localhost/user_api/virtualOrder.php';
 
   constructor(
     private http: HttpClient,
@@ -462,14 +464,23 @@ export class AccountPage implements OnInit {
     if (!this.userId) return;
   
     this.ordersLoading = true;
-    this.http.get<{ orderData: Order[] }>(`${this.ordersApiUrl}?user_id=${this.userId}`).subscribe({
-      next: async (response) => {
-        console.log('Raw API response:', response);
-        this.allOrders = response.orderData;
+  
+    // Create observables for both API calls
+    const ordersRequest = this.http.get<{ orderData: Order[] }>(`${this.ordersUrl}?user_id=${this.userId}`);
+    const virtualOrdersRequest = this.http.get<{ success: boolean; orders: Order[] }>(`${this.ordersVirtualUrl}?user_id=${this.userId}`);
+  
+    // Use forkJoin to combine the results
+    forkJoin([ordersRequest, virtualOrdersRequest]).subscribe({
+      next: async ([ordersResponse, virtualOrdersResponse]) => {
+        console.log('Orders Response:', ordersResponse);
+        console.log('Virtual Orders Response:', virtualOrdersResponse);
+  
+        // Combine the order data from both responses
+        this.allOrders = [...ordersResponse.orderData, ...virtualOrdersResponse.orders];
         this.totalOrders = this.allOrders.length;
         this.filterOrders();
         this.ordersLoading = false;
-        
+  
         if (this.allOrders.length === 0) {
           this.ordersError = 'No orders found for this user';
           await this.presentToast('No orders found', 'warning');
@@ -479,9 +490,11 @@ export class AccountPage implements OnInit {
       },
       error: async (error: HttpErrorResponse) => {
         this.handleError(error, 'Failed to load orders');
+        this.ordersLoading = false; // Ensure loading state is reset on error
       }
     });
   }
+  
 
   filterOrders() {
     let filteredOrders = this.selectedStatus === 'all' 
