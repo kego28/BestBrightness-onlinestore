@@ -470,10 +470,6 @@ export class ProductsPage implements OnInit {
     });
     await toast.present();
   }
-  // Navigate to cart page
-  // navigateToCart() {
-  //   this.navCtrl.navigateForward('/cart');
-  // }
 
   async logout() {
     sessionStorage.removeItem('userId');

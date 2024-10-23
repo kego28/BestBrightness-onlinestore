@@ -1,78 +1,382 @@
-<ion-header [translucent]="true">
+<style>
+  :root {
+    --primary-color: #db7d11;
+    --primary-light: #ee8f2a;
+    --primary-dark: #b15f0c;
+    --background-color: #f8f8f8;
+    --white: #ffffff;
+    --gray-100: #f7fafc;
+    --gray-200: #edf2f7;
+    --gray-300: #e2e8f0;
+    --gray-400: #cbd5e0;
+    --text-dark: #2d3748;
+    --text-light: #4a5568;
+    --success: #48bb78;
+    --error: #f56565;
+  }
+
+  /* Global Styles */
+  ion-content {
+    --background: var(--background-color);
+  }
+
+  /* Header Styling */
+  /* ion-toolbar {
+    --background: var(--primary-color);
+    --color: var(--white);
+  } */
+
+  /* ion-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  } */
+
+  /* Search and Filter Section */
+  .filter-section {
+    background: var(--white);
+    border-radius: 10px;
+    margin: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--primary-color);
+  }
+
+  .filter-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  @media (min-width: 768px) {
+    .filter-grid {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .filter-grid ion-searchbar {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .filter-grid .filter-controls {
+      display: flex;
+      gap: 16px;
+      flex: 2;
+    }
+
+    .filter-grid .filter-item {
+      flex: 1;
+    }
+  }
+
+  ion-searchbar {
+    --box-shadow: none;
+    --background: var(--gray-100);
+    --border-radius: 8px;
+    --placeholder-color: var(--text-light);
+    margin: 0;
+  }
+
+  .filter-controls ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --background: transparent;
+  }
+
+  ion-item.filter-item {
+    --background: var(--gray-100);
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  ion-select {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px;
+  }
+
+  ion-datetime {
+    background: var(--gray-100);
+    border-radius: 8px;
+  }
+
+  /* Order List Card */
+  ion-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 16px;
+  }
+
+  ion-card-header {
+    background: var(--primary-light);
+    color: var(--white);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  ion-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 8px 0;
+  }
+
+  /* Grid Headers */
+  ion-grid ion-row:first-child {
+    background: var(--gray-200);
+    font-weight: 600;
+    color: var(--text-dark);
+    padding: 12px 0;
+  }
+
+  /* Grid Rows */
+  ion-grid ion-row {
+    border-bottom: 1px solid var(--gray-300);
+    align-items: center;
+    padding: 8px 0;
+  }
+
+  ion-grid ion-row:hover {
+    background: var(--gray-100);
+  }
+
+  /* Action Buttons */
+  ion-button[color="primary"] {
+    --color: var(--primary-color);
+  }
+
+  ion-button[color="success"] {
+    --color: var(--success);
+  }
+
+  ion-button[color="danger"] {
+    --color: var(--error);
+  }
+
+  /* Modal Styling */
+  ion-modal ion-header ion-toolbar {
+    --background: var(--primary-color);
+    --color: var(--white);
+  }
+
+  ion-modal ion-content {
+    --background: var(--white);
+  }
+
+  ion-modal ion-list {
+    margin: 16px 0;
+  }
+
+  ion-modal ion-button[expand="block"] {
+    --background: var(--primary-color);
+    margin: 16px 0;
+  }
+
+  /* Order Details Modal */
+  ion-thumbnail {
+    --size: 80px;
+    margin: 8px 16px 8px 0;
+  }
+
+  ion-list-header {
+    background: var(--gray-200);
+    padding: 12px;
+    margin-top: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  /* Status Labels */
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+
+  .status-pending {
+    background: var(--gray-300);
+    color: var(--text-dark);
+  }
+
+  .status-payment-received {
+    background: var(--primary-light);
+    color: var(--white);
+  }
+
+  .status-shipped {
+    background: var(--success);
+    color: var(--white);
+  }
+
+  .status-delivered {
+    background: var(--text-dark);
+    color: var(--white);
+  }
+</style>
+
+<ion-header class="main-header" [class.header-scrolled]="isScrolled">
   <ion-toolbar>
-    <ion-title>Admin Order Management</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="toggleMenu()" class="mobile-menu-button">
+        <ion-icon name="menu-outline"></ion-icon>
+      </ion-button>
+      <ion-title>
+        <img src="assets/icon/logo.png" class="logo" alt="BestBrightness Store"/>
+      
+      </ion-title>
+    </ion-buttons>
+    
+    <ion-buttons slot="end" class="desktop-nav">
+
+
+      <ion-button routerLink="/products">
+        <ion-icon name="home-outline"></ion-icon>
+        <span>Home</span>
+      </ion-button>
+ 
+      
+      <ion-button routerLink="/promotions">
+        <ion-icon name="gift-outline"></ion-icon>
+        <span>Promotions</span>
+      </ion-button>
+
+      <ion-button (click)="viewAccount()">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>Account</span>
+      </ion-button>
+
+      <ion-button (click)="viewOrders()" (click)="closeMenu()">
+        <ion-icon name="archive-outline" slot="start"></ion-icon>
+        <ion-label>Cashier</ion-label>
+      </ion-button>
+    
+
+      <ion-button (click)="logout()">
+        <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
+        <ion-icon name="log-out-outline"></ion-icon>
+        <!-- <span>Privacy</span> -->
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Admin Order Management</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- <ion-content class="ion-padding"> -->
+    <ion-content>
+  <div class="mobile-menu" [class.show-menu]="isMenuOpen">
+    <ion-list>
+      <ion-item routerLink="/products" (click)="closeMenu()">
+        <ion-icon name="house-outline" slot="start"></ion-icon>
+        <ion-label>Home</ion-label>
+      </ion-item>
+      <ion-item (click)="viewAccount()" (click)="closeMenu()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label>Account</ion-label>
+      </ion-item>
+    
+      <ion-item routerLink="/promotions" (click)="closeMenu()">
+        <ion-icon name="gift-outline" slot="start"></ion-icon>
+        <ion-label>Promotions</ion-label>
+      </ion-item>
+     
+      <ion-item (click)="viewOrders()" (click)="closeMenu()">
+        <ion-icon name="archive-outline" slot="start"></ion-icon>
+        <ion-label>View history</ion-label>
+      </ion-item>
 
-  <ion-content>
-    <ion-searchbar placeholder="Search by Order ID" (ionChange)="onSearchChange($event)"></ion-searchbar>
-    <ion-item>
-      <ion-label>Filter By</ion-label>
-      <ion-select placeholder="Select Filter" (ionChange)="onFilterTypeChange($event)">
-        <ion-select-option value="">None</ion-select-option>
-        <ion-select-option value="status">Status</ion-select-option>
-        <ion-select-option value="date">Date</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item *ngIf="filterType === 'status'">
-      <ion-label>Status</ion-label>
-      <ion-select placeholder="Select Status" (ionChange)="onFilterValueChange($event)">
-        <ion-select-option value="pending">Pending</ion-select-option>
-        <ion-select-option value="payment-received">Payment Received</ion-select-option>
-        <ion-select-option value="shipped">Shipped</ion-select-option>
-        <ion-select-option value="delivered">Delivered</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item *ngIf="filterType === 'date'">
-      <ion-label>Date</ion-label>
-      <ion-datetime presentation="date" (ionChange)="onFilterValueChange($event)"></ion-datetime>
-    </ion-item>
+      <ion-item (click)="logout()" (click)="closeMenu()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Log-out</span>
+      </ion-item>
+    </ion-list>
+  </div>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Order List</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col>Order ID</ion-col>
-            <ion-col>User ID</ion-col>
-            <ion-col>Amount</ion-col>
-            <ion-col>Order type</ion-col>
-            <ion-col>Status</ion-col>
-            <ion-col>Date</ion-col>
-            <ion-col>Actions</ion-col>
-          </ion-row>
-          <ion-row *ngFor="let order of filteredOrderData">
-            <ion-col>{{ order.order_id }}</ion-col>
-            <ion-col>{{ order.user_id }}</ion-col>
-            <ion-col>{{ order.total_amount }}</ion-col>
-            <ion-col>{{ order.order_type }}</ion-col>
-            <ion-col>{{ order.status }}</ion-col>
-            <ion-col>{{ order.created_at }}</ion-col>
-            <ion-col>
-              <ion-button fill="clear" color="primary" (click)="viewOrderDetails(order)">
-                <ion-icon name="eye-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" color="success" (click)="openUpdateStatusModal(order)">
-                <ion-icon name="sync-outline"></ion-icon>
-              </ion-button>
-              <ion-button fill="clear" color="danger" (click)="deleteOrder(order)">
-                <ion-icon name="trash-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
-  </ion-content>
+
+<!-- <ion-content [fullscreen]="true"> -->
+  <div class="filter-section">
+    <div class="filter-grid">
+      <ion-searchbar 
+        placeholder="Search by Order ID" 
+        (ionChange)="onSearchChange($event)"
+      ></ion-searchbar>
+      
+      <div class="filter-controls">
+        <ion-item class="filter-item">
+          <ion-label position="stacked">Filter By</ion-label>
+          <ion-select 
+            placeholder="Select Filter" 
+            (ionChange)="onFilterTypeChange($event)"
+          >
+            <ion-select-option value="">None</ion-select-option>
+            <ion-select-option value="status">Status</ion-select-option>
+            <ion-select-option value="date">Date</ion-select-option>
+          </ion-select>
+        </ion-item>
+  
+        <ion-item class="filter-item" *ngIf="filterType === 'status'">
+          <ion-label position="stacked">Status</ion-label>
+          <ion-select 
+            placeholder="Select Status" 
+            (ionChange)="onFilterValueChange($event)"
+          >
+            <ion-select-option value="pending">Pending</ion-select-option>
+            <ion-select-option value="payment-received">Payment Received</ion-select-option>
+            <ion-select-option value="shipped">Shipped</ion-select-option>
+            <ion-select-option value="delivered">Delivered</ion-select-option>
+          </ion-select>
+        </ion-item>
+  
+        <ion-item class="filter-item" *ngIf="filterType === 'date'">
+          <ion-label position="stacked">Date</ion-label>
+          <ion-datetime 
+            presentation="date" 
+            (ionChange)="onFilterValueChange($event)"
+          ></ion-datetime>
+        </ion-item>
+      </div>
+    </div>
+  </div>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Order List</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid fixed>
+        <ion-row>
+          <ion-col size="1.5">Order ID</ion-col>
+          <ion-col size="1.5">User ID</ion-col>
+          <ion-col size="1.5">Amount</ion-col>
+          <ion-col size="2">Order type</ion-col>
+          <ion-col size="2">Status</ion-col>
+          <ion-col size="2">Date</ion-col>
+          <ion-col size="1.5">Actions</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let order of filteredOrderData">
+          <ion-col size="1.5">#{{ order.order_id }}</ion-col>
+          <ion-col size="1.5">{{ order.user_id }}</ion-col>
+          <ion-col size="1.5">${{ order.total_amount }}</ion-col>
+          <ion-col size="2">{{ order.order_type }}</ion-col>
+          <ion-col size="2">
+            <span class="status-badge status-{{ order.status }}">
+              {{ order.status }}
+            </span>
+          </ion-col>
+          <ion-col size="2">{{ order.created_at | date:'short' }}</ion-col>
+          <ion-col size="1.5" class="ion-text-center">
+            <ion-button fill="clear" color="primary" (click)="viewOrderDetails(order)">
+              <ion-icon name="eye-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="success" (click)="openUpdateStatusModal(order)">
+              <ion-icon name="sync-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="deleteOrder(order)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
 
 <!-- Update Status Modal -->
@@ -82,64 +386,92 @@
       <ion-toolbar>
         <ion-title>Update Order Status</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="updateStatusModal.dismiss()">Close</ion-button>
+          <ion-button (click)="updateStatusModal.dismiss()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <ion-list>
-        <ion-select placeholder="Update Status" [(ngModel)]="selectedStatus">
-          <ion-select-option value="pending">Pending</ion-select-option>
-          <ion-select-option value="payment-received">Payment Received</ion-select-option>
-          <ion-select-option value="order-processed">Processed</ion-select-option>
-          <ion-select-option value="shipped">Shipped</ion-select-option>
-          <ion-select-option value="delivered">Delivered</ion-select-option>
-        </ion-select>
+        <ion-item>
+          <ion-select placeholder="Update Status" [(ngModel)]="selectedStatus">
+            <ion-select-option value="pending">Pending</ion-select-option>
+            <ion-select-option value="payment-received">Payment Received</ion-select-option>
+            <ion-select-option value="order-processed">Processed</ion-select-option>
+            <ion-select-option value="shipped">Shipped</ion-select-option>
+            <ion-select-option value="delivered">Delivered</ion-select-option>
+          </ion-select>
+        </ion-item>
       </ion-list>
       <div class="ion-padding">
-        <ion-button expand="block" (click)="updateOrderStatus()">Update Status</ion-button>
+        <ion-button expand="block" (click)="updateOrderStatus()">
+          Update Status
+        </ion-button>
       </div>
     </ion-content>
   </ng-template>
 </ion-modal>
 
-<!-- Update Order Modal -->
+<!-- View Order Modal -->
 <ion-modal #viewOrderModal>
   <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>Order Details</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="viewOrderModal.dismiss()">Close</ion-button>
+          <ion-button (click)="viewOrderModal.dismiss()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <ion-list *ngIf="currentOrderDetails">
         <ion-item>
-          <ion-label>Order ID: {{ currentOrderDetails.order_id }}</ion-label>
+          <ion-label>
+            <h2>Order ID</h2>
+            <p>#{{ currentOrderDetails.order_id }}</p>
+          </ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>User ID: {{ currentOrderDetails.user_id }}</ion-label>
+          <ion-label>
+            <h2>User ID</h2>
+            <p>{{ currentOrderDetails.user_id }}</p>
+          </ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>Total Amount: {{ currentOrderDetails.total_amount }}</ion-label>
+          <ion-label>
+            <h2>Total Amount</h2>
+            <p>${{ currentOrderDetails.total_amount }}</p>
+          </ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>Order Type: {{ currentOrderDetails.order_type }}</ion-label>
+          <ion-label>
+            <h2>Order Type</h2>
+            <p>{{ currentOrderDetails.order_type }}</p>
+          </ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>Status: {{ currentOrderDetails.status }}</ion-label>
+          <ion-label>
+            <h2>Status</h2>
+            <p class="status-badge status-{{ currentOrderDetails.status }}">
+              {{ currentOrderDetails.status }}
+            </p>
+          </ion-label>
         </ion-item>
         <ion-item>
-          <ion-label>Date: {{ currentOrderDetails.created_at }}</ion-label>
+          <ion-label>
+            <h2>Date</h2>
+            <p>{{ currentOrderDetails.created_at | date:'medium' }}</p>
+          </ion-label>
         </ion-item>
       </ion-list>
 
       <ion-list-header>
         <ion-label>Order Items</ion-label>
       </ion-list-header>
-      <ion-list *ngIf="currentOrderDetails && currentOrderDetails.items">
+      <ion-list *ngIf="currentOrderDetails?.items">
         <ion-item *ngFor="let item of currentOrderDetails.items">
           <ion-thumbnail slot="start">
             <ion-img [src]="item.image_url" alt="Product image"></ion-img>
@@ -148,7 +480,7 @@
             <h2>{{ item.product_name }}</h2>
             <p>Product ID: {{ item.product_id }}</p>
             <p>Quantity: {{ item.quantity }}</p>
-            <p>Price: {{ item.price }}</p>
+            <p>Price: ${{ item.price }}</p>
           </ion-label>
         </ion-item>
       </ion-list>

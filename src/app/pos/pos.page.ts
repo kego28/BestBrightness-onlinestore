@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, forkJoin, Observable, of, tap } from 'rxjs';
@@ -42,6 +42,13 @@ interface OrderItem {
   styleUrls: ['pos.page.scss'],
 })
 export class POSPage implements OnInit {
+
+  currentPage: number = 1; // Tracks the current page number
+  pageSize: number = 8; // Number of products per page
+  totalPages: number = 0; // Total number of pages
+
+  filteredProducts: Product[]=[]; // Store filtered products
+  
   currentDate = new Date();
   categories: Array<{ name: string, icon: string }> = [];
   selectedCategory: string = 'All';
@@ -61,14 +68,49 @@ export class POSPage implements OnInit {
   promotions: any[] = [];
   filteredOrderData: any[] = [];
   orderData: any[] = [];
+  
+  // selectedCategory: string = 'All';
+
+
 
   orderIdInput: number =0; // New property for order ID input
   fetchedOrder: any = null; // New property to store the fetched order
 
+  isMenuOpen = false;
+  isScrolled = false;
+  currentUser:any;
+
+  isCashier: boolean = false;
+  isAdmin: boolean = false;
+  showTooltip: boolean = false;
+  cartCount: number = 0;
+  isLoggedIn: boolean = false;
+  // @HostListener('window:scroll', ['$event'])
+  keyboardVisible = false;
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }  
+  toggleKeyboard() {
+    this.keyboardVisible = !this.keyboardVisible;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  
+  Signup() {
+    this.router.navigate(['/signup']);
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
   constructor(private alertController: AlertController,
               private http: HttpClient,
               private router: Router,
               private promotionService: PromotionService,
+              private toastController: ToastController,
             ) {}
 
   ngOnInit() {
@@ -92,23 +134,123 @@ calculateChange(): number {
     }
   }
 
+  // loadProducts() {
+  //   this.http.get<Product[]>('http://localhost/user_api/products.php').subscribe({
+  //     next: (data: Product[]) => {
+  //       this.allProducts = data.map(product => ({
+  //         ...product,
+  //         price: +product.price || 0
+  //       }));
+  //       this.products = this.allProducts;
+  //       this.extractCategories();
+  //       this.applyPromotions();
+  //       console.log('Products loaded:', this.products);
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //       console.error('Error loading products:', error);
+  //     }
+  //   });
+  // }
+  // loadProducts() {
+  //   this.http.get<Product[]>('http://localhost/user_api/products.php').subscribe({
+  //     next: (data: Product[]) => {
+  //       this.allProducts = data.map(product => ({
+  //         ...product,
+  //         price: +product.price || 0,
+  //       }));
+  //       this.totalPages = Math.ceil(this.allProducts.length / this.pageSize); // Calculate total pages
+  //       this.updatePaginatedProducts(); // Load products for the first page
+  //       this.extractCategories();
+  //       console.log('Products loaded:', this.products);
+  //     },
+  //     error: (error: HttpErrorResponse) => {
+  //       console.error('Error loading products:', error);
+  //     },
+  //   });
+  // }
+
+
+
   loadProducts() {
     this.http.get<Product[]>('http://localhost/user_api/products.php').subscribe({
       next: (data: Product[]) => {
         this.allProducts = data.map(product => ({
           ...product,
-          price: +product.price || 0
+          price: +product.price || 0,
         }));
-        this.products = this.allProducts;
+        this.filteredProducts = [...this.allProducts]; // Initialize filtered products
+        this.updatePagination(); // Initial pagination setup
         this.extractCategories();
-        this.applyPromotions();
         console.log('Products loaded:', this.products);
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error loading products:', error);
-      }
+      },
     });
   }
+
+  // Unified pagination update method
+  updatePagination() {
+    // Calculate total pages based on filtered products
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
+    
+    // Ensure current page is valid
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = Math.max(1, this.totalPages);
+    }
+
+    // Calculate slice indices
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    
+    // Update displayed products
+    this.products = this.filteredProducts.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  // Updated filter method
+  filterProducts(searchTerm: string = '') {
+    this.filteredProducts = this.allProducts.filter(product =>
+      (this.selectedCategory === 'All' || product.category === this.selectedCategory) &&
+      (product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       product.barcode.includes(searchTerm))
+    );
+    
+    this.currentPage = 1; // Reset to first page when filtering
+    this.updatePagination(); // Update pagination based on filtered results
+  }
+
+  // Method to go to a specific page
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  // Helper method to get array of page numbers for pagination UI
+  getPageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+
+// Method to update displayed products for the current page
+
+
+
 
   loadPromotions() {
     this.promotionService.getPromotions().subscribe({
@@ -389,12 +531,12 @@ populateCartFromFetchedOrder() {
     this.filterProducts();
 }
 
-  filterProducts(searchTerm: string = '') {
-    this.products = this.allProducts.filter(product =>
-      (this.selectedCategory === 'All' || product.category === this.selectedCategory) &&
-      (product.name.toLowerCase().includes(searchTerm) || product.barcode.includes(searchTerm))
-    );
-}
+//   filterProducts(searchTerm: string = '') {
+//     this.products = this.allProducts.filter(product =>
+//       (this.selectedCategory === 'All' || product.category === this.selectedCategory) &&
+//       (product.name.toLowerCase().includes(searchTerm) || product.barcode.includes(searchTerm))
+//     );
+// }
 
 
 addToCart(product: Product) {
@@ -635,5 +777,23 @@ addToCart(product: Product) {
       buttons: ['OK']
     });
     await alert.present();
+  }
+
+  async presentToast(message: string, color: 'success' | 'danger' | 'warning' | 'primary') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
+
+  async logout() {
+    sessionStorage.removeItem('userId');
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    await this.presentToast('You have logged out successfully', 'success');
+    this.router.navigate(['/products']);
   }
 }
