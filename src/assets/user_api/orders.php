@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:8100");
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Max-Age: 3600");
@@ -34,106 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     error_log("Received data: " . print_r($data, true));
 
-  // Prepare and bind for ORDERS table
-$stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-if (!$stmt) {
-    error_log("Prepare failed: " . $conn->error);
-    die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
-}
-
-// Loop through items to insert into orders table
-foreach ($data->items as $item) {
-    $stmt->bind_param("idsssdids", 
-        $data->user_id, 
-        $data->total_amount, 
-        $data->order_type, 
-        $data->status, 
-        $item->name, 
-        $item->price, 
-        $item->discounted_price, 
-        $item->quantity, 
-        $data->orderNumber
-    );
-
-    // Log the binding parameters including the status
-    error_log("Binding parameters: user_id={$data->user_id}, total_amount={$data->total_amount}, order_type={$data->order_type}, status={$data->status}, name={$item->name}, price={$item->price}, discounted_price={$item->discounted_price}, quantity={$item->quantity}, orderNumber={$data->orderNumber}");
-    
-    // Log the status specifically for clarity
-    error_log("Order status: {$data->status}");
-
-    // Execute the statement
-    if (!$stmt->execute()) {
-        error_log("Failed to place order: " . $stmt->error);
-        echo json_encode(array("success" => false, "message" => "Failed to place order: " . $stmt->error));
-        exit; // Exit if execution fails
-    }
-}
-
-    $order_id = $conn->insert_id; // Capture the last inserted order_id
-
-    // Insert order items separately
-    $stmt_items = $conn->prepare("INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)");
-    if (!$stmt_items) {
-        error_log("Prepare items failed: " . $conn->error);
-        die(json_encode(array("success" => false, "message" => "Prepare items failed: " . $conn->error)));
-    }
-
-    foreach ($data->items as $item) {
-        $stmt_items->bind_param("iiid", $order_id, $item->product_id, $item->quantity, $item->price);
-        if (!$stmt_items->execute()) {
-            error_log("Execute items failed: " . $stmt_items->error);
-            die(json_encode(array("success" => false, "message" => "Execute items failed: " . $stmt_items->error)));
-        }
-    }
-
-    $stmt_items->close();
-
-    // Return success message with order_id
-    echo json_encode(array("success" => true, "message" => "Order placed successfully", "order_id" => $order_id));
-
-    $stmt->close();
-}
-
-
-
-
-
-// Handle GET request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = file_get_contents("php://input");
-    $data = json_decode($input);
-
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        error_log("Invalid JSON: " . json_last_error_msg());
-        die(json_encode(array("success" => false, "message" => "Invalid JSON: " . json_last_error_msg())));
-    }
-
-    error_log("Received data: " . print_r($data, true));
-
-    // Prepare and bind for VIRTUALORDER table
-    $stmt = $conn->prepare("INSERT INTO VIRTUALORDER (user_id, product_id, total_amount, order_type, status, name, price, discounted_price, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Prepare and bind for ORDERS table
+    $stmt = $conn->prepare("INSERT INTO ORDERS (user_id, total_amount, order_type, status, name, price, discounted_price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
         die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
     }
 
-    // Loop through items to insert into VIRTUALORDER table
+    // Loop through items to insert into orders table
     foreach ($data->items as $item) {
-        $stmt->bind_param("idsssdids", 
-            $data->user_id, 
-            $item->product_id,
-            $data->total_amount, 
-            $data->order_type, 
-            $data->status, 
-            $item->name, 
-            $item->price, 
-            $item->discounted_price, 
-            $item->quantity, 
-            $data->orderNumber
-        );
-
-        // Log the binding parameters
-        error_log("Binding parameters: user_id={$data->user_id}, product_id={$item->product_id}, total_amount={$data->total_amount}, order_type={$data->order_type}, status={$data->status}, name={$item->name}, price={$item->price}, discounted_price={$item->discounted_price}, quantity={$item->quantity}, orderNumber={$data->orderNumber}");
+        $stmt->bind_param("idsssdid", $data->user_id, $data->total_amount, $data->order_type, $data->status, $item->name, $item->price, $item->discounted_price, $item->quantity);
         
         // Execute the statement
         if (!$stmt->execute()) {
@@ -161,14 +71,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt_items->close();
-    $stmt->close();
 
     // Return success message with order_id
     echo json_encode(array("success" => true, "message" => "Order placed successfully", "order_id" => $order_id));
+
+    $stmt->close();
 }
 
+// Handle GET request
+else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Check if count=true parameter is passed
+    if (isset($_GET['count']) && $_GET['count'] === 'true') {
+        // Count the total number of orders
+        $sql = "SELECT COUNT(*) AS order_count FROM ORDERS"; 
+        $result = $conn->query($sql);
 
+        if ($result && $row = $result->fetch_assoc()) {
+            echo json_encode(['order_count' => $row['order_count']]);
+        } else {
+            echo json_encode(['order_count' => 0]);
+        }
+    } else if (isset($_GET['id'])) {
+        // View a specific order
+        $order_id = $_GET['id'];
+        $sql = "SELECT * FROM ORDERS WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $order_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $order = $result->fetch_assoc();
+            
+            // Fetch order items
+            $items_sql = "SELECT * FROM ORDER_ITEMS WHERE order_id = ?";
+            $items_stmt = $conn->prepare($items_sql);
+            $items_stmt->bind_param("i", $order_id);
+            $items_stmt->execute();
+            $items_result = $items_stmt->get_result();
+            
+            $order['items'] = [];
+            while ($item = $items_result->fetch_assoc()) {
+                $order['items'][] = $item;
+            }
+            
+            echo json_encode(array("success" => true, "order" => $order));
+        } else {
+            echo json_encode(array("success" => false, "message" => "Order not found"));
+        }
+    } else {
+        // Return all orders data (original functionality)
+        $sql = "SELECT * FROM ORDERS"; 
+        $result = $conn->query($sql);
 
+        $data = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+
+        echo json_encode(['orderData' => $data]);
+    }
+}
 // Handle PUT request for updating an order
 else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $input = file_get_contents("php://input");
@@ -242,8 +207,6 @@ else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         echo json_encode(array("success" => false, "message" => "Failed to update order: " . $e->getMessage()));
     }
 }
-
-
 // Handle DELETE request for deleting an order
 else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $order_id = isset($_GET['id']) ? $_GET['id'] : null;

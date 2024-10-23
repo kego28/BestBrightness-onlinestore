@@ -32,25 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die(json_encode(array("success" => false, "message" => "Invalid JSON: " . json_last_error_msg())));
     }
 
-    // Prepare and bind for virtualOrder table
-    $stmt = $conn->prepare("INSERT INTO virtualOrder (user_id, total_amount, order_type, status, name, price, quantity, orderNumber, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    error_log("Received data: " . print_r($data, true));
+
+    // Prepare and bind for VIRTUALORDER table
+    $stmt = $conn->prepare("INSERT INTO VIRTUALORDER (user_id, total_amount, order_type, status, name, price, product_id, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
-        error_log("Prepare failed: " . $conn->connect_error);
+        error_log("Prepare failed: " . $conn->error);
         die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
     }
 
-    // Loop through items to insert into virtualOrder table
+    // Loop through items to insert into orders table
     foreach ($data->items as $item) {
-        $stmt->bind_param("idsssdids",
-            $data->user_id,  
+        $stmt->bind_param("idsssdids", 
+            $data->user_id, 
             $data->total_amount, 
             $data->order_type, 
             $data->status, 
             $item->name, 
-            $item->price,  
+            $item->price, 
+            $item->product_id, 
             $item->quantity, 
-            $data->orderNumber,
-            $item->product_id
+            $data->orderNumber // Using orderNumber as column name
         );
 
         // Execute the statement
