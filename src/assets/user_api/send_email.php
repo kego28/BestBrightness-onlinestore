@@ -22,7 +22,7 @@ $mail->Host = "smtp.gmail.com";
 $mail->SMTPAuth = true;
 $mail->SMTPSecure = "tls";
 $mail->Port = "587";
-$mail->Username = "mmarashapatience8@gmail.com"; 
+$mail->Username = "marashapatience8@gmail.com"; 
 $mail->Password = "nldzcvenrdqkpsvb"; 
 $mail->setFrom('marashapatience8@gmail.com');
 $mail->addAddress($email);

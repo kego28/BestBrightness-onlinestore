@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Prepare and bind for virtualOrder table
-    $stmt = $conn->prepare("INSERT INTO virtualOrder (product_id, total_amount, order_type, status, name, price, user_id, quantity, orderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO virtualOrder (user_id, total_amount, order_type, status, name, price, quantity, orderNumber, product_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->connect_error);
         die(json_encode(array("success" => false, "message" => "Prepare failed: " . $conn->error)));
@@ -41,16 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Loop through items to insert into virtualOrder table
     foreach ($data->items as $item) {
-        $stmt->bind_param("idsssdids", 
-            $item->product_id, 
+        $stmt->bind_param("idsssdids",
+            $data->user_id,  
             $data->total_amount, 
             $data->order_type, 
             $data->status, 
             $item->name, 
-            $item->price, 
-            $data->user_id, 
+            $item->price,  
             $item->quantity, 
-            $data->orderNumber
+            $data->orderNumber,
+            $item->product_id
         );
 
         // Execute the statement

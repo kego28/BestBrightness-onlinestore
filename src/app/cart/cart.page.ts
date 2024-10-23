@@ -803,6 +803,8 @@ generateOrderNumber(): string {
                             orderData
                         ).toPromise();
 
+                        
+
                         if (response && response.success) {
                             // Update stock for each item in the cart
                             for (const item of this.cartItems) {
@@ -876,7 +878,7 @@ generateOrderNumber(): string {
     }
 }
 
-  
+
 // Function to send email with PDF order details
 async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
   const loader = await this.loadingController.create({
@@ -908,7 +910,52 @@ async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
       }
   );
 }
+
 async generatePDF() {
+const receiptData = this.receiptData; // Use the stored receipt data
+const pdf = new jsPDF('p', 'mm', 'a4');
+
+// Title
+pdf.setFontSize(18);
+pdf.text('Receipt', 14, 20);
+pdf.setFontSize(14);
+pdf.text('BEST BRIGHTNESS STORE', 14, 30);
+pdf.text('123 Main St, City, Country', 14, 40);
+pdf.text('Tel: (555) 123-4567', 14, 50);
+
+// Items Header
+pdf.setFontSize(12);
+pdf.text('Items:', 14, 65);
+
+let yPosition = 75; // Starting y position for items
+receiptData.items.forEach((item: { price: number; quantity: number; name: any; }) => {
+  const itemTotal = item.price * item.quantity;
+  pdf.text(`${item.name} - ${item.quantity} x R${item.price.toFixed(2)} = R${itemTotal.toFixed(2)}`, 14, yPosition);
+  yPosition += 10; // Move down for next item
+});
+
+// Subtotal, Tax, and Total
+pdf.text(`Subtotal: R${receiptData.subtotal.toFixed(2)}`, 14, yPosition);
+yPosition += 10;
+pdf.text(`Tax (15%): R${receiptData.tax.toFixed(2)}`, 14, yPosition);
+yPosition += 10;
+pdf.setFontSize(14);
+pdf.text(`Total: R${receiptData.total.toFixed(2)}`, 14, yPosition);
+yPosition += 10;
+
+// Thank You Message
+pdf.setFontSize(12);
+pdf.text('THANK YOU FOR SHOPPING WITH US!', 14, yPosition);
+yPosition += 10;
+
+// Order Number
+pdf.text(`#Order Number: ${receiptData.orderNumber}`, 14, yPosition);
+
+// Save the PDF
+pdf.save(`receipt_${receiptData.orderNumber}.pdf`);
+}
+
+async generatePDFS() {
   const receiptData = this.receiptData; // Use the stored receipt data
   const pdf = new jsPDF('p', 'mm', 'a4');
 

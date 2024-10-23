@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AlertController, ToastController, IonModal } from '@ionic/angular';
 import { catchError, tap } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cashier',
@@ -25,13 +26,52 @@ export class CashierPage implements OnInit {
   constructor(
     private http: HttpClient,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.fetchOrders();
   }
 
+  isMenuOpen = false;
+  isScrolled = false;
+  currentUser:any;
+
+  isCashier: boolean = false;
+  isAdmin: boolean = false;
+  showTooltip: boolean = false;
+  cartCount: number = 0;
+  isLoggedIn: boolean = false;
+  // @HostListener('window:scroll', ['$event'])
+  keyboardVisible = false;
+  viewAccount() {
+    this.router.navigate(['/account']);
+    console.log('Navigating to account page');
+    // Add navigation logic here
+  }
+  
+  viewOrders() {
+    this.router.navigate(['/pos']);
+    // console.log('Navigating to account page');
+    // Add navigation logic here
+  }
+  onScroll() {
+    this.isScrolled = window.scrollY > 50;
+  }  
+  toggleKeyboard() {
+    this.keyboardVisible = !this.keyboardVisible;
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  
+
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
   fetchOrders() {
     this.http.get<{ orderData: any[] }>('http://localhost/user_api/orders.php')
       .subscribe(
@@ -227,5 +267,15 @@ export class CashierPage implements OnInit {
       this.presentToast(`${operation} failed. Please try again.`, 'danger');
       return of(result as T);
     };
+  }
+
+  
+
+  async logout() {
+    sessionStorage.removeItem('userId');
+    this.isLoggedIn = false;
+    this.currentUser = null;
+    await this.presentToast('You have logged out successfully', 'success');
+    this.router.navigate(['/products']);
   }
 }
