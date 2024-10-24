@@ -222,6 +222,45 @@
     z-index: 9999;
   }
 
+  .order-slip {
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .order-title {
+    font-size: 20px;
+    margin: 0;
+  }
+  
+  .order-date {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .items-title {
+    margin-top: 12px;
+    font-weight: bold;
+  }
+  
+  .items-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .item {
+    margin-bottom: 5px;
+  }
+  
+  .total {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+  }
+  
+
   .page-content {
     padding: 20px;
   }

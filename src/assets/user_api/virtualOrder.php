@@ -105,6 +105,32 @@ else if (isset($_GET['orderNumber'])) {
     }
 }
 
+else if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['orderNumber'])) {
+    // Check if 'user_id' is provided in the query string
+    if (isset($_GET['user_id'])) {
+        $user_id = $_GET['user_id'];
+        $sql = "SELECT * FROM VIRTUALORDER WHERE user_id = ?"; // Fetch orders for a specific user
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id); // Bind user_id parameter
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $sql = "SELECT * FROM VIRTUALORDER"; // Fetch all orders
+        $result = $conn->query($sql);
+    }
+
+    $orders = [];
+    if ($result->num_rows > 0) {
+        while ($order = $result->fetch_assoc()) {
+            $orders[] = $order;
+        }
+        echo json_encode(array("success" => true, "orders" => $orders));
+    } else {
+        echo json_encode(array("success" => true, "orders" => [])); // Return empty array if no orders found
+    }
+}
+
+
 // Handle GET request for all virtual orders
 else if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['orderNumber'])) {
     $sql = "SELECT * FROM VIRTUALORDER"; // Select all records from the VIRTUALORDER table

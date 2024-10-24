@@ -248,7 +248,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 
@@ -265,10 +265,14 @@ interface Order {
   order_id: number;
   user_id: number;
   total_amount: string;
+  quantity: string;
   order_type: string;
   status: string;
   created_at: string;
   updated_at: string;
+  orderNumber: string;
+  name: string;
+  price: string;
 }
 
 @Component({
@@ -291,10 +295,11 @@ export class AccountPage implements OnInit {
   ordersError: string | null = null;
   selectedStatus: string = 'all';
   showAllOrders: boolean = false;
-
+  fetchedOrder: Order[] = []; 
   totalOrders: number = 0;
   loyaltyPoints: number = 53;
   wishlistItems: number = 16;
+  orderIdInput: any;
 
   private apiUrl = 'http://localhost/user_api/login.php';
   private ordersUrl = 'http://localhost/user_api/orders.php';
@@ -304,7 +309,8 @@ export class AccountPage implements OnInit {
     private http: HttpClient,
     private router: Router,
     private toastController: ToastController,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private alertController: AlertController
   ) {
     this.accountForm = this.formBuilder.group({
       firstName: ['', Validators.required],
@@ -371,6 +377,42 @@ export class AccountPage implements OnInit {
       await this.presentToast('You need to login as cashier to access this page', 'warning');
     
     }
+  }
+
+  searchWalkInProducts() {
+    const orderNumber = this.orderIdInput;
+    if (orderNumber) {
+      this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}`)
+        .subscribe({
+          next: (response) => {
+            console.log('API response:', response); // Log the response for debugging
+  
+            // Check if the response is valid and has the expected properties
+            if (response && response.success && Array.isArray(response.orders)) {
+              this.fetchedOrder = response.orders; // Store all fetched orders
+              
+              this.showAlert('Orders found!', `Found ${response.orders.length} orders with this number.`);
+            } else {
+              this.showAlert('No Orders Found', 'No orders found with this number.');
+            }
+          },
+          error: (error) => {
+            console.error('Error fetching orders:', error);
+            this.showAlert('Error', 'Failed to fetch orders.');
+          }
+        });
+    } else {
+      this.showAlert('Invalid Input', 'Please enter a valid order number.');
+    }
+  }
+
+  private async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   async admin() {
@@ -460,40 +502,87 @@ export class AccountPage implements OnInit {
     });
   }
 
+  // private fetchOrders() {
+  //   if (!this.userId) return;
+  
+  //   this.ordersLoading = true;
+  
+  //   // Create observables for both API calls
+  //   const ordersRequest = this.http.get<{ orderData: Order[] }>(`${this.ordersUrl}?user_id=${this.userId}`);
+  //   const virtualOrdersRequest = this.http.get<{ success: boolean; orders: Order[] }>(`${this.ordersVirtualUrl}?user_id=${this.userId}`);
+  
+  //   // Use forkJoin to combine the results
+  //   forkJoin([ordersRequest, virtualOrdersRequest]).subscribe({
+  //     next: async ([ordersResponse, virtualOrdersResponse]) => {
+  //       console.log('Orders Response:', ordersResponse);
+  //       console.log('Virtual Orders Response:', virtualOrdersResponse);
+  
+  //       // Combine the order data from both responses
+  //       this.allOrders = [...ordersResponse.orderData, ...virtualOrdersResponse.orders];
+  //       this.totalOrders = this.allOrders.length;
+  //       this.filterOrders();
+  //       this.ordersLoading = false;
+  
+  //       if (this.allOrders.length === 0) {
+  //         this.ordersError = 'No orders found for this user';
+  //         await this.presentToast('No orders found', 'warning');
+  //       } else {
+  //         await this.presentToast('Orders loaded successfully', 'success');
+  //       }
+  //     },
+  //     error: async (error: HttpErrorResponse) => {
+  //       this.handleError(error, 'Failed to load orders');
+  //       this.ordersLoading = false; // Ensure loading state is reset on error
+  //     }
+  //   });
+  // }
+
+  
   private fetchOrders() {
     if (!this.userId) return;
   
     this.ordersLoading = true;
+    this.http.get<{ success: boolean; orders: Order[] }>(`${this.ordersVirtualUrl}?user_id=${this.userId}`).subscribe({
+      next: async (response) => {
+        console.log('Raw API response:', response);
   
-    // Create observables for both API calls
-    const ordersRequest = this.http.get<{ orderData: Order[] }>(`${this.ordersUrl}?user_id=${this.userId}`);
-    const virtualOrdersRequest = this.http.get<{ success: boolean; orders: Order[] }>(`${this.ordersVirtualUrl}?user_id=${this.userId}`);
+        // Check if the response indicates success
+        if (response.success) {
+          // Use a Set to track unique orderNumbers
+          const uniqueOrdersMap = new Map<string, Order>();
   
-    // Use forkJoin to combine the results
-    forkJoin([ordersRequest, virtualOrdersRequest]).subscribe({
-      next: async ([ordersResponse, virtualOrdersResponse]) => {
-        console.log('Orders Response:', ordersResponse);
-        console.log('Virtual Orders Response:', virtualOrdersResponse);
+          // Iterate through the orders and store only unique ones
+          response.orders.forEach(order => {
+            if (!uniqueOrdersMap.has(order.orderNumber)) {
+              uniqueOrdersMap.set(order.orderNumber, order);
+            }
+          });
   
-        // Combine the order data from both responses
-        this.allOrders = [...ordersResponse.orderData, ...virtualOrdersResponse.orders];
-        this.totalOrders = this.allOrders.length;
-        this.filterOrders();
-        this.ordersLoading = false;
+          // Convert the map back to an array
+          this.allOrders = Array.from(uniqueOrdersMap.values());
+          this.totalOrders = this.allOrders.length;
+          this.filterOrders();
+          this.ordersLoading = false;
   
-        if (this.allOrders.length === 0) {
-          this.ordersError = 'No orders found for this user';
-          await this.presentToast('No orders found', 'warning');
+          if (this.allOrders.length === 0) {
+            this.ordersError = 'No orders found for this user';
+            await this.presentToast('No orders found', 'warning');
+          } else {
+            await this.presentToast('Orders loaded successfully', 'success');
+          }
         } else {
-          await this.presentToast('Orders loaded successfully', 'success');
+          // Handle case where the response is not successful
+          this.ordersError = 'Failed to load orders';
+          // await this.presentToast(this.ordersError, 'error');
+          this.ordersLoading = false;
         }
       },
       error: async (error: HttpErrorResponse) => {
         this.handleError(error, 'Failed to load orders');
-        this.ordersLoading = false; // Ensure loading state is reset on error
       }
     });
   }
+  
   
 
   filterOrders() {

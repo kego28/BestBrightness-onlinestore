@@ -126,10 +126,11 @@ font-size: 25px;
 <div class="search-in-bar">
   <ion-input
     [(ngModel)]="orderIdInput"
-    label="Order ID : |"
+    label="Order Number : |"
     (keyup.enter)="searchWalkInProducts()">
   </ion-input>
 </div>
+
 </div>
       <ion-segment [(ngModel)]="selectedCategory" (ionChange)="onCategoryChange()">
         <ion-segment-button *ngFor="let category of categories" [value]="category.name">

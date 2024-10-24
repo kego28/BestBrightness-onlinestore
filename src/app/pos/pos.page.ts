@@ -336,8 +336,7 @@ async purchaseProducts() {
         discounted_price: item.discountedPrice
       }))
     };
-    
-alert(CheckOutData.status);
+  
     const orderResponse = await this.http.post<{ success: boolean, message: string, order_id: number }>(
       'http://localhost/user_api/orders.php',
       CheckOutData

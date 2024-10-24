@@ -371,6 +371,9 @@
           <ion-segment-button value="orders">
             <ion-label>Orders</ion-label>
           </ion-segment-button>
+          <ion-segment-button value="vieworders">
+            <ion-label>View Order</ion-label>
+          </ion-segment-button>
           <ion-segment-button value="account">
             <ion-label>Account</ion-label>
           </ion-segment-button>
@@ -385,8 +388,9 @@
           <ion-list>
             <ion-item *ngFor="let order of displayedOrders" class="order-item">
               <ion-label>
-                <h2>Order #{{ order.order_id }}</h2>
+                <h2>Order No. {{ order.orderNumber }}</h2>
                 <p>{{ order.created_at | date:'mediumDate' }}</p>
+                
                 <ion-badge [class]="getStatusColor(order.status)">{{ order.status }}</ion-badge>
               </ion-label>
               <ion-note slot="end">
@@ -395,11 +399,50 @@
             </ion-item>
           </ion-list>
   
-          <ion-infinite-scroll (ionInfinite)="loadMoreOrders($event)">
+          <!-- <ion-infinite-scroll >
             <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more orders...">
             </ion-infinite-scroll-content>
-          </ion-infinite-scroll>
+          </ion-infinite-scroll> -->
         </div>
+
+        <div *ngIf="activeSection === 'vieworders'" class="section-content">
+          <div class="search-in-bar">
+            <ion-input
+              [(ngModel)]="orderIdInput"
+              label="Order Number : |"
+              (keyup.enter)="searchWalkInProducts()">
+            </ion-input>
+          </div>
+        
+          <ion-list>
+            <ion-item *ngFor="let order of fetchedOrder" class="order-item" detail="false">
+              <div class="order-slip">
+                <h2 class="order-title">Order No. {{ order.orderNumber }}</h2>
+                <p class="order-date">{{ order.created_at | date:'mediumDate' }}</p>
+                <ion-badge [class]="getStatusColor(order.status)">{{ order.status }}</ion-badge>
+          
+                <h4 class="items-title">Items:</h4>
+                <ul class="items-list">
+                  <li class="item">
+                    {{ order.name }} - {{ order.quantity }} x {{ order.price | currency:'R' }}
+                  </li>
+                </ul>
+          
+                <p class="total"><strong>Total: {{ order.total_amount | currency:'R' }}</strong></p>
+              </div>
+            </ion-item>
+          </ion-list>
+          
+          
+          
+        
+          <ion-list *ngIf="fetchedOrder.length === 0">
+            <ion-item>
+              <ion-label>No orders found.</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+        
   
         <div *ngIf="activeSection === 'account'" class="section-content">
           <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
