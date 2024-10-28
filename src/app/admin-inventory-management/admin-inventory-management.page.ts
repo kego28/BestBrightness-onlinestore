@@ -18,6 +18,13 @@ import {
 } from '@ionic/angular';
 import { CategoryManagementComponent } from '../category-management/category-management.component';
 import { PromotionManagementComponent } from '../promotion-management/promotion-management.component';
+// import { Component, ViewChild } from '@angular/core';
+// import { IonModal } from '@ionic/angular';
+
+
+ 
+
+  // Function to open modal
 
 interface Product {
   product_id: number;
@@ -50,6 +57,13 @@ interface Category {
 export class AdminInventoryManagementPage implements OnInit {
   @ViewChild('addItemModal') addItemModal?: IonModal;
   @ViewChild('videoElement', { static: false }) videoElement?: ElementRef<HTMLVideoElement>;
+  @ViewChild('lowStockModalTemplate') lowStockModalTemplate: any;
+  @ViewChild('lowStockModal', { static: true }) lowStockModal!: IonModal;
+  @ViewChild('lowStockModal') modal!: IonModal;
+  
+  isModalOpen = false;
+  // lowStockAlert: any[] = []; // Your low stock items array
+
   newItem: Product = {
     product_id: 0,
     name: '',
@@ -86,6 +100,10 @@ export class AdminInventoryManagementPage implements OnInit {
   selectedCategory: string = '';
   selectedStatus: string = '';
   selectedStockLevel: string = '';
+
+
+
+  
   constructor(
     private http: HttpClient,
     private alertController: AlertController,
@@ -107,7 +125,31 @@ export class AdminInventoryManagementPage implements OnInit {
     // Ensure the video element is available
     console.log('Video element:', this.videoElement);
   }
+  async presentLowStockModal() {
+    const modal = await this.modalController.create({
+      component: IonModal, // Use IonModal component
+      componentProps: {
+        content: this.lowStockModalTemplate,
+      },
+    });
 
+    return await modal.present();
+  }
+  openLowStockModal() {
+    this.lowStockModal.present();
+  }
+
+  // closeModal() {
+  //   this.lowStockModal.dismiss();
+  // }
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  // Function to close modal
+  closeModal() {
+    this.isModalOpen = false;
+  }
   calculateMovementRates() {
     const currentDate = new Date();
     const thirtyDaysAgo = new Date(currentDate.getTime() - (30 * 24 * 60 * 60 * 1000));

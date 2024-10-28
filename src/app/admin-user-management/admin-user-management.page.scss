@@ -169,17 +169,17 @@ ion-fab-button {
 }
 
 // Responsive styles
-@media (max-width: 767px) {
-  .user-table-card {
-    display: none;
-  }
-}
+// @media (max-width: 767px) {
+//   .user-table-card {
+//     display: none;
+//   }
+// }
 
-@media (min-width: 768px) {
-  .user-cards-container {
-    display: none;
-  }
-}
+// @media (min-width: 768px) {
+//   .user-cards-container {
+//     display: none;
+//   }
+// }
 
 // Modal styles
 ion-modal {

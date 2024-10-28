@@ -6,6 +6,7 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <!-- Search and Filter Section -->
+   <br><br>
   <ion-card class="search-filter-card">
     <ion-card-content>
       <ion-grid>
@@ -64,9 +65,9 @@
       </ion-grid>
     </ion-card-content>
   </ion-card>
-
+<br><br>
   <!-- Quick Action Buttons -->
-  <ion-grid>
+  <!-- <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="6">
         <ion-button expand="block" (click)="openCategoryManagementModal()" class="custom-button" color="warning">
@@ -81,15 +82,17 @@
         </ion-button>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 
   <!-- Inventory List -->
   <ion-card class="inventory-list-card">
+    <br><br>
     <ion-card-header>
-      <ion-card-title>Inventory List</ion-card-title>
+      <ion-card-title style="margin-left:5px;font-weight:bold">Available Stock</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-grid class="inventory-grid">
+      <br>
+      <!-- <ion-grid class="inventory-grid">
         <ion-row class="header-row">
           <ion-col>Item ID</ion-col>
           <ion-col>Name</ion-col>
@@ -127,12 +130,50 @@
             </ion-button>
           </ion-col>
         </ion-row>
-      </ion-grid>
+      </ion-grid> -->
+      <div class="inventory-container">
+        <div class="inventory-card" *ngFor="let item of filteredProducts">
+            <div class="card-header">
+                <span class="item-id">ID: {{ item.product_id }}</span>
+            </div>
+            
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-category">{{ item.category }}</div>
+            
+            <div class="stock-info">
+                <span class="status-badge" 
+                      [ngClass]="item.stock_quantity > 0 ? 'status-available' : 'status-outofstock'">
+                    {{ item.stock_quantity > 0 ? 'Available' : 'Out of stock' }}
+                </span>
+                <span class="stock-quantity"
+                      [ngClass]="{'stock-low': item.stock_quantity < 75, 
+                                'stock-medium': item.stock_quantity >= 75 && item.stock_quantity < 150, 
+                                'stock-high': item.stock_quantity >= 150}">
+                    Stock: {{ item.stock_quantity }}
+                </span>
+            </div>
+            
+            <div class="card-actions">
+                <button class="action-button view-btn" (click)="editItem(item)">
+                    <ion-icon name="eye-outline"></ion-icon>
+                </button>
+                <button class="action-button add-btn" (click)="updateQuantity(item, 'add')">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                </button>
+                <button class="action-button subtract-btn" (click)="updateQuantity(item, 'subtract')">
+                    <ion-icon name="remove-circle-outline"></ion-icon>
+                </button>
+                <button class="action-button delete-btn" (click)="deleteItem(item.product_id)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
     </ion-card-content>
   </ion-card>
 
   <!-- Low Stock Alerts -->
-  <ion-card class="alert-card">
+  <!-- <ion-card class="alert-card">
     <ion-card-header>
       <ion-card-title>
         <ion-icon name="warning-outline" color="danger"></ion-icon>
@@ -150,10 +191,39 @@
         </ion-item>
       </ion-list>
     </ion-card-content>
-  </ion-card>
+  </ion-card> -->
+
+
+
+
+
+  <!-- <ion-modal  #lowStockModalTemplate>
+
+  <ng-template>
+    <ion-card class="alert-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="warning-outline" color="danger"></ion-icon>
+          Low Stock Alerts
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let item of lowStockAlert">
+            <ion-label>
+              <h2>{{ item.name }}</h2>
+              <p>ID: {{ item.product_id }}</p>
+            </ion-label>
+            <ion-badge slot="end" color="danger">Stock: {{ item.stock_quantity }}</ion-badge>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+</ion-modal> -->
 
   <!-- Slow/Fast Moving Items -->
-  <ion-card class="movement-card">
+  <!-- <ion-card class="movement-card">
     <ion-card-header>
       <ion-card-title>Slow/Fast Moving Items</ion-card-title>
     </ion-card-header>
@@ -210,9 +280,158 @@
         </ion-item>
       </ion-list>
     </ion-card-content>
+  </ion-card> -->
+  <ion-card class="modern-movement-card">
+    <ion-card-header class="gradient-header">
+      <ion-card-title class="title-container">
+        <div class="title-text">Inventory Insights</div>
+        <ion-icon [name]="selectedMovementView === 'fast' ? 'trending-up' : 'trending-down'" 
+                  [class]="selectedMovementView === 'fast' ? 'trend-up' : 'trend-down'">
+        </ion-icon>
+      </ion-card-title>
+    </ion-card-header>
+  
+    <ion-card-content class="card-content">
+      <ion-segment [(ngModel)]="selectedMovementView" 
+                  (ionChange)="toggleMovementView($event.detail.value)" 
+                  mode="ios" 
+                  class="custom-segment"
+                >
+        <ion-segment-button value="fast" class="segment-button" >
+          <ion-label>
+            <ion-icon name="flash"></ion-icon>
+            Fast Moving
+          </ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="slow" class="segment-button">
+          <ion-label>
+            <ion-icon name="hourglass"></ion-icon>
+            Slow Moving
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
+  
+      <div class="items-container">
+        <ion-list lines="none">
+          <ng-container *ngIf="selectedMovementView === 'fast'">
+            <ion-item *ngFor="let item of fastMoving" class="custom-item">
+              <div class="item-content">
+                <div class="item-header">
+                  <h2 class="item-title">{{ item.name }}</h2>
+                  <ion-chip [color]="getMovementStatusClass(item.movement_rate)" class="movement-chip">
+                    {{ formatMovementRate(item.movement_rate) }}
+                  </ion-chip>
+                </div>
+                
+                <div class="item-details">
+                  <div class="category-badge">
+                    <ion-icon name="pricetag"></ion-icon>
+                    {{ item.category }}
+                  </div>
+                  
+                  <div class="metrics">
+                    <div class="metric">
+                      <ion-icon name="cube"></ion-icon>
+                      <span>Stock: {{ item.stock_quantity }}</span>
+                    </div>
+                    <div class="metric">
+                      <ion-icon name="cart"></ion-icon>
+                      <span>Sales: {{ item.sales_count || 0 }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ion-item>
+          </ng-container>
+  
+          <ng-container *ngIf="selectedMovementView === 'slow'">
+            <ion-item *ngFor="let item of slowMoving" class="custom-item">
+              <div class="item-content">
+                <div class="item-header">
+                  <h2 class="item-title">{{ item.name }}</h2>
+                  <ion-chip [color]="getMovementStatusClass(item.movement_rate)" class="movement-chip">
+                    {{ formatMovementRate(item.movement_rate) }}
+                  </ion-chip>
+                </div>
+                
+                <div class="item-details">
+                  <div class="category-badge">
+                    <ion-icon name="pricetag"></ion-icon>
+                    {{ item.category }}
+                  </div>
+                  
+                  <div class="metrics">
+                    <div class="metric">
+                      <ion-icon name="cube"></ion-icon>
+                      <span>Stock: {{ item.stock_quantity }}</span>
+                    </div>
+                    <div class="metric">
+                      <ion-icon name="cart"></ion-icon>
+                      <span>Sales: {{ item.sales_count || 0 }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ion-item>
+          </ng-container>
+  
+          <ion-item *ngIf="(selectedMovementView === 'fast' && fastMoving.length === 0) || 
+                           (selectedMovementView === 'slow' && slowMoving.length === 0)"
+                    class="empty-state">
+            <div class="empty-content">
+              <ion-icon name="alert-circle"></ion-icon>
+              <ion-label>
+                No {{ selectedMovementView }} moving items found
+              </ion-label>
+            </div>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ion-card-content>
   </ion-card>
-
   <!-- Add Item FAB -->
+  <!-- <ion-grid class="button-grid">
+    <ion-row>
+      <ion-col> -->
+        <div class="floating-buttons">
+
+          <!-- <ion-button 
+          shape="round" 
+          (click)="presentLowStockModal()" 
+          class="floating-button" 
+          color="danger">
+          <ion-icon name="alert-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+         -->
+        <ion-button 
+        shape="round" 
+        (click)="openLowStockModal()" 
+        class="floating-button" 
+        color="danger">
+        <ion-icon name="alert-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+
+          <ion-button 
+            shape="round" 
+            (click)="openCategoryManagementModal()" 
+            class="floating-button" 
+            color="warning">
+            <ion-icon name="folder-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        
+          <ion-button 
+            shape="round" 
+            (click)="openPromotionManagementModal()" 
+            class="floating-button" 
+            color="warning">
+            <ion-icon name="pricetag-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        
+      <!-- </ion-col>
+    </ion-row>
+  </ion-grid> -->
+  
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="presentAddItemModal()" color="warning">
       <ion-icon name="add"></ion-icon>
@@ -311,6 +530,37 @@
   </ng-template>
 </ion-modal>
 
+
+<!-- Modal Template -->
+<ion-modal #lowStockModal trigger="openLowStockModalTrigger" [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="custom-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="danger">
+        <ion-title>Low Stock Alerts</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list *ngIf="lowStockAlert && lowStockAlert.length > 0">
+        <ion-item *ngFor="let item of lowStockAlert">
+          <ion-label>
+            <h2>{{ item.name }}</h2>
+            <p>ID: {{ item.product_id }}</p>
+          </ion-label>
+          <ion-badge slot="end" color="danger">Stock: {{ item.stock_quantity }}</ion-badge>
+        </ion-item>
+      </ion-list>
+      
+      <!-- No items message -->
+      <div *ngIf="!lowStockAlert || lowStockAlert.length === 0" class="ion-text-center ion-padding">
+        <p>No low stock items to display</p>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 <style>
   /* Custom CSS */
   :root {
@@ -330,6 +580,36 @@
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
+  .floating-buttons {
+  position: fixed;
+  bottom: 80px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between the buttons */
+  z-index: 1000; /* Make sure the buttons are above other elements */
+}
+
+.floating-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* Circular shape */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for better look */
+}
+
+/* .alert-card {
+  max-width: 90%;
+  margin: auto;
+} */
+
+/* ion-modal {
+  --width: 80%;
+  --height: 60%;
+  --border-radius: 12px;
+} */
 
   .custom-searchbar {
     --box-shadow: none;
@@ -446,4 +726,12 @@
   ion-fab-button {
     --background: var(--ion-color-primary);
   }
+
+
+
+
+
+
+
+  
 </style>

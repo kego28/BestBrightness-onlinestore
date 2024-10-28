@@ -64,7 +64,44 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <div class="table-container">
+      <div class="cards-container">
+        <div class="user-card animate__animated animate__fadeIn" *ngFor="let user of filteredUsers">
+          <div class="card-header">
+            <div class="user-primary-info">
+              <div class="user-id">
+                <span class="badge">#{{ user.user_id }}</span>
+              </div>
+              <div class="user-role">
+                <span class="role-badge" [class.admin-role]="user.role === 'admin'" [class.user-role]="user.role !== 'admin'">
+                  {{ user.role }}
+                </span>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="action-btn edit" (click)="editUser(user)" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn view" (click)="viewDetails(user)" title="View">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="action-btn delete" (click)="deleteUser(user.user_id)" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="user-details">
+              <h3 class="user-name">{{ user.first_name }} {{ user.last_name }}</h3>
+              <p class="user-email">
+                <i class="fas fa-envelope"></i>
+                {{ user.email }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="table-container">
         <table class="custom-table">
           <thead>
             <tr>
@@ -95,12 +132,12 @@
                   <!-- <ion-avatar class="small-avatar">
                     <img [src]="user.avatar || 'assets/default-avatar.png'" />
                   </ion-avatar> -->
-                  <div class="user-details">
-                    <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                  <!-- <div class="user-details">
+                    <strong>{{ user.first_name }} {{ user.last_name }}</strong> -->
                     <!-- <small class="status" [class.active]="true">
                       active
                     </small> -->
-                  </div>
+                  <!-- </div>
                 </div>
               </td>
               <td>{{ user.email }}</td>
@@ -123,7 +160,7 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> --> 
     </ion-card-content>
   </ion-card>
 </ion-content>

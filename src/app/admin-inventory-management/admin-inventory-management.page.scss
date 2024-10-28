@@ -344,6 +344,366 @@ ion-thumbnail {
 }
 
 /* Segment Control */
+// ion-segment {
+//   margin: 16px 0;
+//   --background: #f8f9fa;
+//   border-radius: 8px;
+//   padding: 4px;
+
+//   ion-segment-button {
+//     --background-checked: var(--ion-color-primary);
+//     --color-checked: #ffffff;
+//     --indicator-color: transparent;
+//     min-height: 40px;
+//     --border-radius: 6px;
+//     text-transform: none;
+//     font-weight: 500;
+//   }
+// }
+
+
+:root {
+  --background: rgb(112, 203, 233);
+  --primary-color: #db7d11;
+  --secondary-color: #00b4d8;
+  --text-color: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #e2953d, #db7d11);
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.inventory-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.inventory-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.inventory-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.item-id {
+  background: var(--primary-color);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.item-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.item-category {
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+}
+
+.stock-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.status-available {
+  background: #4caf50;
+  color: white;
+}
+
+.status-outofstock {
+  background: #f44336;
+  color: white;
+}
+
+.stock-quantity {
+  font-weight: bold;
+}
+
+.stock-low { color: #f44336; }
+.stock-medium { color: #ff9800; }
+.stock-high { color: #4caf50; }
+
+.card-actions {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.action-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.view-btn { color: var(--secondary-color); }
+.add-btn { color: #4caf50; }
+.subtract-btn { color: #ff9800; }
+.delete-btn { color: #f44336; }
+
+ion-icon {
+  font-size: 1.2em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Add this to your component's CSS file */
+
+// .modern-movement-card {
+//   border-radius: 16px;
+//   overflow: hidden;
+//   margin: 16px;
+//   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+// }
+
+// .gradient-header {
+//   background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+//   padding: 20px;
+// }
+
+// .title-container {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   color: white;
+// }
+
+// .title-text {
+//   font-size: 1.5rem;
+//   font-weight: 600;
+// }
+
+// .trend-up {
+//   color: #2dd36f;
+//   font-size: 24px;
+// }
+
+// .trend-down {
+//   color: #eb445a;
+//   font-size: 24px;
+// }
+
+// .card-content {
+//   padding: 16px;
+// }
+
+// .custom-segment {
+//   background: var(--ion-color-light);
+//   border-radius: 12px;
+//   margin-bottom: 16px;
+// }
+
+// .segment-button {
+//   --background-checked: var(--ion-color-primary);
+//   --color-checked: white;
+//   --border-radius: 10px;
+//   min-height: 45px;
+// }
+
+// .segment-button ion-icon {
+//   margin-right: 8px;
+// }
+
+// .items-container {
+//   max-height: 60vh;
+//   overflow-y: auto;
+// }
+
+// .custom-item {
+//   --background: var(--ion-color-light);
+//   margin-bottom: 12px;
+//   border-radius: 12px;
+//   --padding-start: 0;
+//   --inner-padding-end: 0;
+// }
+
+// .item-content {
+//   width: 100%;
+//   padding: 16px;
+// }
+
+// .item-header {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: 12px;
+// }
+
+// .item-title {
+//   font-size: 1.1rem;
+//   font-weight: 600;
+//   color: var(--ion-color-dark);
+//   margin: 0;
+// }
+
+// .movement-chip {
+//   font-size: 0.8rem;
+//   font-weight: 500;
+//   height: 24px;
+// }
+
+// .item-details {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+// }
+
+// .category-badge {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+//   background: rgba(var(--ion-color-primary-rgb), 0.1);
+//   padding: 4px 8px;
+//   border-radius: 6px;
+//   font-size: 0.9rem;
+//   color: var(--ion-color-primary);
+// }
+
+// .metrics {
+//   display: flex;
+//   gap: 16px;
+// }
+
+// .metric {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+//   color: var(--ion-color-medium);
+//   font-size: 0.9rem;
+// }
+
+// .metric ion-icon {
+//   font-size: 16px;
+// }
+
+// .empty-state {
+//   --background: transparent;
+// }
+
+// .empty-content {
+//   width: 100%;
+//   text-align: center;
+//   padding: 32px 16px;
+//   color: var(--ion-color-medium);
+// }
+
+// .empty-content ion-icon {
+//   font-size: 48px;
+//   margin-bottom: 12px;
+// }
+
+/* Add this to your component's CSS file */
+
+.modern-movement-card {
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.gradient-header {
+  background: linear-gradient(135deg,#fa9727 0%,  var(--primary-color) 100%);
+  padding: 20px;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.title-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.trend-up {
+  color: #2dd36f;
+  font-size: 24px;
+}
+
+.trend-down {
+  color: #eb445a;
+  font-size: 24px;
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.custom-segment {
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.segment-button {
+  --background-checked:  #fa9727;
+  // --background:var(--primary-color);
+  --color-checked: white;
+  --border-radius: 10px;
+  min-height: 45px;
+}
+
+
+
 ion-segment {
   margin: 16px 0;
   --background: #f8f9fa;
@@ -351,7 +711,7 @@ ion-segment {
   padding: 4px;
 
   ion-segment-button {
-    --background-checked: var(--ion-color-primary);
+    --background-checked: var(--primary-color);
     --color-checked: #ffffff;
     --indicator-color: transparent;
     min-height: 40px;
@@ -359,4 +719,116 @@ ion-segment {
     text-transform: none;
     font-weight: 500;
   }
+}
+// .segment-button:active{
+//   --background:var(--primary-color);
+// }
+
+
+.segment-button ion-icon {
+  margin-right: 8px;
+}
+
+.items-container {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.custom-item {
+  --background: var(--ion-color-light);
+  margin-bottom: 12px;
+  border-radius: 12px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.item-content {
+  width: 100%;
+  padding: 16px;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.item-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0;
+}
+
+.movement-chip {
+  font-size: 0.8rem;
+  font-weight: 500;
+  height: 24px;
+}
+
+/* Movement status classes styling */
+.movement-high {
+  --background: rgba(45, 211, 111, 0.1);
+  color: #2dd36f;
+}
+
+.movement-medium {
+  --background: rgba(255, 196, 9, 0.1);
+  color: #ffc409;
+}
+
+.movement-low {
+  --background: rgba(235, 68, 90, 0.1);
+  color: #eb445a;
+}
+
+.item-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+}
+
+.metrics {
+  display: flex;
+  gap: 16px;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+}
+
+.metric ion-icon {
+  font-size: 16px;
+}
+
+.empty-state {
+  --background: transparent;
+}
+
+.empty-content {
+  width: 100%;
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--ion-color-medium);
+}
+
+.empty-content ion-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
 }

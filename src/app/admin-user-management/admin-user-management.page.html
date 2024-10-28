@@ -139,7 +139,7 @@
     </ion-card>
 
     <!-- User List for Small Screens -->
-    <div class="user-cards-container" *ngIf="isSmallScreen">
+    <div class="user-cards-container" >
       <ion-card *ngFor="let user of filteredUsers" class="user-card">
         <ion-card-header>
           <ion-card-subtitle>{{ user.role }}</ion-card-subtitle>
@@ -161,7 +161,7 @@
     </div>
 
     <!-- User Table for Large Screens -->
-    <ion-card *ngIf="!isSmallScreen" class="user-table-card">
+    <ion-card *ngIf="isSmallScreen" class="user-table-card">
       <ion-card-header>
         <ion-card-title>User List</ion-card-title>
       </ion-card-header>
