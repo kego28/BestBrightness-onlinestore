@@ -81,7 +81,7 @@ export class ProductsPage implements OnInit {
   onSubmit(){}
 
   // userId: string | null = null;
-
+  currentUserName: string | null = null;
   isLoggedIn: boolean = false;
   constructor(
     private http: HttpClient,
@@ -95,6 +95,7 @@ export class ProductsPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.getUserName();
     this.loadProducts();
     this.getUserId();
     this.loadPromotions();
@@ -124,6 +125,14 @@ export class ProductsPage implements OnInit {
   }
 
 
+  
+  
+  getUserName() {
+    this.currentUserName = sessionStorage.getItem('username');
+  
+    console.log('Logged-in user:', this.currentUserName); // Optional: To check if the name is correctly retrieved
+  }
+
   searchProducts() {
     this.filteredProducts = this.products.filter(product =>
       product.name.toLowerCase().includes(this.searchTerm.toLowerCase())
@@ -142,6 +151,8 @@ export class ProductsPage implements OnInit {
   }
   getUserRole() {
     const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
+    const name = sessionStorage.getItem('userName'); 
+ 
     if (role === 'admin') {
       this.isAdmin = true;
     } else if (role === 'cashier') {

@@ -5,6 +5,8 @@ import { Chart, ChartConfiguration,registerables  } from 'chart.js/auto';
 import { AnimationController } from '@ionic/angular';
 import { forkJoin, catchError, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+// import { Chart } from 'chart.js';
+import { ChartDataService } from '../services/chart-data.service';
 // import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 Chart.register(...registerables);
 
@@ -97,7 +99,8 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
   isLoadingActivities = false;
   activitiesError: string | null = null;
 
-  
+  ordersChart: any;
+  productsChart: any;
     // totalUsers: number = 1000;
     // totalSalesAmount: number = 50000;
     // pendingOrders: number = 75;
@@ -139,13 +142,15 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
       return `${value * 100}, 100`;
     }
   
-  constructor(private http: HttpClient, private router: Router,  private animationCtrl: AnimationController) { }
+  constructor(private http: HttpClient, private router: Router, private chartDataService: ChartDataService, private animationCtrl: AnimationController) { }
 
   ngOnInit() {
     this.fetchUserCount();
     this.fetchTotalSalesAmount();
     this.fetchPendingOrdersCount();
     this.fetchSalesData(this.currentFilter);
+    // this.loadOrdersChart();
+    // this.loadProductsChart();
 
     this.totalSalesCount = this.salesData.length;
     console.log(`Total Sales Count: ${this.totalSalesCount}`);
@@ -174,7 +179,8 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.updateChart();
     this.fetchRecentActivities();
-    this['initializeCharts']();
+   
+    this.loadCharts();
   }
   
 
@@ -253,6 +259,102 @@ export class AdminDashboardPage implements OnInit, AfterViewInit {
       await animation.play();
     }
   }
+
+
+
+
+
+// Update your loadCharts() method in your component
+
+loadCharts() {
+  // Wait for the view to be ready
+  setTimeout(() => {
+    this.chartDataService.getStockLevelsByCategory().subscribe((data) => {
+      const categories = data.map((item: any) => item.category);
+      const stockLevels = data.map((item: any) => item.total_stock);
+      
+      const stockChart = new Chart('stockChart', {
+        type: 'bar',
+        data: {
+          labels: categories,
+          datasets: [{
+            label: 'Stock Levels',
+            data: stockLevels,
+            backgroundColor: 'rgba(219, 125, 17, 0.6)',
+            borderColor: 'rgba(219, 125, 17, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+
+    this.chartDataService.getUserCountByRole().subscribe((data) => {
+      const roles = data.map((item: any) => item.role);
+      const userCounts = data.map((item: any) => item.total_users);
+      
+      const userChart = new Chart('userChart', {
+        type: 'doughnut',
+        data: {
+          labels: roles,
+          datasets: [{
+            label: 'User Count by Role',
+            data: userCounts,
+            backgroundColor: [
+              'rgba(219, 125, 17, 0.6)',
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(153, 102, 255, 0.6)'
+            ],
+            borderColor: [
+              'rgba(219, 125, 17, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top'
+            }
+          }
+        }
+      });
+    });
+  }, 150); // Small delay to ensure DOM elements are ready
+}
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   getStatusColor(status: string | undefined): string {
