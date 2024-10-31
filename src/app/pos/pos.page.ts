@@ -69,12 +69,13 @@ export class POSPage implements OnInit {
   filteredOrderData: any[] = [];
   CheckOutData: any[] = [];
 
-  orderIdInput: number =0; // New property for order ID input
+  orderIdInput: string = ''; // New property for order ID input
   fetchedOrder: any = null; // New property to store the fetched order
 
   isMenuOpen = false;
   isScrolled = false;
   currentUser:any;
+  orderNumber: string = '';
 
   isCashier: boolean = false;
   isAdmin: boolean = false;
@@ -130,6 +131,8 @@ calculateChange(): number {
       // You might want to redirect to login page or show a message
     }
   }
+
+
 
   // loadProducts() {
   //   this.http.get<Product[]>('http://localhost/user_api/products.php').subscribe({
@@ -475,6 +478,44 @@ resetCart() {
     }
   }
 
+  updateOrderStatuss() {
+    const orderNumber = 'BB-428370'; // Ensure correct variable
+    this.http.post('http://localhost/user_api/virtualOrder.php?updateStatus=true', { orderNumber: orderNumber })
+      .subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.showAlert('Order Updated', 'Order status updated to "processed".');
+          } else {
+            this.showAlert('Update Failed', response.message);
+          }
+        },
+        error: (error) => {
+          console.error('Error updating order status:', error);
+          this.showAlert('Error', 'Failed to update order status.');
+        }
+      });
+  }
+
+  updateOrderStatus() {
+    alert('The number is here'+ this.orderIdInput);
+    this.http.post('http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}', { orderNumber: this.orderIdInput })
+      .subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.showAlert('Order Updated', 'Order status updated to "order processed".');
+          } else {
+            this.showAlert('Update Failed', response.message);
+          }
+        },
+        error: (error) => {
+          console.error('Error updating order status:', error);
+          this.showAlert('Error', 'Failed to update order status.');
+        }
+      });
+  }
+  
+
+  
   populateCartFromFetchedOrder() {
     if (!this.fetchedOrder || this.fetchedOrder.length === 0) {
       console.error('No fetched orders available');
@@ -678,7 +719,9 @@ resetCart() {
     this.cart = [];
     this.paymentType = '';
     this.amountPaidInput = '';
-    this.printReceipt(); // Automatically show the receipt after transaction completion
+    this.updateOrderStatus();
+    // console.log(this.orderNumber);
+    // this.printReceipt(); // Automatically show the receipt after transaction completion
   }
 
   prepareReceiptData() {

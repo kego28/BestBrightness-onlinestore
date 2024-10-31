@@ -33,6 +33,7 @@
     "chart.js": "^4.4.4",
     "cordova-plugin-camera": "^7.0.0",
     "cors": "^2.8.5",
+    "emailjs-com": "^3.2.0",
     "express": "^4.19.2",
     "firebase": "^10.13.1",
     "html2canvas": "^1.4.1",
