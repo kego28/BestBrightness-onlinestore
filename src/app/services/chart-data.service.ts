@@ -10,18 +10,6 @@ export class ChartDataService {
 
   constructor(private http: HttpClient) {}
 
-  getOrdersByStatus(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiBaseUrl}/getOrdersByStatus.php`);
-  }
-
-  getProductPopularity(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiBaseUrl}/getProductPopularity.php`);
-  }
-
-  getSalesTrends(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiBaseUrl}/getSalesTrends.php`);
-  }
-
   getStockLevelsByCategory(): Observable<any> {
     return this.http.get(`${this.apiBaseUrl}/getStockLevelsByCategory.php`);
   }
@@ -29,4 +17,8 @@ export class ChartDataService {
   getUserCountByRole(): Observable<any> {
     return this.http.get(`${this.apiBaseUrl}/getUserCountByRole.php`);
   }
+  getChartData(chartType: string): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/statestics.php?chart=${chartType}`);
+  }
+  
 }

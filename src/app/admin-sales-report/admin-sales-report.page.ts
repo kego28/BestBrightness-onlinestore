@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-
+import { ChartDataService } from '../services/chart-data.service';
+import { Chart } from 'chart.js';
 
 interface Product {
   product_id: number;
@@ -40,12 +41,13 @@ export class AdminSalesReportPage implements OnInit {
   currentPage: number = 1; // Current page
   totalPages: number = 0; // Total number of pages
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private chartDataService: ChartDataService) {}
 
   ngOnInit() {
    
     this.loadProducts();
     this.fetchSalesData();
+    this.loadSalesCharts();
   }
 
   fetchSalesData() {
@@ -88,6 +90,71 @@ export class AdminSalesReportPage implements OnInit {
           // this.presentToast('Error loading products: ' + error.message, 'danger');
         }
       );
+  }
+
+
+
+
+
+
+
+ 
+
+
+
+  loadSalesCharts() {
+    // Sales by Payment Method Chart
+
+    setTimeout(() => {
+    this.chartDataService.getChartData('sales_by_payment_method').subscribe((data: any[]) => {
+      const methods = data.map((item: any) => item.payment_method);
+      const salesCounts = data.map((item: any) => item.total_sales);
+
+      new Chart('salesPaymentMethodChart', {
+        type: 'pie',
+        data: {
+          labels: methods,
+          datasets: [{
+            data: salesCounts,
+            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' }
+          }
+        }
+      });
+    });
+
+    // Top Selling Products Chart
+    this.chartDataService.getChartData('top_selling_products').subscribe((data: any[]) => {
+      const products = data.map((item: any) => item.name);
+      const quantities = data.map((item: any) => item.total_quantity_sold);
+
+      new Chart('topSellingProductsChart', {
+        type: 'bar',
+        data: {
+          labels: products,
+          datasets: [{
+            label: 'Units Sold',
+            data: quantities,
+            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+            borderColor: 'rgba(153, 102, 255, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }); }, 150); 
   }
 
   updateProductLists() {

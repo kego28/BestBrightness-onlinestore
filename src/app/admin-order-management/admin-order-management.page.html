@@ -156,6 +156,50 @@
     </ion-content>
   </ng-template>
 </ion-modal> -->
+<style>
+  /* Add these styles to your existing SCSS file */
+
+.charts-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  margin: 0;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  ion-card-header {
+    background-color: #db7d11;
+    
+    ion-card-title {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+  padding: 10px;
+}
+
+/* Ensure proper spacing on mobile */
+@media (max-width: 768px) {
+  ion-col {
+    padding: 10px;
+  }
+  
+  .chart-card {
+    margin-bottom: 20px;
+  }
+}
+</style>
 
 <ion-header class="ion-no-border">
   <ion-toolbar color="light">
@@ -219,6 +263,37 @@
     </ion-row>
   </ion-grid>
 
+
+  <div class="charts-container">
+    <ion-row>
+      <ion-col size="12" size-md="6">
+        <ion-card class="chart-card">
+          <ion-card-header>
+            <ion-card-title>Stock Levels by Category</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-wrapper">
+              <canvas id="ordersTypeChart"></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+  
+      <ion-col size="12" size-md="6">
+        <ion-card class="chart-card">
+          <ion-card-header>
+            <ion-card-title>User Distribution by Role</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-wrapper">
+              <canvas id="ordersStatusChart"></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </div>
+ 
   <!-- Orders Card -->
   <ion-card class="orders-card">
     <ion-card-header class="header-card">

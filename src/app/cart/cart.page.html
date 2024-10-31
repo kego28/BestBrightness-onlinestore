@@ -118,9 +118,33 @@
                         </div>
                       </div>
                       
-                      <div *ngIf="deliveryMethod === 'delivery'">
+                      <!-- <div *ngIf="deliveryMethod === 'delivery'">
                         <ion-button (click)="openAddressPopup()">Select Shipping Address</ion-button>
                       </div>
+                      <div *ngIf="deliveryMethod === 'delivery'">
+                        <ion-row align-items-center>
+                          <ion-col size="6">
+                            <ion-button (click)="openAddressPopup()">
+                              <ion-icon name="pin"></ion-icon> Select Shipping Address
+                            </ion-button>
+                          </ion-col> -->
+                      
+                          <!-- <ion-col size="6"> -->
+                            <ion-item-divider>
+                              <ion-icon slot="start" name="cash"></ion-icon> <!-- Icon for cash -->
+                              <ion-label>Payment Method</ion-label>
+                              <ion-select [(ngModel)]="paymentMethod" placeholder="Select Payment Method">
+                                <ion-select-option value="card">
+                                  <ion-icon slot="start" name="card"></ion-icon> Card
+                                </ion-select-option>
+                                <ion-select-option value="cash">
+                                  <ion-icon slot="start" name="cash"></ion-icon> Cash
+                                </ion-select-option>
+                              </ion-select>
+                            </ion-item-divider>
+                          <!-- </ion-col>
+                        </ion-row>
+                      </div> -->
                       
                       <div class="address-popup" *ngIf="showAddressPopup">
                         <div class="address-popup-content">

@@ -17,13 +17,29 @@ import { LoadingController} from '@ionic/angular';
 import { OrderService } from '../services/order.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { PlaceOrderService } from '../services/place-order.service'
 
 // import { AddressModalComponent } from './address-modal.component';
 
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: UserOptions) => void;
 }
-
+interface OrderData {
+  orderNumber: string;
+  user_id: string;
+  total_amount: number;
+  order_type: string;
+  status: string;
+  items: OrderItem[];
+  created_at: Date;
+}
+interface OrderItem {
+  product_id: number;
+  name: string;
+  quantity: number;
+  price: number;
+  discountedPrice?: number;
+}
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.page.html',
@@ -45,6 +61,9 @@ export class CartPage implements OnInit {
   discountedTotal: number = 0;
   currentUser!: any;
 
+ 
+
+
   private cartSubscription: Subscription | undefined;
 
   receiptData: any = null; // To hold receipt details
@@ -59,7 +78,7 @@ export class CartPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 1;
-
+  paymentMethod: string; 
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
@@ -71,9 +90,11 @@ export class CartPage implements OnInit {
      private afStorage: AngularFireStorage,
      private loadingController: LoadingController,
      private firestore: AngularFirestore,
-     private router: Router
+     private router: Router,
+     private placeorder: PlaceOrderService
   ) {
-
+    this.deliveryMethod = 'delivery'; // Example initialization
+    this.paymentMethod = ''; // Default to an empty string
   }
  
     
@@ -99,7 +120,8 @@ export class CartPage implements OnInit {
       this.closeAddressPopup();
     }
   
-  
+    // deliveryMethod: string;
+// To store selected payment metho
 
   ngOnInit() {
     const navigation = this.router.getCurrentNavigation();
@@ -623,6 +645,147 @@ generateOrderNumber(): string {
   getTax() {
     return this.roundToTwo(this.total * 0.15); // Assuming 15% VAT
   }
+  // async PlaceOrder(): Promise<void> {
+  //   try {
+  //     // Validate cart
+  //     if (this.cartItems.length === 0) {
+  //       await this.showAlert('Empty Cart', 'Your cart is empty. Add some items before placing an order.');
+  //       return;
+  //     }
+
+  //     if (!this.userEmail) {
+  //       await this.showToast('User email not found. Please log in again.');
+  //       return;
+  //     }
+
+  //     // Check quantities
+  //     const { isValid, invalidItems } = await this.placeorder.checkProductQuantities(this.cartItems);
+  //     if (!isValid) {
+  //       let message = 'The following items have insufficient quantity:\n';
+  //       invalidItems.forEach(item => {
+  //         message += `${item.name}: ${item.availableQuantity} available\n`;
+  //       });
+  //       await this.showAlert('Insufficient Quantity', message);
+  //       return;
+  //     }
+
+  //     // Generate order data
+  //     const orderNumber = this.placeorder.generateOrderNumber();
+  //     const orderData = this.prepareOrderData(orderNumber);
+
+  //     // Generate PDF for email
+  //     const pdfBlob = this.placeorder.generateOrderPDF({
+  //       orderNumber,
+  //       customerName: `${sessionStorage.getItem('userName')} ${sessionStorage.getItem('userSurname')}`,
+  //       customerEmail: this.userEmail,
+  //       deliveryAddress: this.selectedAddress,
+  //       items: this.cartItems,
+  //       subtotal: this.subtotal,
+  //       discountedSubtotal: this.discountedSubtotal,
+  //       tax: this.tax,
+  //       total: this.total
+  //     });
+
+  //     // Show confirmation dialog
+  //     const confirmed = await this.showOrderConfirmation(orderData);
+  //     if (!confirmed) return;
+
+  //     // Place order
+  //     const response = await this.placeorder.placeOrder(orderData).toPromise();
+
+  //     if (response?.success) {
+  //       // Update stock
+  //       for (const item of this.cartItems) {
+  //         await this.placeorder.updateStock(item);
+  //       }
+
+  //       // Clear cart
+  //       await this.cartService.clearCart().toPromise();
+        
+  //       // Show receipt
+  //       this.receiptData = {
+  //         orderNumber,
+  //         items: this.cartItems,
+  //         subtotal: this.subtotal,
+  //         tax: this.tax,
+  //         total: this.total
+  //       };
+  //       this.receiptVisible = true;
+
+  //       await this.showAlert('Order Placed', `Your order for R${this.total.toFixed(2)} has been placed successfully!`);
+        
+  //       // Reset component state
+  //       this.cartItems = [];
+  //       this.calculateTotals();
+  //     } else {
+  //       throw new Error('Server response indicates failure');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error in order placement process:', error);
+  //     await this.showToast('An error occurred while placing your order. Please try again.');
+  //   }
+  // }
+
+  // private prepareOrderData(orderNumber: string): OrderData {
+  //   return {
+  //     orderNumber,
+  //     // user_id: this.userId,
+  //     user_id: this.userId || 'defaultUserId',
+  //     total_amount: this.total,
+  //     order_type: this.deliveryMethod,
+  //     status: 'pending',
+  //     items: this.cartItems.map(item => ({
+  //       product_id: item.product_id,
+  //       name: item.name,
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //       discountedPrice: item.discountedPrice
+  //     })),
+  //     created_at: new Date()
+  //   };
+  // }
+
+  // private async showAlert(header: string, message: string): Promise<void> {
+  //   const alert = await this.alertController.create({
+  //     header,
+  //     message,
+  //     buttons: ['OK']
+  //   });
+  //   await alert.present();
+  // }
+
+ 
+
+  // private async showOrderConfirmation(orderData: OrderData): Promise<boolean> {
+  //   return new Promise(async (resolve) => {
+  //     const orderDetails = this.cartItems.map(item => 
+  //       `Product ID: ${item.product_id}\n` +
+  //       `Name: ${item.name}\n` +
+  //       `Quantity: ${item.quantity}\n` +
+  //       `Price: R${item.price.toFixed(2)}\n` +
+  //       `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`
+  //     ).join('\n');
+
+  //     const alert = await this.alertController.create({
+  //       header: 'Order Confirmation',
+  //       message: `You are about to place the following order:\n\n${orderDetails}`,
+  //       buttons: [
+  //         {
+  //           text: 'Cancel',
+  //           role: 'cancel',
+  //           handler: () => resolve(false)
+  //         },
+  //         {
+  //           text: 'Confirm',
+  //           handler: () => resolve(true)
+  //         }
+  //       ]
+  //     });
+
+  //     await alert.present();
+  //   });
+  // }
+
 
   async PlaceOrder(): Promise<void> {
     try {
