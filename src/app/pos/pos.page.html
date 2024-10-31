@@ -230,8 +230,7 @@ font-size: 25px;
           type="number"
           placeholder="Enter Amount Paid"
           [(ngModel)]="amountPaidInput"
-          [required]="paymentType === 'cash'"
-          [disabled]="paymentType !== 'cash'"
+          
           (ionChange)="calculateChange()"
         ></ion-input>
       </div>

@@ -17,29 +17,14 @@ import { LoadingController} from '@ionic/angular';
 import { OrderService } from '../services/order.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { PlaceOrderService } from '../services/place-order.service'
+import emailjs from 'emailjs-com';
 
 // import { AddressModalComponent } from './address-modal.component';
 
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: UserOptions) => void;
 }
-interface OrderData {
-  orderNumber: string;
-  user_id: string;
-  total_amount: number;
-  order_type: string;
-  status: string;
-  items: OrderItem[];
-  created_at: Date;
-}
-interface OrderItem {
-  product_id: number;
-  name: string;
-  quantity: number;
-  price: number;
-  discountedPrice?: number;
-}
+
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.page.html',
@@ -60,9 +45,9 @@ export class CartPage implements OnInit {
   total: number = 0;
   discountedTotal: number = 0;
   currentUser!: any;
-
- 
-
+  average : number = 50;
+  name: string = 'wandile';
+  emails: string ='generalwandile41@gmail.com';
 
   private cartSubscription: Subscription | undefined;
 
@@ -78,7 +63,7 @@ export class CartPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 1;
-  paymentMethod: string; 
+
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
@@ -90,11 +75,9 @@ export class CartPage implements OnInit {
      private afStorage: AngularFireStorage,
      private loadingController: LoadingController,
      private firestore: AngularFirestore,
-     private router: Router,
-     private placeorder: PlaceOrderService
+     private router: Router
   ) {
-    this.deliveryMethod = 'delivery'; // Example initialization
-    this.paymentMethod = ''; // Default to an empty string
+
   }
  
     
@@ -120,8 +103,7 @@ export class CartPage implements OnInit {
       this.closeAddressPopup();
     }
   
-    // deliveryMethod: string;
-// To store selected payment metho
+  
 
   ngOnInit() {
     const navigation = this.router.getCurrentNavigation();
@@ -265,19 +247,7 @@ export class CartPage implements OnInit {
     return Math.round((num + Number.EPSILON) * 100) / 100;
   }
 
-  removeItem(productId: number) {
-    console.log('removeItem: Attempting to remove item with productId:', productId);
-    this.cartService.removeFromCart(productId).subscribe({
-      next: () => {
-        console.log('removeItem: Item successfully removed from cart');
-        this.showToast('Item removed from cart');
-        this.loadCart();
-      },
-      error: (error: Error) => {
-        this.showToast(`Failed to remove item from cart: ${error.message}`);
-      }
-    });
-}
+
 
 
   async showToast(message: string) {
@@ -645,147 +615,20 @@ generateOrderNumber(): string {
   getTax() {
     return this.roundToTwo(this.total * 0.15); // Assuming 15% VAT
   }
-  // async PlaceOrder(): Promise<void> {
-  //   try {
-  //     // Validate cart
-  //     if (this.cartItems.length === 0) {
-  //       await this.showAlert('Empty Cart', 'Your cart is empty. Add some items before placing an order.');
-  //       return;
-  //     }
 
-  //     if (!this.userEmail) {
-  //       await this.showToast('User email not found. Please log in again.');
-  //       return;
-  //     }
-
-  //     // Check quantities
-  //     const { isValid, invalidItems } = await this.placeorder.checkProductQuantities(this.cartItems);
-  //     if (!isValid) {
-  //       let message = 'The following items have insufficient quantity:\n';
-  //       invalidItems.forEach(item => {
-  //         message += `${item.name}: ${item.availableQuantity} available\n`;
-  //       });
-  //       await this.showAlert('Insufficient Quantity', message);
-  //       return;
-  //     }
-
-  //     // Generate order data
-  //     const orderNumber = this.placeorder.generateOrderNumber();
-  //     const orderData = this.prepareOrderData(orderNumber);
-
-  //     // Generate PDF for email
-  //     const pdfBlob = this.placeorder.generateOrderPDF({
-  //       orderNumber,
-  //       customerName: `${sessionStorage.getItem('userName')} ${sessionStorage.getItem('userSurname')}`,
-  //       customerEmail: this.userEmail,
-  //       deliveryAddress: this.selectedAddress,
-  //       items: this.cartItems,
-  //       subtotal: this.subtotal,
-  //       discountedSubtotal: this.discountedSubtotal,
-  //       tax: this.tax,
-  //       total: this.total
-  //     });
-
-  //     // Show confirmation dialog
-  //     const confirmed = await this.showOrderConfirmation(orderData);
-  //     if (!confirmed) return;
-
-  //     // Place order
-  //     const response = await this.placeorder.placeOrder(orderData).toPromise();
-
-  //     if (response?.success) {
-  //       // Update stock
-  //       for (const item of this.cartItems) {
-  //         await this.placeorder.updateStock(item);
-  //       }
-
-  //       // Clear cart
-  //       await this.cartService.clearCart().toPromise();
-        
-  //       // Show receipt
-  //       this.receiptData = {
-  //         orderNumber,
-  //         items: this.cartItems,
-  //         subtotal: this.subtotal,
-  //         tax: this.tax,
-  //         total: this.total
-  //       };
-  //       this.receiptVisible = true;
-
-  //       await this.showAlert('Order Placed', `Your order for R${this.total.toFixed(2)} has been placed successfully!`);
-        
-  //       // Reset component state
-  //       this.cartItems = [];
-  //       this.calculateTotals();
-  //     } else {
-  //       throw new Error('Server response indicates failure');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error in order placement process:', error);
-  //     await this.showToast('An error occurred while placing your order. Please try again.');
-  //   }
-  // }
-
-  // private prepareOrderData(orderNumber: string): OrderData {
-  //   return {
-  //     orderNumber,
-  //     // user_id: this.userId,
-  //     user_id: this.userId || 'defaultUserId',
-  //     total_amount: this.total,
-  //     order_type: this.deliveryMethod,
-  //     status: 'pending',
-  //     items: this.cartItems.map(item => ({
-  //       product_id: item.product_id,
-  //       name: item.name,
-  //       quantity: item.quantity,
-  //       price: item.price,
-  //       discountedPrice: item.discountedPrice
-  //     })),
-  //     created_at: new Date()
-  //   };
-  // }
-
-  // private async showAlert(header: string, message: string): Promise<void> {
-  //   const alert = await this.alertController.create({
-  //     header,
-  //     message,
-  //     buttons: ['OK']
-  //   });
-  //   await alert.present();
-  // }
-
- 
-
-  // private async showOrderConfirmation(orderData: OrderData): Promise<boolean> {
-  //   return new Promise(async (resolve) => {
-  //     const orderDetails = this.cartItems.map(item => 
-  //       `Product ID: ${item.product_id}\n` +
-  //       `Name: ${item.name}\n` +
-  //       `Quantity: ${item.quantity}\n` +
-  //       `Price: R${item.price.toFixed(2)}\n` +
-  //       `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`
-  //     ).join('\n');
-
-  //     const alert = await this.alertController.create({
-  //       header: 'Order Confirmation',
-  //       message: `You are about to place the following order:\n\n${orderDetails}`,
-  //       buttons: [
-  //         {
-  //           text: 'Cancel',
-  //           role: 'cancel',
-  //           handler: () => resolve(false)
-  //         },
-  //         {
-  //           text: 'Confirm',
-  //           handler: () => resolve(true)
-  //         }
-  //       ]
-  //     });
-
-  //     await alert.present();
-  //   });
-  // }
-
+    removeItem(productId: number) {
+    console.log('removeItem: Attempting to remove item with productId:', productId);
+    this.cartService.removeFromCart(productId).subscribe({
+      next: () => {
+        console.log('removeItem: Item successfully removed from cart');
+        this.showToast('Item removed from cart');
+        this.loadCart();
+      },
+      error: (error: Error) => {
+        this.showToast(`Failed to remove item from cart: ${error.message}`);
+      }
+    });
+}
 
   async PlaceOrder(): Promise<void> {
     try {
@@ -827,86 +670,12 @@ generateOrderNumber(): string {
           return;
         }
     
-        // Generate PDF
-        const pdf = new jsPDF() as jsPDFWithAutoTable;
-      const pageWidth = pdf.internal.pageSize.width;
-    
-      // Set font
-      pdf.setFont("helvetica", "normal");
-    
-      // Add header
-      pdf.setFontSize(20);
-      pdf.text("Invoice", pageWidth / 2, 20, { align: "center" });
-    
-      // Add order details
-      pdf.setFontSize(12);
-      const orderId = new Date().getTime().toString(); // Generate a unique order ID
-      pdf.text(`Order ID: ${orderId}`, 20, 40);
     
       // Add customer details
       const customerName = sessionStorage.getItem('userName') || 'N/A';
       const customerSurname = sessionStorage.getItem('userSurname') || 'N/A';
-      pdf.text(`Name: ${customerName} ${customerSurname}`, 20, 50);
-      pdf.text(`Email: ${this.userEmail}`, 20, 60);
     
-      // Add delivery address if applicable
-      let yPos = 70;
-      if (this.deliveryMethod === 'delivery' && this.selectedAddress) {
-        pdf.text("Delivery Address:", 20, yPos);
-        yPos += 10;
-        pdf.text(this.selectedAddress.address_line1, 20, yPos);
-        if (this.selectedAddress.address_line2) {
-          yPos += 10;
-          pdf.text(this.selectedAddress.address_line2, 20, yPos);
-        }
-        yPos += 10;
-        pdf.text(`${this.selectedAddress.city}, ${this.selectedAddress.province} ${this.selectedAddress.postal_code}`, 20, yPos);
-        yPos += 10;
-        pdf.text(this.selectedAddress.country, 20, yPos);
-        yPos += 20;
-      } else {
-        yPos += 10;
-      }
     
-      // Add order items table
-      pdf.setFontSize(14);
-      pdf.text("Order Items", 20, yPos);
-      yPos += 10;
-    
-      const columns = ["Item", "Quantity", "Price", "Total"];
-      const data = this.cartItems.map(item => [
-        item.name,
-        item.quantity.toString(),
-        `R${item.price.toFixed(2)}`,
-        `R${(item.price * item.quantity).toFixed(2)}`
-      ]);
-    
-      pdf.autoTable({
-        head: [columns],
-        body: data,
-        startY: yPos,
-        theme: 'striped',
-        headStyles: { fillColor: [66, 66, 66] },
-        margin: { top: 20 },
-      });
-    
-      yPos = (pdf as any).lastAutoTable.finalY + 20;
-    
-      // Add price details
-      pdf.setFontSize(12);
-      pdf.text(`Subtotal: R${this.subtotal.toFixed(2)}`, pageWidth - 70, yPos);
-      yPos += 10;
-      pdf.text(`Discounted Subtotal: R${this.discountedSubtotal.toFixed(2)}`, pageWidth - 70, yPos);
-      yPos += 10;
-      pdf.text(`Tax (15%): R${this.tax.toFixed(2)}`, pageWidth - 70, yPos);
-      yPos += 10;
-      pdf.setFontSize(14);
-      pdf.text(`Total: R${this.discountedTotal.toFixed(2)}`, pageWidth - 70, yPos);
-    
-      console.log('PDF generated');
-    
-      // Save PDF to a Blob
-      const pdfBlob = pdf.output('blob');
         // Prepare the order data
         const orderData = {
             orderNumber: orderNumber,
@@ -933,7 +702,8 @@ generateOrderNumber(): string {
       };
 
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
-        await this.sendOrderEmail(this.userEmail, pdfBlob);
+        // await this.Send(this.userEmail, this.receiptData);
+
 
         // Display order details in an alert
         const orderDetails = this.cartItems.map(item => {
@@ -1024,6 +794,7 @@ generateOrderNumber(): string {
                                 buttons: ['OK']
                             });
                             await successAlert.present();
+                            
                             this.cartItems = [];
                             this.calculateTotals();
                         } else {
@@ -1042,7 +813,115 @@ generateOrderNumber(): string {
 }
 
 
+async Send(emails: string, receiptData: any): Promise<void> {
+  if (!emails) {
+    this.showToast('Recipient email address is empty');
+    return;
+  }
+
+  // Construct the receipt message in plain text format
+  let message = `
+BEST BRIGHTNESS STORE
+123 Main St, City, Country
+Tel: (555) 123-4567
+Email: ${emails}
+
+-----------------------------
+Receipt
+-----------------------------
+
+Items:
+`;
+
+  // Loop through each item in receiptData to display in the message
+  receiptData.items.forEach((item: any) => {
+    message += `${item.name} - Qty: ${item.quantity} x R${item.price.toFixed(2)} = R${(item.quantity * item.price).toFixed(2)}\n`;
+  });
+
+  message += `
+-----------------------------
+Subtotal: R${receiptData.subtotal.toFixed(2)}
+Tax (15%): R${receiptData.tax.toFixed(2)}
+Total: R${receiptData.total.toFixed(2)}
+-----------------------------
+
+THANK YOU FOR SHOPPING WITH US!
+Order Number: ${receiptData.orderNumber}
+`;
+
+  // EmailJS email parameters
+  const emailParams = {
+    email_to: emails,
+    subject: 'Your Order Receipt',
+    message: message, // Set the receipt message as the email body (plain text format)
+  };
+
+  // Show loading indicator
+  const loader = await this.loadingController.create({
+    message: 'Sending Email...',
+    cssClass: 'custom-loader-class'
+  });
+
+  await loader.present();
+
+  try {
+    // Send email using EmailJS
+    await emailjs.send('service_enj4mb1','template_zr0xpch', emailParams, 'wbYhGj7VnQN_l3bm5');
+    this.showToast('Email successfully sent');
+    alert('Email successfully sent');
+  } catch (error) {
+    this.showToast('Error sending email: ' + error);
+    alert('Error sending email');
+  } finally {
+    await loader.dismiss();
+  }
+}
+
+
+
+// async Send(emails: string, name: string, average: number) {
+//   if (!emails) {
+//     this.showToast('Recipient email address is empty');
+//     return;
+//   }
+
+//   let message: string;
+
+//   if (average >= 40) {
+//     message = 'Congratulations on passing your interview';
+//   } else if (average >= 0 && average < 35) {
+//     message = 'Thank you for your time. Unfortunately, you did not pass the interview.';
+//   } else {
+//     this.showToast('Invalid score:'+ 'average');
+//     return; 
+//   }
+
+//   const emailParams = {
+//     email_to: emails,
+//     subject: 'Your Order Receipt',
+//     message: `Dear ${name},
+    
+// ${message}
+
+
+// Best Brightness Store`
+//   };
+
+//   try {
+//     await emailjs.send('interviewEmailsAD', 'template_7x4kjte', emailParams, 'TrFF8ofl4gbJlOhzB');
+//     this.showToast('email successfully sent');
+//     alert('email successfully sent');
+//   } catch (error) {
+//     this.showToast('error sending email'+ error);
+//     alert('error sending email');
+//   }
+// }
+
+
 // Function to send email with PDF order details
+
+
+
 async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
   const loader = await this.loadingController.create({
       message: 'Sending Email...',
@@ -1050,7 +929,7 @@ async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
   });
   await loader.present();
 
-  const url = "http://localhost/Bestbrightness/src/send_email.php";
+
   const subject = "Order Details";
   const body = "Please find the attached order details PDF.";
   
@@ -1061,17 +940,7 @@ async sendOrderEmail(email: string, pdfBlob: Blob): Promise<void> {
   formData.append('body', body);
   formData.append('pdf', pdfBlob, `Order_${new Date().getTime()}.pdf`); // Attach the PDF blob
 
-  this.http.post(url, formData).subscribe(
-      async (response) => {
-          loader.dismiss();
-          this.showToast('Email sent successfully!');
-      },
-      (error) => {
-          loader.dismiss();
-          console.error('Error sending email:', error);
-          this.showToast('Failed to send email. Please try again.');
-      }
-  );
+  
 }
 
 async generatePDF() {

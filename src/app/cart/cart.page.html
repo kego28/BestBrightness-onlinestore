@@ -61,10 +61,10 @@
                               <h5 class="mb-0">
                                 <ng-container *ngIf="item.hasPromotion; else regularPrice">
                                   <span class="original-price">R{{ item.price * item.quantity }}</span>
-                                  <span class="discounted-price">{{ item.discountedPrice * item.quantity | currency }}</span>
+                                  <span class="discounted-price">R{{ item.discountedPrice * item.quantity  }}</span>
                                 </ng-container>
                                 <ng-template #regularPrice>
-                                  {{ item.price * item.quantity | currency }}
+                                  R{{ item.price * item.quantity  }}
                                 </ng-template>
                               </h5>
                             </div>
@@ -118,33 +118,9 @@
                         </div>
                       </div>
                       
-                      <!-- <div *ngIf="deliveryMethod === 'delivery'">
+                      <div *ngIf="deliveryMethod === 'delivery'">
                         <ion-button (click)="openAddressPopup()">Select Shipping Address</ion-button>
                       </div>
-                      <div *ngIf="deliveryMethod === 'delivery'">
-                        <ion-row align-items-center>
-                          <ion-col size="6">
-                            <ion-button (click)="openAddressPopup()">
-                              <ion-icon name="pin"></ion-icon> Select Shipping Address
-                            </ion-button>
-                          </ion-col> -->
-                      
-                          <!-- <ion-col size="6"> -->
-                            <ion-item-divider>
-                              <ion-icon slot="start" name="cash"></ion-icon> <!-- Icon for cash -->
-                              <ion-label>Payment Method</ion-label>
-                              <ion-select [(ngModel)]="paymentMethod" placeholder="Select Payment Method">
-                                <ion-select-option value="card">
-                                  <ion-icon slot="start" name="card"></ion-icon> Card
-                                </ion-select-option>
-                                <ion-select-option value="cash">
-                                  <ion-icon slot="start" name="cash"></ion-icon> Cash
-                                </ion-select-option>
-                              </ion-select>
-                            </ion-item-divider>
-                          <!-- </ion-col>
-                        </ion-row>
-                      </div> -->
                       
                       <div class="address-popup" *ngIf="showAddressPopup">
                         <div class="address-popup-content">
@@ -169,31 +145,42 @@
                       <ion-item-divider class="colors"></ion-item-divider>
                       <div class="d-flex justify-content-between">
                         <p class="mb-2">Original Subtotal</p>
-                        <p class="mb-2">{{ subtotal | currency }}</p>
+                        <p class="mb-2">R{{ subtotal }}</p>
                       </div>
 
                       <div class="d-flex justify-content-between">
                         <p class="mb-2">Discounted Subtotal</p>
-                        <p class="mb-2">{{ discountedSubtotal | currency }}</p>
+                        <p class="mb-2">R{{ discountedSubtotal  }}</p>
                       </div>
 
                       <div class="d-flex justify-content-between">
                         <p class="mb-2">Tax</p>
-                        <p class="mb-2">{{ tax  | currency }}</p>
+                        <p class="mb-2">R{{ tax   }}</p>
                       </div>
 
                       
 
                       <div class="d-flex justify-content-between mb-4">
                         <p class="mb-2">Discounted Total</p>
-                        <p class="mb-2">{{ discountedTotal | currency }}</p>
+                        <p class="mb-2">R{{ discountedTotal  }}</p>
                       </div>
 
                       <div class="d-flex justify-content-between mb-4">
                         <p class="mb-2">Total (Incl. taxes)</p>
-                        <p class="mb-2">{{ discountedTotal | currency }}</p>
+                        <p class="mb-2">R{{ discountedTotal  }}</p>
                       </div>
 
+                      <!-- <ion-button expand="block" class="btn-lg" 
+                      *ngFor="let item of cartItems" 
+                      (click)="PlaceOrder(item.product_id)">
+                      Place Order for {{ item.name }}
+                  
+                  
+                        <div class="d-flex justify-content-between">
+                           <span>{{ discountedTotal | currency }}
+                          <span>Checkout <ion-icon name="arrow-forward" class="ms-2"></ion-icon></span>
+                        </div>
+                      </ion-button> -->
                       <ion-button expand="block" class="btn-lg" (click)="PlaceOrder()">
                         <div class="d-flex justify-content-between">
                           <!-- <span>{{ discountedTotal | currency }}</span> -->
