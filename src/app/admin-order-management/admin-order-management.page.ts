@@ -6,6 +6,8 @@ import { forkJoin, of } from 'rxjs';
 import { ChartDataService } from '../services/chart-data.service';
 import { Chart } from 'chart.js'
 
+import { PopoverController } from '@ionic/angular';
+
 interface UpdateResponse {
   success: boolean;
   message?: string; // Optional, in case there's no message
@@ -30,18 +32,28 @@ export class AdminOrderManagementPage implements OnInit {
   filterValue: string = '';
   filteredOrderData: any[] = [];
 
+
   constructor(
     private http: HttpClient,
     private alertController: AlertController,
     private toastController: ToastController,
-    private chartDataService: ChartDataService
+    private chartDataService: ChartDataService,
+    private popoverController: PopoverController
   ) {}
 
   ngOnInit() {
     this.fetchOrders();
-    this.loadInventoryCharts();
+    // this.loadInventoryCharts();
+    this.loadOrdersCharts();
   }
 
+  presentPopover(ev: any) {
+    // Popover presentation logic
+  }
+ 
+  applyFilter() {
+    // Apply filter logic and dismiss popover
+  }
   fetchOrders() {
     const ordersRequest = this.http.get<{ orderData: any[] }>('http://localhost/user_api/orders.php');
     const virtualOrdersRequest = this.http.get<{ success: boolean; orders: any[] }>('http://localhost/user_api/virtualOrder.php');
@@ -71,52 +83,21 @@ export class AdminOrderManagementPage implements OnInit {
       });
   }
   
-  
-  
-  
-  
-    
-  
-    loadInventoryCharts() {
-      // Product Ratings Chart
-      this.chartDataService.getChartData('product_ratings').subscribe(data => {
-        const products = data.map((item: any) => item.name);
-        const ratings = data.map((item: any) => item.average_rating);
-  
-        new Chart('productRatingsChart', {
-          type: 'bar',
-          data: {
-            labels: products,
-            datasets: [{
-              label: 'Average Rating',
-              data: ratings,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }
-        });
-      });
-  
-      // Promotions Usage Chart
-      this.chartDataService.getChartData('promotions_usage').subscribe(data => {
-        const promotionStatus = data.map((item: any) => item.promotion_status);
+    loadOrdersCharts() {
+      // Orders by Status Chart
+      setTimeout(() => {
+      this.chartDataService.getChartData('orders_by_status').subscribe(data => {
+        const statuses = data.map((item: any) => item.status);
         const orderCounts = data.map((item: any) => item.total_orders);
   
-        new Chart('promotionsUsageChart', {
+        new Chart('ordersStatusChart', {
           type: 'pie',
           data: {
-            labels: promotionStatus,
+            labels: statuses,
             datasets: [{
               data: orderCounts,
-              backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
-              borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+              backgroundColor: ['rgba(219, 125, 17, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+              borderColor: ['rgba(219, 125, 17, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
               borderWidth: 1
             }]
           },
@@ -128,6 +109,31 @@ export class AdminOrderManagementPage implements OnInit {
           }
         });
       });
+  
+      // Orders by Type Chart
+      this.chartDataService.getChartData('orders_by_type').subscribe(data => {
+        const orderTypes = data.map((item: any) => item.order_type);
+        const orderCounts = data.map((item: any) => item.total_orders);
+  
+        new Chart('ordersTypeChart', {
+          type: 'doughnut',
+          data: {
+            labels: orderTypes,
+            datasets: [{
+              data: orderCounts,
+              backgroundColor: ['rgba(255, 159, 64, 0.6)', 'rgba(54, 162, 235, 0.6)'],
+              borderColor: ['rgba(255, 159, 64, 1)', 'rgba(54, 162, 235, 1)'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' }
+            }
+          }
+        });
+      }); }, 150);
     }
   
   getStatusClass(status: string): string {
