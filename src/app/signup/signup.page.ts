@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router'; // Import Router
+// import { AuthService  } from ' ../services/auth.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -64,7 +66,8 @@ export class SignupPage implements OnInit {
     private http: HttpClient,
     private alertController: AlertController,
     private toastController: ToastController,
-    private router: Router // Inject Router
+    private router: Router,
+    private authService: AuthService,
   ) {}
 
 
@@ -142,13 +145,11 @@ export class SignupPage implements OnInit {
             };
 
               // Navigate based on the role
-              if (response.role === 'admin') {
-                this.router.navigate(['/products'] , { state: { user: userData } }); // Navigate to admin dashboard
-              } else if (response.role === 'cashier') {
-                this.router.navigate(['/products'],  { state: { user: userData } }); // Navigate to POS page
-              } else {
-                this.router.navigate(['/products'],  { state: { user: userData } }); // Navigate to home page for all other roles
-              }
+              if (response) {
+                // this.authService.setUserData(userData);
+                this.router.navigate(['/products'] , { state: { user: userData } }); 
+              } 
+              
             } else {
               await this.presentToast('Login failed: ' + response.message, 'danger');
             }

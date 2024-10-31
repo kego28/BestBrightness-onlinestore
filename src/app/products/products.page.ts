@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ToastController, IonSearchbar } from '@ionic/angular';
 import { CartService } from '../services/cart.service';
 import { PromotionService } from '../services/promotion.service'; 
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../services/auth.service';
 interface Product {
   product_id: number;
   name: string;
@@ -40,7 +40,7 @@ interface Promotion {
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
 })
-export class ProductsPage implements OnInit {
+export class ProductsPage implements OnInit,  OnDestroy {
   @ViewChild(IonSearchbar) searchbar!: IonSearchbar;
 
   products: Product[] = [];
@@ -48,10 +48,10 @@ export class ProductsPage implements OnInit {
   categories: string[] = ['All'];
   selectedCategory: string = 'All';
   sortOption: string = 'name';
-  userId: string | null = null;
+  // userId: string | null = null;
   promotions: Promotion[] = [];
   searchTerm: any;
-
+    userData:any;
   isMenuOpen = false;
   isScrolled = false;
   currentUser:any;
@@ -95,7 +95,7 @@ export class ProductsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getUserName();
+    // this.getUserName();
     this.loadProducts();
     this.getUserId();
     this.loadPromotions();
@@ -113,6 +113,13 @@ export class ProductsPage implements OnInit {
       console.log('No user data found in Products page.');
     }
   }
+  ngOnDestroy() {
+    // this.getUserName();
+  }
+
+  ionViewWillEnter() {
+    this.getUserId();
+  }
   getStarRating(rating: number): string {
     const fullStar = '★';
     const emptyStar = '☆';
@@ -127,11 +134,11 @@ export class ProductsPage implements OnInit {
 
   
   
-  getUserName() {
-    this.currentUserName = sessionStorage.getItem('username');
+  // getUserName() {
+  //   this.currentUserName = sessionStorage.getItem('username');
   
-    console.log('Logged-in user:', this.currentUserName); // Optional: To check if the name is correctly retrieved
-  }
+  //   console.log('Logged-in user:', this.currentUserName); // Optional: To check if the name is correctly retrieved
+  // }
 
   searchProducts() {
     this.filteredProducts = this.products.filter(product =>
@@ -139,32 +146,48 @@ export class ProductsPage implements OnInit {
     );
   }
   getUserId() {
-    this.userId = sessionStorage.getItem('userId');
-    if (!this.userId) {
+    // this.userId = sessionStorage.getItem('userId');
+    // this.currentUserName = sessionStorage.getItem('username');
+
+    const userData = {
+      email: sessionStorage.getItem('userEmail'),
+      role: sessionStorage.getItem('userRole'),
+      userId: sessionStorage.getItem('userId'),
+      username: sessionStorage.getItem('username')
+  };
+
+    if (!userData) {
       console.warn('User is not logged in');
-      // You might want to redirect to login page or show a message
     }
+    else{
+      this.userData = userData;
+      this. currentUserName = this.userData.username;
+      this.getUserRole();
+    }
+
+
+
   }
 
   async viewAccount() {
     await this.toAccount();
   }
   getUserRole() {
-    const role = sessionStorage.getItem('userRole'); // Assume 'userRole' is stored in sessionStorage
-    const name = sessionStorage.getItem('userName'); 
- 
-    if (role === 'admin') {
+    if (this.userData.role === 'admin') {
       this.isAdmin = true;
-    } else if (role === 'cashier') {
+    } else if (this.userData.role  === 'cashier') {
       this.isCashier = true;
+    }
+    else{
+      this.isAdmin = false;
+      this.isCashier = false;
     }
   }
 
   async cashier() {
-    const role = sessionStorage.getItem('userRole');
-    this.userId = sessionStorage.getItem('userId');
-    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
-    if (this.userId && role ==='cashier') {
+ 
+    console.log('Stored userId in sessionStorage:', this.userData .userId);  // Log the userId to check
+    if (this.userData.userId && this.userData .role ==='cashier') {
       this.router.navigate(['/pos']);
       this.isLoggedIn = false;
         
@@ -177,10 +200,9 @@ export class ProductsPage implements OnInit {
   }
 
   async admin() {
-    this.userId = sessionStorage.getItem('userId');
-    const role = sessionStorage.getItem('userRole');
-    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
-    if (this.userId && role === 'admin') {
+  
+    console.log('Stored userId in sessionStorage:', this.userData.userId);  // Log the userId to check
+    if (this.userData.userId && this.userData.role === 'admin') {
       this.router.navigate(['/admin-dashboard']);
       this.isLoggedIn = false;
         
@@ -192,9 +214,9 @@ export class ProductsPage implements OnInit {
     }
   }
   async toAccount() {
-    this.userId = sessionStorage.getItem('userId');
-    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
-    if (this.userId) {
+   
+    console.log('Stored userId in sessionStorage:', this.userData.userId);  // Log the userId to check
+    if (this.userData.userId) {
       this.router.navigate(['/account']);
       this.isLoggedIn = false;
         
@@ -209,9 +231,9 @@ export class ProductsPage implements OnInit {
  await  this.tocart();
   }
   async tocart() {
-    this.userId = sessionStorage.getItem('userId');
-    console.log('Stored userId in sessionStorage:', this.userId);  // Log the userId to check
-    if (this.userId) {
+
+    console.log('Stored userId in sessionStorage:', this.userData.userId);  // Log the userId to check
+    if (this.userData.userId) {
       this.router.navigate(['/cart']);
       this.isLoggedIn = false;
         
@@ -408,7 +430,7 @@ export class ProductsPage implements OnInit {
   }
 
   async addToCart(product: Product) {
-    if (!this.userId) {
+    if (!this.userData.userId) {
       const toast = await this.toastController.create({
         message: 'Please log in to add items to your cart',
         duration: 2000,
@@ -426,7 +448,7 @@ export class ProductsPage implements OnInit {
     this.cartService.addToCart(product);
     
     const payload = {
-      user_id: this.userId,
+      user_id: this.userData .userId,
       product_id: product.product_id,
       quantity: product.quantity
     };
@@ -484,8 +506,21 @@ export class ProductsPage implements OnInit {
 
   async logout() {
     sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('username');
     this.isLoggedIn = false;
     this.currentUser = null;
+    this.currentUserName ='';
+    // this.userData.userId ='';
+    this.userData = {
+      email: sessionStorage.getItem('userEmail'),
+      role: sessionStorage.getItem('userRole'),
+      userId: sessionStorage.getItem('userId'),
+      username: sessionStorage.getItem('username')
+  };
+    this.getUserRole();
     await this.presentToast('You have logged out successfully', 'success');
     this.router.navigate(['/products']);
   }
