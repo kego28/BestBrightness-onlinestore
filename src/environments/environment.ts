@@ -4,8 +4,10 @@
 
 export const environment = {
   production: false,
+   stripePublishableKey: 'pk_test_51PRAGZEwp4oV1bz67bXzSXUoyc0kVk5qX38V5p93uxa9RhpBU8QCIvyQ1y4nqkuPfqfzXWVClM7w8iAM4KihF7Ch00y4dd0OQY',
   apiUrl: 'http://localhost/user_api',
-  firebaseConfig : {
+  api:'http://localhost:3000'
+,  firebaseConfig : {
     apiKey: "AIzaSyDB_jlyUddtmTvzJM8qCd-ePZ5YupwXgkA",
     authDomain: "new-99e13.firebaseapp.com",
     projectId: "new-99e13",

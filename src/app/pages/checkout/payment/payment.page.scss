@@ -1,9 +1,83 @@
-ion-input {
-    --padding-top: 12px;
-    --padding-bottom: 12px;
+:host {
+  --primary-color: #db7d11;
+  --background-color: #ffffff;
+}
+
+.payment-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+ion-card {
+  margin: 16px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-header {
+  background-color: var(--background-color);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+ion-card-title {
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.order-details {
+  .order-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
-  
-  ion-input::placeholder {
-    color: #999;
+
+  .order-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
   }
-  
+}
+
+.stripe-card {
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  margin: 16px 0;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 8px;
+}
+
+ion-button {
+  --background: var(--primary-color);
+  --background-hover: #c26b0a;
+  margin-top: 24px;
+  height: 48px;
+  font-weight: 600;
+}
+
+// For smaller screens
+@media (max-width: 576px) {
+  .payment-container {
+    padding: 8px;
+  }
+
+  ion-card {
+    margin: 8px 0;
+  }
+
+  ion-card-title {
+    font-size: 1.1rem;
+  }
+}

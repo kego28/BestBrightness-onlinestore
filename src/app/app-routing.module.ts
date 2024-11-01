@@ -66,18 +66,6 @@ const routes: Routes = [
     loadChildren: () => import('./account/account.module').then(m => m.AccountPageModule)
   },
   {
-    path: 'products',
-    loadChildren: () => import('./products/products.module').then( m => m.ProductsPageModule)
-  },
-  {
-    path: 'promotions',
-    loadChildren: () => import('./promotions/promotions.module').then( m => m.PromotionsPageModule)
-  },
-  {
-    path: 'account',
-    loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
-  },
-  {
     path: 'cart',
     loadChildren: () => import('./cart/cart.module').then( m => m.CartPageModule)
   },
@@ -131,7 +119,8 @@ const routes: Routes = [
     
   loadChildren: () => import('./forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
   
-  },
+  }
+
   // {
   //   path: 'auth',
   //   loadChildren: () => import('./auth/auth.module').then( m => m.AuthPageModule)
