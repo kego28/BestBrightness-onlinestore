@@ -707,16 +707,20 @@ generateOrderNumber(): string {
 
         // Display order details in an alert
         const orderDetails = this.cartItems.map(item => {
-            return `Product ID: ${item.product_id}\n` +
-                   `Name: ${item.name}\n` +
-                   `Quantity: ${item.quantity}\n` +
-                   `Price: R${item.price.toFixed(2)}\n` +
-                   `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`;
-        }).join('\n');
+          return `
+      
+      | Name: ${item.name} 
+      | Quantity: ${item.quantity} 
+      | Price: R${item.price.toFixed(2)} 
+      | Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'} \n
+      \n
+      \n
+          `;
+      }).join('\n');
 
         const confirmationAlert = await this.alertController.create({
-            header: 'Order Confirmation',
-            message: `You are about to place the following order:\n\n${orderDetails}`,
+            header: 'Order Confirmation, You are about to place the following order:',
+            message: `\n\n${orderDetails}`,
             buttons: [
                 {
                     text: 'Cancel',

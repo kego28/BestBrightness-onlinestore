@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AlertController, ToastController, IonModal } from '@ionic/angular';
 import { catchError, tap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -11,6 +11,15 @@ import { PopoverController } from '@ionic/angular';
 interface UpdateResponse {
   success: boolean;
   message?: string; // Optional, in case there's no message
+}
+
+interface User {
+  user_id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
 }
 
 
@@ -31,7 +40,8 @@ export class AdminOrderManagementPage implements OnInit {
   filterType: string = '';
   filterValue: string = '';
   filteredOrderData: any[] = [];
-
+  user: User | null = null;
+  private apiUrl = 'http://localhost/user_api/login.php';
 
   constructor(
     private http: HttpClient,
@@ -79,9 +89,33 @@ export class AdminOrderManagementPage implements OnInit {
           // Combine orders
           this.orderData = [...this.orderData, ...virtualOrders]; // Combine both arrays
           this.filteredOrderData = [...this.orderData]; // Initialize filtered data
-        }
-      });
+        
+
+          this.orderData.forEach(order => {
+            this.fetchUserData(order.user_id); // Fetch user data for each order
+          });
+      }
+    });
+
+      
   }
+
+  fetchUserData(user_id: any) {
+    this.http.get<User>(`${this.apiUrl}?user_id=${user_id}`).subscribe({
+      next: async (user) => {
+        
+        this.user = user;
+       console.log("email:"+user.email);
+       console.log("Name:"+user.first_name);
+       await this.presentToast('User details loaded successfully', 'success');
+       
+      },
+      error: async (error: HttpErrorResponse) => {
+        this.presentToast('Failed to fetch user details', 'danger');
+      }
+    });
+  }
+  
   
     loadOrdersCharts() {
       // Orders by Status Chart

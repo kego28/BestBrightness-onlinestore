@@ -69,6 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'user_id' => $row['user_id'],
                     'email' => $row['email'],
                     'username' => $row['username'],
+                    'first_name' => $row['first_name'],
+                    'last_name' => $row['last_name'],
                     'role' => $row['role']
                 ];
             } else {

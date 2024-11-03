@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, LoadingController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ToastController, AlertController } from '@ionic/angular';
+import emailjs from 'emailjs-com';
 
 import { ModalController, Platform } from '@ionic/angular';
 interface User {
@@ -139,7 +140,7 @@ console.log(newUser.password);
             this.fetchUsers();
             
             // Send email to the new user
-            await this.sendUserCreationEmail(newUser, response.user_id);
+            await this.Send(newUser, response.user_id);
           } else {
             await this.presentToast('Error: ' + response.message, 'danger');
           }
@@ -149,51 +150,122 @@ console.log(newUser.password);
     }
   }
 
-  async sendUserCreationEmail(user: any, userId: number): Promise<void> {
+  // async sendUserCreationEmail(user: any, userId: number): Promise<void> {
+  //   const loader = await this.loadingController.create({
+  //     message: 'Sending Email...',
+  //     cssClass: 'custom-loader-class'
+  //   });
+  //   await loader.present();
+
+  //   const url = "http://localhost/user_api/send_email.php";
+  //   const subject = "Welcome to Our System";
+  //   const body = `
+  //     Dear ${user.first_name} ${user.last_name},
+
+  //     Welcome to our system! Your account has been created successfully.
+
+  //     Here are your account details:
+  //     Username: ${user.username}
+  //     Role: ${user.role}
+  //     Email: ${user.email}
+
+  //     Your password is the same as the username, please login to the system to change to a safer and secure password.
+
+  //     Please keep this information safe. You can use your username to log in to the system.
+
+  //     If you have any questions or need assistance, please don't hesitate to contact us.
+
+  //     Best regards,
+  //     The Admin Team
+  //   `;
+    
+  //   const formData = new FormData();
+  //   formData.append('recipient', user.email);
+  //   formData.append('subject', subject);
+  //   formData.append('body', body);
+
+  //   this.http.post(url, formData).subscribe(
+  //     async (response) => {
+  //       loader.dismiss();
+  //       await this.presentToast('Welcome email sent successfully!', 'success');
+  //     },
+  //     (error) => {
+  //       loader.dismiss();
+  //       console.error('Error sending email:', error);
+  //       this.presentToast('Failed to send welcome email. Please try again.', 'danger');
+  //     }
+  //   );
+  // }
+
+
+  async Send(user: any, userId: number): Promise<void> {
+    if (!user.email) {
+      this.showToast('Recipient email address is empty');
+      return;
+    }
+    else{
+      alert('Email is'+ user.email)
+    }
+  
+    // Construct the receipt message in plain text format
+    let message = `
+    Dear ${user.first_name} ${user.last_name},
+
+    Welcome to our system! Your account has been created successfully.
+
+    Here are your account details:
+    Username: ${user.username}
+    Role: ${user.role}
+    Email: ${user.email}
+
+    Your password is the same as the username, please login to the system to change to a safer and secure password.
+
+    Please keep this information safe. You can use your username to log in to the system.
+
+    If you have any questions or need assistance, please don't hesitate to contact us.
+
+    Best regards,
+    The Admin Team
+  `;
+  
+    // EmailJS email parameters
+    const emailParams = {
+      email_to: user.email,
+      subject: 'Welcome to Best Brightness Sysytem',
+      message: message, // Set the receipt message as the email body (plain text format)
+    };
+
+    console.log("Email parameters:", emailParams);
+
+  
+    // Show loading indicator
     const loader = await this.loadingController.create({
       message: 'Sending Email...',
       cssClass: 'custom-loader-class'
     });
+  
     await loader.present();
+  
+    try {
+      // Send email using EmailJS
+      await emailjs.send('service_enj4mb1','template_zr0xpch', emailParams, 'wbYhGj7VnQN_l3bm5');
+      this.showToast('Email successfully sent');
+      alert('Email successfully sent');
+    } catch (error) {
+      this.showToast('Error sending email: ' + error);
+      alert('Error sending email');
+    } finally {
+      await loader.dismiss();
+    }
+  }
 
-    const url = "http://localhost/user_api/send_email.php";
-    const subject = "Welcome to Our System";
-    const body = `
-      Dear ${user.first_name} ${user.last_name},
-
-      Welcome to our system! Your account has been created successfully.
-
-      Here are your account details:
-      Username: ${user.username}
-      Role: ${user.role}
-      Email: ${user.email}
-
-      Your password is the same as the username, please login to the system to change to a safer and secure password.
-
-      Please keep this information safe. You can use your username to log in to the system.
-
-      If you have any questions or need assistance, please don't hesitate to contact us.
-
-      Best regards,
-      The Admin Team
-    `;
-    
-    const formData = new FormData();
-    formData.append('recipient', user.email);
-    formData.append('subject', subject);
-    formData.append('body', body);
-
-    this.http.post(url, formData).subscribe(
-      async (response) => {
-        loader.dismiss();
-        await this.presentToast('Welcome email sent successfully!', 'success');
-      },
-      (error) => {
-        loader.dismiss();
-        console.error('Error sending email:', error);
-        this.presentToast('Failed to send welcome email. Please try again.', 'danger');
-      }
-    );
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.present();
   }
 
   // Method to present a toast
