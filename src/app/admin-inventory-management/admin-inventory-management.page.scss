@@ -1,5 +1,5 @@
 
-  /* Main Layout Styles */
+//   /* Main Layout Styles */
 :host {
   --page-margin: 16px;
   --card-border-radius: 12px;
@@ -23,7 +23,7 @@ ion-header ion-toolbar {
   }
 }
 
-/* Card Styling */
+// /* Card Styling */
 .custom-card {
   border-radius: var(--card-border-radius);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -315,6 +315,32 @@ ion-thumbnail {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 :root {
   --background: rgb(112, 203, 233);
   --primary-color: #db7d11;
@@ -555,7 +581,7 @@ ion-segment {
   height: 24px;
 }
 
-/* Movement status classes styling */
+// /* Movement status classes styling */
 .movement-high {
   --background: rgba(45, 211, 111, 0.1);
   color: #2dd36f;

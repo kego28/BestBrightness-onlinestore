@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild,AfterViewInit } from '@angular/core';
 import { IonModal } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -10,21 +10,10 @@ import { Camera, CameraPhoto, CameraResultType, CameraSource } from '@capacitor/
 import jsQR from 'jsqr';
 import { Capacitor } from '@capacitor/core';
 import { CameraService } from '../services/camera.service';
-import {
-  AlertController,
-  LoadingController,
-  ModalController,
-  ToastController,
-} from '@ionic/angular';
+import {AlertController,LoadingController, ModalController,  ToastController} from '@ionic/angular';
 import { CategoryManagementComponent } from '../category-management/category-management.component';
 import { PromotionManagementComponent } from '../promotion-management/promotion-management.component';
-// import { Component, ViewChild } from '@angular/core';
-// import { IonModal } from '@ionic/angular';
-
-
- 
-
-  // Function to open modal
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 interface Product {
   product_id: number;
@@ -60,10 +49,11 @@ export class AdminInventoryManagementPage implements OnInit {
   @ViewChild('lowStockModalTemplate') lowStockModalTemplate: any;
   @ViewChild('lowStockModal', { static: true }) lowStockModal!: IonModal;
   @ViewChild('lowStockModal') modal!: IonModal;
-  
+ 
   isModalOpen = false;
-  // lowStockAlert: any[] = []; // Your low stock items array
-
+  private codeReader = new BrowserMultiFormatReader();
+  // public scanning: boolean = false;
+ 
   newItem: Product = {
     product_id: 0,
     name: '',
@@ -102,7 +92,7 @@ export class AdminInventoryManagementPage implements OnInit {
   selectedStockLevel: string = '';
 
 
-
+  isScanning = false;
   
   constructor(
     private http: HttpClient,
@@ -112,7 +102,8 @@ export class AdminInventoryManagementPage implements OnInit {
     private firestore: AngularFirestore,
     private storage: AngularFireStorage,
     private cameraService: CameraService,
-    private modalController: ModalController
+    private modalController: ModalController,
+ 
   ) { }
 
   ngOnInit() {
@@ -121,8 +112,9 @@ export class AdminInventoryManagementPage implements OnInit {
     this.calculateMovementRates();
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     // Ensure the video element is available
+    
     console.log('Video element:', this.videoElement);
   }
   async presentLowStockModal() {
@@ -263,7 +255,7 @@ export class AdminInventoryManagementPage implements OnInit {
       return matchesSearch && matchesCategory && matchesStatus && matchesStockLevel;
     });
   }
-
+  
   getStockLevelMatch(stockQuantity: number): boolean {
     switch (this.selectedStockLevel) {
       case 'low':
@@ -429,42 +421,118 @@ export class AdminInventoryManagementPage implements OnInit {
     input.click();
   }
      
-  async scanBarcode() {
-    try {
-      const stream = await this.cameraService.startCamera();
-      const video: HTMLVideoElement = document.querySelector('video')!;
-      video.srcObject = stream;
-      await video.play();
+  // async scanBarcode() {
+  //   try {
+  //     const stream = await this.cameraService.startCamera();
+  //     const video: HTMLVideoElement = document.querySelector('video')!;
+  //     video.srcObject = stream;
+  //     await video.play();
 
-      requestAnimationFrame(this.scan.bind(this));
-    } catch (error) {
-      console.error('Error starting camera:', error);
-    }
-  }
+  //     requestAnimationFrame(this.scan.bind(this));
+  //   } catch (error) {
+  //     console.error('Error starting camera:', error);
+  //   }
+  // }
+  
+  
+ 
+  
 
-  private scan() {
-    const video: HTMLVideoElement = document.querySelector('video')!;
-    const canvas: HTMLCanvasElement = document.querySelector('canvas')!;
-    const context = canvas.getContext('2d')!;
 
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.height = video.videoHeight;
-      canvas.width = video.videoWidth;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-      if (code) {
-        console.log('Found QR code', code.data);
-        this.newItem.barcode = code.data;
-        this.cameraService.stopCamera();
-      } else {
-        requestAnimationFrame(this.scan.bind(this));
-      }
+
+
+
+
+
+
+
+
+
+videoScanner = false;
+
+  toggleScanning() {
+
+  
+    this.isScanning = !this.isScanning;
+
+
+    if (this.isScanning) {
+      this.videoScanner = this.isScanning;
+     
+      setTimeout(() => {
+      this.startScanning();
+    }, 200); 
+
     } else {
-      requestAnimationFrame(this.scan.bind(this));
+      setTimeout(() => {
+      this.stopScanning();}, 200); 
+
+      this.videoScanner = this.isScanning;
     }
   }
+
+
+  startScanning() {
+    // this.scanning = true;
+
+    // Get the video element to display the camera feed
+    const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
+
+    // Start video stream
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' } // Use the back camera
+    })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+      videoElement.play();
+
+      // Continuously scan for QR codes
+      this.scanQRCode(videoElement);
+    })
+    .catch((err) => {
+      console.error('Error accessing camera: ', err);
+      // this.scanning = false;
+    });
+  }
+
+  scanQRCode(videoElement: HTMLVideoElement) {
+    const resultElement = document.getElementById('result') as HTMLElement;
+
+    // Pass null to use the default camera
+    this.codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+      if (result) {
+        // Use getText() to access the decoded text
+        console.log('QR Code Data:', result.getText());
+        alert(result.getText());
+
+        this.newItem.barcode =String(result.getText());
+        // Optionally display the result
+        resultElement.innerText = `QR Code Data: ${result.getText()}`;
+        // Stop scanning once a QR code is detected
+        this.stopScanning();
+      }
+
+      if (err && !(err instanceof NotFoundException)) {
+        console.error('Error scanning QR code:', err);
+      }
+    });
+  }
+
+  stopScanning() {
+    // this.scanning = false;
+    const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
+    const stream = videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+
+    // Stop all video tracks to turn off the camera
+    tracks.forEach(track => track.stop());
+  }
+
+
+
+
+
 
   async checkCameraPermission(): Promise<boolean> {
     if (Capacitor.getPlatform() === 'web') {

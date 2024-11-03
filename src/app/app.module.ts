@@ -9,7 +9,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 // import { AuthFormComponent } from './auth-form/auth-form.component';
 
@@ -27,6 +27,7 @@ import { PromotionManagementComponent } from './promotion-management/promotion-m
     BrowserModule,
     FormsModule,
     IonicModule.forRoot(),
+    ZXingScannerModule,
     AppRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),

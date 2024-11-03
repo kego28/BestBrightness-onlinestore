@@ -119,7 +119,11 @@ const routes: Routes = [
     
   loadChildren: () => import('./forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
   
-  }
+  }, 
+   {
+    path: 'scanner',
+    loadChildren: () => import('./scanner/scanner.module').then( m => m.ScannerPageModule)
+  },
 
   // {
   //   path: 'auth',

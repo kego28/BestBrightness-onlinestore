@@ -1,41 +1,4 @@
-// import { Component, OnInit } from '@angular/core';
-// import { Router } from '@angular/router';
 
-// @Component({
-//   selector: 'app-payment',
-//   templateUrl: './payment.page.html',
-//   styleUrls: ['./payment.page.scss'],
-// })
-// export class PaymentPage {
-//   cardNumber!: string;
-//   expirationDate!: string;
-//   cvv!: string;
-//   promoCode!: string;
-  
-
-//   constructor(private router: Router) { }
-//   onApplyPromoCode() {
-//     // Apply the promo code and update the total
-//   }
-
-//   onContinue() {
-//     // Navigate to the shipping address page
-//     this.router.navigate(['/pages/checkout/order-summary']);
-//   }
-
-//   ngOnInit(){
-    
-//   }
-
-//   // selectPaymentMethod(method: string) {
-//   //   this.paymentMethod = method;
-//   //   // Store the payment method in a service or local storage
-//   //   this.router.navigate(['/checkout/order-summary']);
-//   // }
-// }
-  
-
-// First, create a stripe.service.ts file
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -59,6 +22,7 @@ export class PaymentPage implements OnInit, OnDestroy {
   clientSecret: string | null = null;
   isLoggedIn: boolean=false;
   currentUserName: string ="";
+
   // userData: { email: string | null; role: string | null; userId: string | null; username: string | null; };
   userData: any;
   constructor(
@@ -77,6 +41,8 @@ export class PaymentPage implements OnInit, OnDestroy {
   async ngOnInit() {
     // Load Stripe
     this.stripe = await loadStripe(environment.stripePublishableKey);
+
+    alert(JSON.stringify(this.stripe));
     if (!this.stripe) {
       await this.showToast('Failed to load Stripe', 'danger');
       return;
@@ -233,12 +199,7 @@ export class PaymentPage implements OnInit, OnDestroy {
     await this.presentToast('You have logged out successfully', 'success');
     this.router.navigate(['/products']);
   }
-  // getUserRole() {
-  //   throw new Error('Method not implemented.');
-  // }
-  // presentToast(arg0: string, arg1: string) {
-  //   throw new Error('Method not implemented.');
-  // }
+  
   private async createPaymentIntent() {
     try {
       const response = await this.stripeService.createPaymentIntent(this.total).toPromise();
@@ -257,6 +218,13 @@ export class PaymentPage implements OnInit, OnDestroy {
     }
   }
 
+
+
+
+
+
+
+  
   private loadCartItems() {
     // Example cart items for testing
     this.cartItems = [
@@ -267,7 +235,10 @@ export class PaymentPage implements OnInit, OnDestroy {
   }
 
   async processPayment() {
-    if (!this.paymentForm.valid || !this.stripe || !this.clientSecret) return;
+    if (!this.paymentForm.valid || !this.stripe || !this.clientSecret) {
+      alert("something missing");
+       return;
+    }
 
     this.processing = true;
     const loading = await this.loadingController.create({
