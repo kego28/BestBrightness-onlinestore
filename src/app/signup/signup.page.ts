@@ -130,18 +130,23 @@ export class SignupPage implements OnInit {
               sessionStorage.setItem('userRole', response.role);
               sessionStorage.setItem('userId', response.user_id);
               sessionStorage.setItem('username', response.username);
+              sessionStorage.setItem('first_name', response.first_name);
+              sessionStorage.setItem('last_name', response.last_name);
 
               // Log user details to the console
               console.log("User logged in:");
               console.log("Email: " + response.email);
               console.log("User ID: " + response.user_id);
               console.log("Username: " + response.username);
+              console.log("First Name: " +response.first_name);
 
               const userData = {
                 email: sessionStorage.getItem('userEmail'),
                 role: sessionStorage.getItem('userRole'),
                 userId: sessionStorage.getItem('userId'),
-                username: sessionStorage.getItem('username')
+                username: sessionStorage.getItem('username'),
+                first_name: sessionStorage.getItem('first_name'),
+                last_name: sessionStorage.getItem('last_name')
             };
 
               // Navigate based on the role

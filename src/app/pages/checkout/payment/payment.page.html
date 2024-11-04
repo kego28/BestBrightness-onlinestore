@@ -123,11 +123,11 @@
         <div class="order-details">
           <div class="order-item" *ngFor="let item of cartItems">
             <span>{{item.name}}</span>
-            <span>${{item.price.toFixed(2)}}</span>
+            <span>R{{item.price.toFixed(2)}}</span>
           </div>
           <div class="order-total">
             <strong>Total:</strong>
-            <strong>${{total.toFixed(2)}}</strong>
+            <strong>R{{total.toFixed(2)}}</strong>
           </div>
         </div>
       </ion-card-content>
@@ -160,7 +160,7 @@
 
           <ion-button expand="block" type="submit" [disabled]="!paymentForm.valid || processing">
             <ion-spinner name="circles" *ngIf="processing"></ion-spinner>
-            <span *ngIf="!processing">Pay ${{'{{total.toFixed(2)}}'}}</span>
+            <span *ngIf="!processing">Pay R{{'{{total.toFixed(2)}}'}}</span>
           </ion-button>
         </form>
       </ion-card-content>

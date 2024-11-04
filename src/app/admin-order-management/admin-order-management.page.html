@@ -219,7 +219,7 @@
       <ion-col size="12" size-md="6">
         <ion-card class="chart-card">
           <ion-card-header>
-            <ion-card-title>Stock Levels by Category</ion-card-title>
+            <ion-card-title>Orders by Collection Type</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div class="chart-wrapper">
@@ -232,7 +232,7 @@
       <ion-col size="12" size-md="6">
         <ion-card class="chart-card">
           <ion-card-header>
-            <ion-card-title>User Distribution by Role</ion-card-title>
+            <ion-card-title>Order by Order Status</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div class="chart-wrapper">
@@ -320,8 +320,8 @@
 
           <div class="order-details">
             <div class="detail-row">
-              <span class="label">Customer ID</span>
-              <span class="value">{{order.user_id}}</span>
+              <span class="label">Customer Name</span>
+              <span class="value">{{user?.first_name}}</span>
             </div>
             <div class="detail-row">
               <span class="label">Amount</span>

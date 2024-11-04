@@ -1,6 +1,6 @@
 
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,ViewChild} from '@angular/core';
 import { CartService } from '../services/cart.service';
 import { PromotionService } from '../services/promotion.service'; 
 import { Router } from '@angular/router';
@@ -18,6 +18,7 @@ import { OrderService } from '../services/order.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import emailjs from 'emailjs-com';
+import { IonModal } from '@ionic/angular';
 
 // import { AddressModalComponent } from './address-modal.component';
 
@@ -31,6 +32,8 @@ interface jsPDFWithAutoTable extends jsPDF {
   styleUrls: ['./cart.page.scss'],
 })
 export class CartPage implements OnInit {
+
+  @ViewChild('checkoutPopup') checkoutPopup!: IonModal;
   cartItems: any[] = [];
   promotions: any[] = [];
   deliveryMethod: string = 'delivery';
@@ -63,6 +66,7 @@ export class CartPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 1;
+
 
   constructor(
     private cartService: CartService,
@@ -707,16 +711,20 @@ generateOrderNumber(): string {
 
         // Display order details in an alert
         const orderDetails = this.cartItems.map(item => {
-            return `Product ID: ${item.product_id}\n` +
-                   `Name: ${item.name}\n` +
-                   `Quantity: ${item.quantity}\n` +
-                   `Price: R${item.price.toFixed(2)}\n` +
-                   `Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'}\n`;
-        }).join('\n');
+          return `
+      
+      | Name: ${item.name} 
+      | Quantity: ${item.quantity} 
+      | Price: R${item.price.toFixed(2)} 
+      | Discounted Price: R${item.discountedPrice ? item.discountedPrice.toFixed(2) : 'N/A'} \n
+      \n
+      \n
+          `;
+      }).join('\n');
 
         const confirmationAlert = await this.alertController.create({
-            header: 'Order Confirmation',
-            message: `You are about to place the following order:\n\n${orderDetails}`,
+            header: 'Order Confirmation, You are about to place the following order:',
+            message: `\n\n${orderDetails}`,
             buttons: [
                 {
                     text: 'Cancel',
@@ -1033,6 +1041,27 @@ async generatePDFS() {
 
 
 
+@ViewChild('paymentModal') paymentModal!: IonModal;
+isModalOpen = false;
 
-  
+openModal() {
+    this.isModalOpen = true;
+  }
+
+  dismissModal() {
+    this.isModalOpen = false;
+  }
+
+  selectPaymentMethod(method: 'cash' | 'card') {
+    console.log(`Selected payment method: ${method}`);
+    // Handle payment method selection here
+
+    if(method === 'cash'){
+      this. PlaceOrder();
+    }
+    if(method ==='card'){
+      this.router.navigate(['/payment'], { queryParams: { method: 'card' } });
+    }
+    this.dismissModal();
+  }
 }
