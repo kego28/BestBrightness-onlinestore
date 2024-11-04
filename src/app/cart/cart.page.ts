@@ -706,7 +706,7 @@ generateOrderNumber(): string {
       };
 
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
-        // await this.Send(this.userEmail, this.receiptData);
+        await this.Send(this.userEmail, this.receiptData);
 
 
         // Display order details in an alert

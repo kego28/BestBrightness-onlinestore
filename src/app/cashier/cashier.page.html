@@ -354,7 +354,7 @@
         <ion-row *ngFor="let order of filteredOrderData">
           <ion-col size="1.5">#{{ order.order_id }}</ion-col>
           <ion-col size="1.5">{{ order.user_id }}</ion-col>
-          <ion-col size="1.5">${{ order.total_amount }}</ion-col>
+          <ion-col size="1.5">R{{ order.total_amount }}</ion-col>
           <ion-col size="2">{{ order.order_type }}</ion-col>
           <ion-col size="2">
             <span class="status-badge status-{{ order.status }}">
@@ -443,7 +443,7 @@
         <ion-item>
           <ion-label>
             <h2>Total Amount</h2>
-            <p>${{ currentOrderDetails.total_amount }}</p>
+            <p>R{{ currentOrderDetails.total_amount }}</p>
           </ion-label>
         </ion-item>
         <ion-item>
@@ -480,7 +480,7 @@
             <h2>{{ item.product_name }}</h2>
             <p>Product ID: {{ item.product_id }}</p>
             <p>Quantity: {{ item.quantity }}</p>
-            <p>Price: ${{ item.price }}</p>
+            <p>Price: R{{ item.price }}</p>
           </ion-label>
         </ion-item>
       </ion-list>
