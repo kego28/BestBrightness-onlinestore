@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Stripe, loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment';
 import { StripeService } from '../../../services/stripe.service';
-
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.page.html',
@@ -16,9 +16,10 @@ export class PaymentPage implements OnInit, OnDestroy {
   paymentForm: FormGroup;
   stripe: Stripe | null = null;
   card: any;
+  receiptData: any;
   processing = false;
   cartItems: any[] = [];
-  total = 1000;
+  total = 0;
   clientSecret: string | null = null;
   isLoggedIn: boolean=false;
   currentUserName: string ="";
@@ -30,7 +31,8 @@ export class PaymentPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private toastController: ToastController,
     private router: Router,
-    private stripeService: StripeService
+    private stripeService: StripeService,
+    private route: ActivatedRoute
   ) {
     this.paymentForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -39,10 +41,18 @@ export class PaymentPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+
+    this.route.queryParams.subscribe(params => {
+      if (params['method']) {
+        this.receiptData = JSON.parse(params['method']);
+        this.total = this.receiptData.total;
+      }
+    });
+
     // Load Stripe
     this.stripe = await loadStripe(environment.stripePublishableKey);
 
-    alert(JSON.stringify(this.stripe));
+    // alert(JSON.stringify(this.stripe));
     if (!this.stripe) {
       await this.showToast('Failed to load Stripe', 'danger');
       return;
@@ -75,7 +85,7 @@ export class PaymentPage implements OnInit, OnDestroy {
     this.card.addEventListener('change', this.handleCardChange.bind(this));
 
     // Load cart items
-    this.loadCartItems();
+    // this.loadCartItems();
     
     // Create payment intent
     await this.createPaymentIntent();
@@ -225,14 +235,19 @@ export class PaymentPage implements OnInit, OnDestroy {
 
 
   
-  private loadCartItems() {
-    // Example cart items for testing
-    this.cartItems = [
-      { name: 'Test Product 1', price: 29.99 },
-      { name: 'Test Product 2', price: 39.99 }
-    ];
-    this.total = this.cartItems.reduce((sum, item) => sum + item.price, 0);
-  }
+  // private loadCartItems() {
+   
+  //   this.receiptData.items.forEach((item: any) => {
+  //     this.cartItems.push(item);
+  //   });
+    
+  //   this.total = this.cartItems.reduce((sum, item) => sum + item.price, 0);
+  // }
+
+
+
+
+
 
   async processPayment() {
     if (!this.paymentForm.valid || !this.stripe || !this.clientSecret) {

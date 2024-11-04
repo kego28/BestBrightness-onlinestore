@@ -118,16 +118,23 @@
     <ion-card>
       <ion-card-header>
         <ion-card-title>Order Summary</ion-card-title>
+        <p><strong>Order Number:</strong> {{ receiptData.orderNumber }}</p>
       </ion-card-header>
       <ion-card-content>
+        
         <div class="order-details">
-          <div class="order-item" *ngFor="let item of cartItems">
+          <!-- <div class="order-item" *ngFor="let item of cartItems"> -->
+            <div class="order-item" *ngFor="let item of receiptData.items">
             <span>{{item.name}}</span>
             <span>R{{item.price.toFixed(2)}}</span>
           </div>
           <div class="order-total">
-            <strong>Total:</strong>
-            <strong>R{{total.toFixed(2)}}</strong>
+            <!-- <strong>Total:</strong> -->
+            <!-- <strong>R{{total.toFixed(2)}}</strong> -->
+            <h3>Order Summary</h3>
+            <p><strong>Subtotal:</strong> R{{ receiptData.subtotal }}</p>
+            <p><strong>Tax:</strong> R{{ receiptData.tax }}</p>
+            <p><strong>Total:</strong> R{{ receiptData.total }}</p>
           </div>
         </div>
       </ion-card-content>
@@ -160,7 +167,7 @@
 
           <ion-button expand="block" type="submit" [disabled]="!paymentForm.valid || processing">
             <ion-spinner name="circles" *ngIf="processing"></ion-spinner>
-            <span *ngIf="!processing">Pay R{{'{{total.toFixed(2)}}'}}</span>
+            <span *ngIf="!processing">Pay R{{total.toFixed(2)}}</span>
           </ion-button>
         </form>
       </ion-card-content>

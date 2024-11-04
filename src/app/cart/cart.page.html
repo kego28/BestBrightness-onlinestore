@@ -244,7 +244,7 @@
         <!-- Payment Options Section -->
         <div class="payment-method-grid">
           <!-- Cash Option -->
-          <div class="payment-option-card" (click)="selectPaymentMethod('cash')">
+          <div class="payment-option-card" (click)="PlaceOrder('cash')">
             <div class="option-icon-container">
               <ion-icon name="cash" class="option-icon"></ion-icon>
             </div>
@@ -252,7 +252,7 @@
           </div>
 
           <!-- Card Option -->
-          <div class="payment-option-card" (click)="selectPaymentMethod('card')">
+          <div class="payment-option-card" (click)="PlaceOrder('card')">
             <div class="option-icon-container">
               <ion-icon name="card" class="option-icon"></ion-icon>
             </div>

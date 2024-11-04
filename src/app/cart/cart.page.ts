@@ -634,7 +634,7 @@ generateOrderNumber(): string {
     });
 }
 
-  async PlaceOrder(): Promise<void> {
+  async PlaceOrder(method: 'cash' | 'card'): Promise<void> {
     try {
         // Generate order number
         const orderNumber = this.generateOrderNumber();
@@ -654,7 +654,7 @@ generateOrderNumber(): string {
        if (!this.userEmail) {
       this.showToast('User email not found. Please log in again.');
       return;
-    }
+          }
 
         console.log('Starting order placement process');
 
@@ -705,6 +705,16 @@ generateOrderNumber(): string {
           total: this.total // Adjust as necessary
       };
 
+      alert(JSON.stringify(this.receiptData));
+     alert("here");
+      if(method ==='card'){
+        this.dismissModal();
+        this.router.navigate(['/payment'], { queryParams: { method: JSON.stringify(this.receiptData) } });
+
+        // this.router.navigate(['/payment'], { queryParams: { method:  this.receiptData } });
+     
+        return;
+      }
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
         // await this.Send(this.userEmail, this.receiptData);
 
@@ -1052,16 +1062,16 @@ openModal() {
     this.isModalOpen = false;
   }
 
-  selectPaymentMethod(method: 'cash' | 'card') {
-    console.log(`Selected payment method: ${method}`);
-    // Handle payment method selection here
+  // selectPaymentMethod(method: 'cash' | 'card') {
+  //   console.log(`Selected payment method: ${method}`);
+  //   // Handle payment method selection here
 
-    if(method === 'cash'){
-      this. PlaceOrder();
-    }
-    if(method ==='card'){
-      this.router.navigate(['/payment'], { queryParams: { method: 'card' } });
-    }
-    this.dismissModal();
-  }
+  //   if(method === 'cash'){
+  //     this. PlaceOrder();
+  //   }
+  //   if(method ==='card'){
+  //     this.router.navigate(['/payment'], { queryParams: { method: 'card' } });
+  //   }
+  //   this.dismissModal();
+  // }
 }
