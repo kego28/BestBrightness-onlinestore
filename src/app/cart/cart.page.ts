@@ -637,6 +637,7 @@ generateOrderNumber(): string {
   async PlaceOrder(method: 'cash' | 'card'): Promise<void> {
     try {
         // Generate order number
+        this.dismissModal();
         const orderNumber = this.generateOrderNumber();
 
         // Check if the cart is empty
@@ -705,10 +706,11 @@ generateOrderNumber(): string {
           total: this.total // Adjust as necessary
       };
 
-      alert(JSON.stringify(this.receiptData));
-     alert("here");
+      
       if(method ==='card'){
-        this.dismissModal();
+        // setTimeout(() => {
+        // this.dismissModal(); }, 150); 
+
         this.router.navigate(['/payment'], { queryParams: { method: JSON.stringify(this.receiptData) } });
 
         // this.router.navigate(['/payment'], { queryParams: { method:  this.receiptData } });
