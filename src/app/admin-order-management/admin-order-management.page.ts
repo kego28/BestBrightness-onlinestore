@@ -41,6 +41,7 @@ export class AdminOrderManagementPage implements OnInit {
   filterValue: string = '';
   filteredOrderData: any[] = [];
   user: User | null = null;
+  userMap: { [user_id: number]: User } = {}; // Map to store user details indexed by user_id
   private apiUrl = 'http://localhost/user_api/login.php';
 
   constructor(
@@ -81,39 +82,37 @@ export class AdminOrderManagementPage implements OnInit {
         })
       )
       .subscribe(([response1, response2]) => {
-        this.orderData = response1.orderData ?? []; // Use default empty array if undefined
-  
+        this.orderData = response1.orderData ?? [];
         if (response2.success) {
           const virtualOrders = response2.orders;
-  
-          // Combine orders
-          this.orderData = [...this.orderData, ...virtualOrders]; // Combine both arrays
-          this.filteredOrderData = [...this.orderData]; // Initialize filtered data
-        
+          this.orderData = [...this.orderData, ...virtualOrders];
+          this.filteredOrderData = [...this.orderData];
 
+          // Fetch user details for each order
           this.orderData.forEach(order => {
-            this.fetchUserData(order.user_id); // Fetch user data for each order
+            if (!this.userMap[order.user_id]) { // Fetch user only if not already fetched
+              this.fetchUserData(order.user_id);
+            }
           });
-      }
-    });
-
-      
+        }
+      });
   }
 
-  fetchUserData(user_id: any) {
+  fetchUserData(user_id: number) {
     this.http.get<User>(`${this.apiUrl}?user_id=${user_id}`).subscribe({
-      next: async (user) => {
-        
-        this.user = user;
-       console.log("email:"+user.email);
-       console.log("Name:"+user.first_name);
-       await this.presentToast('User details loaded successfully', 'success');
-       
+      next: (user) => {
+        this.userMap[user_id] = user; // Store user details in the map by user_id
+        this.applyFilters(); // Reapply filters to update user data in the display
       },
-      error: async (error: HttpErrorResponse) => {
+      error: () => {
         this.presentToast('Failed to fetch user details', 'danger');
       }
     });
+  }
+
+  // Modify the method for displaying the user’s first name
+  getUserName(user_id: number): string {
+    return this.userMap[user_id]?.first_name || 'Unknown User';
   }
   
   

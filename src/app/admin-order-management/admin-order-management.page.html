@@ -307,7 +307,7 @@
 
     <ion-card-content class="main-content">
       <div class="order-grid">
-        <ion-card *ngFor="let order of filteredOrderData" class="order-item">
+        <ion-card *ngFor="let order of filteredOrderData"  class="order-item">
           <div class="order-header">
             <div class="order-id">
               <span class="label">Order #</span>
@@ -321,7 +321,7 @@
           <div class="order-details">
             <div class="detail-row">
               <span class="label">Customer Name</span>
-              <span class="value">{{user?.first_name}}</span>
+              <span class="value">{{ getUserName(order.user_id) }}</span>
             </div>
             <div class="detail-row">
               <span class="label">Amount</span>
