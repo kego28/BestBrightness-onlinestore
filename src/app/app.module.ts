@@ -19,10 +19,11 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CategoryManagementComponent } from './category-management/category-management.component';
 import { PromotionManagementComponent } from './promotion-management/promotion-management.component';
-
+import { ChartDataService } from './services/chart-data.service';
+import { SalesChartComponent } from './sales-chart/sales-chart.component';
 @NgModule({
   
-  declarations: [AppComponent, NavbarComponent, CategoryManagementComponent, PromotionManagementComponent,],
+  declarations: [AppComponent, NavbarComponent, CategoryManagementComponent, PromotionManagementComponent,SalesChartComponent],
   imports: [
     BrowserModule,
     FormsModule,
@@ -37,7 +38,7 @@ import { PromotionManagementComponent } from './promotion-management/promotion-m
     ReactiveFormsModule
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },ChartDataService,
     MenuController,
     ModalController
     

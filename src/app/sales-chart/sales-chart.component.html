@@ -1,0 +1,320 @@
+<style>
+  .chart-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgb(249, 249, 249);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(74, 144, 226, 0.2);
+    }
+
+    button.active {
+      background-color: var(--button-hover);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+      margin: 2rem 0;
+    }
+
+    ion-button[expand="block"] {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 1rem;
+      background: var(--text-color);
+      color: white;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    ion-button[expand="block"]:hover {
+      background: #1a2632;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 768px) {
+      .chart-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .buttons {
+        gap: 0.5rem;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      canvas {
+        height: 300px !important;
+      }
+    }
+
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chart-container {
+      animation: fadeIn 0.5s ease-out;
+    }
+</style>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Sales Chart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  
+  <div class="chart-container">
+    
+    <div class="buttons">
+      <button ion-button (click)="setPeriod('day')">Day</button>
+      <button ion-button (click)="setPeriod('week')">Week</button>
+      <button ion-button (click)="setPeriod('month')">Month</button>
+      <button ion-button (click)="setPeriod('year')">Month</button>
+    </div>
+
+    <canvas id="salesChart"></canvas>
+
+  
+    <ion-button expand="block" (click)="closeModal()">Close</ion-button>
+  </div>
+</ion-content>
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root {
+      --primary-color: #4A90E2;
+      --background-color: #f5f7fa;
+      --header-bg: #ffffff;
+      --text-color: #2c3e50;
+      --button-hover: #357ABD;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--background-color);
+    }
+
+    ion-header {
+      background: var(--header-bg);
+      box-shadow: var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    ion-toolbar {
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    ion-title {
+      color: var(--text-color);
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    ion-content {
+      padding-top: 4rem;
+    }
+
+    .chart-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgb(0, 0, 0);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(74, 144, 226, 0.2);
+    }
+
+    button.active {
+      background-color: var(--button-hover);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+      margin: 2rem 0;
+    }
+
+    ion-button[expand="block"] {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 1rem;
+      background: var(--text-color);
+      color: white;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    ion-button[expand="block"]:hover {
+      background: #1a2632;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 768px) {
+      .chart-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+
+      .buttons {
+        gap: 0.5rem;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      canvas {
+        height: 300px !important;
+      }
+    }
+
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chart-container {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+   
+    body {
+      background: linear-gradient(120deg, #f6f9fc 0%, #f1f4f8 100%);
+    }
+  </style>
+</head>
+<body>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Sales Chart</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <div class="chart-container">
+      <div class="buttons">
+        <button onclick="setPeriod('day')">Day</button>
+        <button onclick="setPeriod('week')">Week</button>
+        <button onclick="setPeriod('month')">Month</button>
+        <button onclick="setPeriod('year')">Year</button>
+      </div>
+      
+      <canvas id="salesChart"></canvas>
+      
+      <ion-button expand="block" onclick="closeModal()">Close</ion-button>
+    </div>
+  </ion-content>
+
+  <script>
+    
+    function setPeriod(period) {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function closeModal() {
+      alert('Close button clicked');
+    }
+  </script>
+</body>
+</html> -->

@@ -261,20 +261,21 @@ interface User {
   role: string;
 }
 
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 interface Order {
   order_id: number;
   user_id: number;
   total_amount: string;
-  quantity: string;
-  order_type: string;
   status: string;
   created_at: string;
-  updated_at: string;
   orderNumber: string;
-  name: string;
-  price: string;
+  items: OrderItem[];  // Add this to store multiple items
 }
-
 @Component({
   selector: 'app-account',
   templateUrl: './account.page.html',
@@ -380,16 +381,17 @@ export class AccountPage implements OnInit {
   }
 
   viewOrderDetails(orderNumber: string) {
-    this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}`)
+    this.http.get<{ success: boolean; orders: any[] }>(`${this.ordersVirtualUrl}?orderNumber=${orderNumber}`)
       .subscribe({
         next: (response) => {
           console.log('API response:', response);
 
           if (response && response.success && Array.isArray(response.orders)) {
-            this.fetchedOrder = response.orders;
+            // Transform the response to group items by order
+            this.fetchedOrder = this.transformOrderData(response.orders);
             this.activeSection = 'vieworders';
             
-            if (response.orders.length > 0) {
+            if (this.fetchedOrder.length > 0) {
               this.showAlert('Order Details', `Viewing details for Order ${orderNumber}`);
             } else {
               this.showAlert('No Orders Found', 'No orders found with this number.');
@@ -405,10 +407,39 @@ export class AccountPage implements OnInit {
       });
   }
 
+  private transformOrderData(orders: any[]): Order[] {
+    // Group items by order number
+    const orderMap = new Map<string, Order>();
+    
+    orders.forEach(item => {
+      if (!orderMap.has(item.orderNumber)) {
+        orderMap.set(item.orderNumber, {
+          order_id: item.order_id,
+          user_id: item.user_id,
+          total_amount: item.total_amount,
+          status: item.status,
+          created_at: item.created_at,
+          orderNumber: item.orderNumber,
+          items: []
+        });
+      }
+      
+      // Add item to the order
+      orderMap.get(item.orderNumber)?.items.push({
+        name: item.name,
+        quantity: parseInt(item.quantity),
+        price: parseFloat(item.price)
+      });
+    });
+    
+    return Array.from(orderMap.values());
+  }
+
   backToOrders() {
     this.activeSection = 'orders';
     this.fetchedOrder = [];
   }
+  
 
   private async showAlert(header: string, message: string) {
     const alert = await this.alertController.create({

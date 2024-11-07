@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -20,5 +20,35 @@ export class ChartDataService {
   getChartData(chartType: string): Observable<any> {
     return this.http.get(`${this.apiBaseUrl}/statestics.php?chart=${chartType}`);
   }
-  
+
+
+  getSalesByDay(): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/analyseSales.php`, {
+      params: new HttpParams().set('type', 'day')
+    });
+  }
+
+  getSalesByWeek(): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/analyseSales.php`, {
+      params: new HttpParams().set('type', 'week')
+    });
+  }
+
+  getSalesByMonth(): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/analyseSales.php`, {
+      params: new HttpParams().set('type', 'month')
+    });
+  }
+
+  getSalesByYear(): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/analyseSales.php`, {
+      params: new HttpParams().set('type', 'year')
+    });
+  }
+
+
+  getSalesData(period: string): Observable<any> {
+    let params = new HttpParams().set('period', period);
+    return this.http.get(`${this.apiBaseUrl}/analyseSales.php`,{ params });
+  }
 }

@@ -33,6 +33,8 @@ interface jsPDFWithAutoTable extends jsPDF {
 })
 export class CartPage implements OnInit {
 
+  private apiUrl = 'http://localhost/user_api/orders.php'
+
   @ViewChild('checkoutPopup') checkoutPopup!: IonModal;
   cartItems: any[] = [];
   promotions: any[] = [];
@@ -43,6 +45,7 @@ export class CartPage implements OnInit {
   userEmail: string | null = null;
 
   subtotal: number = 0;
+  discountAmountOffer: number = 0;
   discountedSubtotal: number = 0;
   tax: number = 0;
   total: number = 0;
@@ -183,6 +186,7 @@ export class CartPage implements OnInit {
           quantity: this.ensureValidNumber(item.quantity)
         }));
         this.applyPromotions();
+        this.applyUserFrequencyDiscount()
         console.log('Cart items:', this.cartItems);
        
         if (this.cartItems.length === 0) {
@@ -230,17 +234,82 @@ export class CartPage implements OnInit {
     this.calculateTotals();
   }
 
-  calculateTotals() {
+  async applyUserFrequencyDiscount() {
+    try {
+      // Get the user's order count from PHP backend
+      const response = await fetch(`${this.apiUrl}?user_count=${this.userId}`);
+      const data = await response.json();
+      const orderCount = data.order_count;
+  
+      // Determine discount percentage based on order count
+      let offerPercent = 0;
+      if (orderCount >= 50) {
+        offerPercent = 30;
+      } else if (orderCount >= 20) {
+        offerPercent = 10;
+      } else if (orderCount >= 10) {
+        offerPercent = 5;
+      } else if (orderCount >= 5) {
+        offerPercent = 2;
+      }
+  
+      // Apply the discount to each item
+      this.cartItems.forEach(item => {
+        item.offerPercent = offerPercent;
+        item.hasPromotion = offerPercent > 0;
+        if (offerPercent > 0) {
+          item.promotionName = `Loyalty Discount ${offerPercent}%`;
+        }
+      });
+  
+      // Calculate totals with the applied discount
+      this.calculateTotals(offerPercent);
+  
+      return {
+        orderCount: orderCount,
+        appliedDiscount: offerPercent,
+        message: offerPercent > 0 ? 
+          `Thank you for being a loyal customer! You received a ${offerPercent}% discount.` : 
+          'Make more purchases to unlock loyalty discounts!'
+      };
+    } catch (error) {
+      console.error('Error applying frequency discount:', error);
+      throw error;
+    }
+  }
+  
+  // Updated calculateTotals function to take appliedDiscount as a parameter
+  calculateTotals(appliedDiscount: number = 0) {
+    // Calculate subtotal without any discount
     this.subtotal = this.roundToTwo(
       this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
     );
-    this.discountedSubtotal = this.roundToTwo(
-      this.cartItems.reduce((sum, item) => sum + (item.discountedPrice * item.quantity), 0)
-    );
+  
+    // Calculate the discount amount
+      this.discountAmountOffer = this.subtotal * (appliedDiscount / 100);
+  
+    // Calculate subtotal with discount applied
+    this.discountedSubtotal = this.roundToTwo(this.subtotal - this.discountAmountOffer);
+  
+    // Calculate tax based on the discounted subtotal
     this.tax = this.roundToTwo(this.discountedSubtotal * 0.15); // Assuming 15% tax rate
+  
+    // Calculate final totals with and without the discount
     this.total = this.roundToTwo(this.subtotal + this.tax);
     this.discountedTotal = this.roundToTwo(this.discountedSubtotal + this.tax);
   }
+
+  // calculateTotals() {
+  //   this.subtotal = this.roundToTwo(
+  //     this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  //   );
+   
+  //   this.tax = this.roundToTwo(this.discountedSubtotal * 0.15); // Assuming 15% tax rate
+  //   this.total = this.roundToTwo(this.subtotal + this.tax);
+  //   this.discountedTotal = this.roundToTwo(this.discountedSubtotal + this.tax);
+  // }
+
+  
 
   ensureValidNumber(value: any): number {
     const num = Number(value);
@@ -686,6 +755,7 @@ generateOrderNumber(): string {
             orderNumber: orderNumber,
             user_id: this.userId,
             total_amount: this.total,
+            loyalOffer: this.discountAmountOffer,
             order_type: this.deliveryMethod,
             status: 'pending',
             items: this.cartItems.map(item => ({
@@ -718,7 +788,9 @@ generateOrderNumber(): string {
         return;
       }
         console.log('Order data prepared:', JSON.stringify(orderData, null, 2));
-        await this.Send(this.userEmail, this.receiptData);
+        // await this.Send(this.userEmail, this.receiptData);
+        alert('Your Loyalty Got You' + this.discountAmountOffer  + ' Off On Your Total' );
+
 
 
         // Display order details in an alert

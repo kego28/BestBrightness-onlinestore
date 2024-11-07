@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild,AfterViewInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, forkJoin, Observable, of, tap } from 'rxjs';
 import { PromotionService } from '../services/promotion.service'; 
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 interface Product {
   id: any;
@@ -84,6 +85,11 @@ export class POSPage implements OnInit {
   isLoggedIn: boolean = false;
   // @HostListener('window:scroll', ['$event'])
   keyboardVisible = false;
+
+  isScanning = false;
+  private codeReader = new BrowserMultiFormatReader();
+
+  @ViewChild('videoElement', { static: false }) videoElement?: ElementRef<HTMLVideoElement>;
   onScroll() {
     this.isScrolled = window.scrollY > 50;
   }  
@@ -329,7 +335,7 @@ async purchaseProducts() {
       total_amount: this.getTotal(),
       discounted_amount: this.getSubtotal(),
       levels: "done",
-      order_type: "walk in",
+      order_type: "walk-in",
       status: "checked-out", // Ensure this value is set correctly
       items: this.cart.map(item => ({
         product_id: item.product_id,
@@ -478,25 +484,47 @@ resetCart() {
     }
   }
 
-  updateOrderStatuss() {
-    const orderNumber = 'BB-428370'; // Ensure correct variable
-    this.http.post('http://localhost/user_api/virtualOrder.php?updateStatus=true', { orderNumber: orderNumber })
-      .subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.showAlert('Order Updated', 'Order status updated to "processed".');
-          } else {
-            this.showAlert('Update Failed', response.message);
-          }
-        },
-        error: (error) => {
-          console.error('Error updating order status:', error);
-          this.showAlert('Error', 'Failed to update order status.');
-        }
-      });
-  }
+  // updateOrderStatuss() {
+  //   const orderNumber = 'BB-428370'; // Ensure correct variable
 
+  //   this.http.post('http://localhost/user_api/virtualOrder.php?updateStatus=true', { orderNumber: orderNumber })
+  //     .subscribe({
+  //       next: (response: any) => {
+  //         if (response.success) {
+  //           this.showAlert('Order Updated', 'Order status updated to "processed".');
+  //         } else {
+  //           this.showAlert('Update Failed', response.message);
+  //         }
+  //       },
+  //       error: (error) => {
+  //         console.error('Error updating order status:', error);
+  //         this.showAlert('Error', 'Failed to update order status.');
+  //       }
+  //     });
+  // }
   updateOrderStatus() {
+    const orderNumber = this.orderIdInput; // Replace with actual order ID input
+    const status = 'completed'; // New status you want to update
+  
+    this.http.post('http://localhost/user_api/update_status.php', {
+      orderNumber: orderNumber,
+      status: status,
+    }).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.showAlert('Order Updated', 'Order status updated to "completed".');
+        } else {
+          this.showAlert('Update Failed', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error updating order status:', error);
+        this.showAlert('Error', 'Failed to update order status.');
+      }
+    });
+  }
+  
+  updateOrderStatuss() {
     alert('The number is here'+ this.orderIdInput);
     this.http.post('http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}', { orderNumber: this.orderIdInput })
       .subscribe({
@@ -828,6 +856,114 @@ resetCart() {
     await toast.present();
   }
 
+
+
+
+
+
+
+
+  videoScanner = false;
+
+  toggleScanning() {
+
+  
+    this.isScanning = !this.isScanning;
+
+
+    if (this.isScanning) {
+      this.videoScanner = this.isScanning;
+     
+      setTimeout(() => {
+      this.startScanning();
+    }, 200); 
+
+    } else {
+      setTimeout(() => {
+      this.stopScanning();}, 200); 
+
+      this.videoScanner = this.isScanning;
+    }
+  }
+
+
+  startScanning() {
+    // this.scanning = true;
+
+    // Get the video element to display the camera feed
+    const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
+
+    // Start video stream
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' } // Use the back camera
+    })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+      videoElement.play();
+
+      // Continuously scan for QR codes
+      this.scanQRCode(videoElement);
+    })
+    .catch((err) => {
+      console.error('Error accessing camera: ', err);
+      // this.scanning = false;
+    });
+  }
+
+  scanQRCode(videoElement: HTMLVideoElement) {
+    const resultElement = document.getElementById('result') as HTMLElement;
+
+    // Pass null to use the default camera
+    this.codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+      if (result) {
+        // Use getText() to access the decoded text
+        console.log('QR Code Data:', result.getText());
+        // alert(result.getText());
+
+        this.barcodeInput =String(result.getText());
+        // Optionally display the result
+        resultElement.innerText = `QR Code Data: ${result.getText()}`;
+        // Stop scanning once a QR code is detected
+        this.stopScanning();
+      }
+
+      if (err && !(err instanceof NotFoundException)) {
+        console.error('Error scanning QR code:', err);
+      }
+    });
+  }
+
+  stopScanning() {
+    // this.scanning = false;
+    const videoElement: HTMLVideoElement = document.getElementById('video') as HTMLVideoElement;
+    const stream = videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+
+    // Stop all video tracks to turn off the camera
+    tracks.forEach(track => track.stop());
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   async logout() {
     sessionStorage.removeItem('userId');
     this.isLoggedIn = false;
@@ -835,4 +971,6 @@ resetCart() {
     await this.presentToast('You have logged out successfully', 'success');
     this.router.navigate(['/products']);
   }
+
+
 }

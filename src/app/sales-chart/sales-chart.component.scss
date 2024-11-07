@@ -1,0 +1,16 @@
+/* File: src/app/pages/sales-chart/sales-chart.component.scss */
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  canvas {
+    max-width: 100%;
+    max-height: 400px;
+  }
+  
+  .buttons {
+    margin-bottom: 15px;
+  }
+  

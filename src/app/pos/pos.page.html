@@ -234,14 +234,20 @@ font-size: 25px;
           (ionChange)="calculateChange()"
         ></ion-input>
       </div>
-      
+      <div>
+       
+     
       <div class="barcode-input">
         <ion-input
           [(ngModel)]="barcodeInput"
           placeholder="Enter Barcode"
           (keyup.enter)="onBarcodeEnter()"
         ></ion-input>
+        <!-- <ion-button fill="clear" (click)="toggleScanning()">
+          <ion-icon [color]="isScanning ? 'danger' : 'primary'" name="barcode-outline" size="large"></ion-icon>
+        </ion-button> -->
       </div>
+    </div>
     </div>
     
     <!-- Barcode Input -->
@@ -298,7 +304,7 @@ font-size: 25px;
   </div>
  
 </ion-content>
-
+<video *ngIf="videoScanner" id="video" autoplay class="video-preview"></video>
 <ion-footer>
   <!-- <ion-toolbar> -->
     <!-- <ion-segment [(ngModel)]="paymentType" color="primary">
@@ -314,19 +320,33 @@ font-size: 25px;
   <!-- </ion-toolbar>
   <ion-toolbar> -->
     <ion-row>
-      <ion-col size="9">
-        <ion-button expand="block" (click)="checkout()" [disabled]="!paymentType || cart.length === 0">
-          <ion-icon name="cart-outline" slot="start"></ion-icon>
-          Checkout
-        </ion-button>
-      </ion-col>
-      
+    
       <ion-col size="3">
         <ion-button expand="block"  (click)="printReceipt()" >
           <ion-icon name="print-outline" slot="icon-only"></ion-icon>
           print
         </ion-button>
       </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" (click)="checkout()" [disabled]="!paymentType || cart.length === 0">
+          <ion-icon name="cart-outline" slot="start"></ion-icon>
+          Checkout
+        </ion-button>
+      </ion-col>
+      <ion-col size="3">
+        <ion-button [color]="isScanning ? 'danger' : 'primary'" expand="block" fill="outline"  (click)="toggleScanning()" >
+          <ion-icon [color]="isScanning ? 'danger' : 'primary'" name="barcode-outline" size="large"></ion-icon>
+          Item Scanner
+        </ion-button>
+      </ion-col>
     </ion-row>
   <!-- </ion-toolbar> -->
 </ion-footer>
+<style>
+  .video-preview{
+    width:400px;
+    z-index:999;
+    position: absolute;
+    place-self: center;
+  }
+</style>

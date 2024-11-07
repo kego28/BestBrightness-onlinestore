@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChartDataService } from '../services/chart-data.service';
 import { Chart } from 'chart.js';
+import { ModalController } from '@ionic/angular';
+import { SalesChartComponent } from '../sales-chart/sales-chart.component';
 
 interface Product {
   product_id: number;
@@ -41,7 +43,7 @@ export class AdminSalesReportPage implements OnInit {
   currentPage: number = 1; // Current page
   totalPages: number = 0; // Total number of pages
 
-  constructor(private http: HttpClient,private chartDataService: ChartDataService) {}
+  constructor(private http: HttpClient,private chartDataService: ChartDataService,private modalController: ModalController) {}
 
   ngOnInit() {
    
@@ -49,7 +51,12 @@ export class AdminSalesReportPage implements OnInit {
     this.fetchSalesData();
     this.loadSalesCharts();
   }
-
+  async openSalesChart() {
+    const modal = await this.modalController.create({
+      component: SalesChartComponent,
+    });
+    return await modal.present();
+  }
   fetchSalesData() {
     this.http.get<{ salesData: any[], totalSalesAmount: number }>('http://localhost/user_api/sales.php')
       .subscribe(response => {

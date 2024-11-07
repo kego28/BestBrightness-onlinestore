@@ -168,3 +168,28 @@ ion-card-title {
     margin-right: 8px; /* Add spacing between buttons */
   }
   
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--ion-color-primary);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--transition-duration);
+  
+    &:hover {
+      transform: scale(1.1);
+    }
+  
+    ion-icon {
+      font-size: 24px;
+    }
+  }
