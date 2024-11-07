@@ -379,31 +379,35 @@ export class AccountPage implements OnInit {
     }
   }
 
-  searchWalkInProducts() {
-    const orderNumber = this.orderIdInput;
-    if (orderNumber) {
-      this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}`)
-        .subscribe({
-          next: (response) => {
-            console.log('API response:', response); // Log the response for debugging
-  
-            // Check if the response is valid and has the expected properties
-            if (response && response.success && Array.isArray(response.orders)) {
-              this.fetchedOrder = response.orders; // Store all fetched orders
-              
-              this.showAlert('Orders found!', `Found ${response.orders.length} orders with this number.`);
+  viewOrderDetails(orderNumber: string) {
+    this.http.get<{ success: boolean; orders: any[] }>(`http://localhost/user_api/virtualOrder.php?orderNumber=${orderNumber}`)
+      .subscribe({
+        next: (response) => {
+          console.log('API response:', response);
+
+          if (response && response.success && Array.isArray(response.orders)) {
+            this.fetchedOrder = response.orders;
+            this.activeSection = 'vieworders';
+            
+            if (response.orders.length > 0) {
+              this.showAlert('Order Details', `Viewing details for Order ${orderNumber}`);
             } else {
               this.showAlert('No Orders Found', 'No orders found with this number.');
             }
-          },
-          error: (error) => {
-            console.error('Error fetching orders:', error);
-            this.showAlert('Error', 'Failed to fetch orders.');
+          } else {
+            this.showAlert('Error', 'Invalid response from server.');
           }
-        });
-    } else {
-      this.showAlert('Invalid Input', 'Please enter a valid order number.');
-    }
+        },
+        error: (error) => {
+          console.error('Error fetching orders:', error);
+          this.showAlert('Error', 'Failed to fetch order details.');
+        }
+      });
+  }
+
+  backToOrders() {
+    this.activeSection = 'orders';
+    this.fetchedOrder = [];
   }
 
   private async showAlert(header: string, message: string) {

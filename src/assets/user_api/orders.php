@@ -78,6 +78,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
+else if (isset($_GET['user_count'])) {
+    $user_id = $_GET['user_count'];
+    $sql = "SELECT COUNT(*) AS order_count FROM ORDERS WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result && $row = $result->fetch_assoc()) {
+        echo json_encode(['order_count' => $row['order_count']]);
+    } else {
+        echo json_encode(['order_count' => 0]);
+    }
+}
+
 // Handle GET request
 else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Check if count=true parameter is passed
