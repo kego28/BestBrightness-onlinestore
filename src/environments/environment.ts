@@ -8,12 +8,19 @@ export const environment = {
   apiUrl: 'http://localhost/user_api',
   api:'http://localhost:3000'
 ,  firebaseConfig : {
-    apiKey: "AIzaSyDB_jlyUddtmTvzJM8qCd-ePZ5YupwXgkA",
-    authDomain: "new-99e13.firebaseapp.com",
-    projectId: "new-99e13",
-    storageBucket: "new-99e13.appspot.com",
-    messagingSenderId: "530722211947",
-    appId: "1:530722211947:web:17a36799dcd0b58192c92e"
+    // apiKey: "AIzaSyDB_jlyUddtmTvzJM8qCd-ePZ5YupwXgkA",
+    // authDomain: "new-99e13.firebaseapp.com",
+    // projectId: "new-99e13",
+    // storageBucket: "new-99e13.appspot.com",
+    // messagingSenderId: "530722211947",
+    // appId: "1:530722211947:web:17a36799dcd0b58192c92e"
+    apiKey: "AIzaSyARw5oRmaSmYoSc7C646JanZWM31yPemxw",
+    authDomain: "bestbrightness-a6989.firebaseapp.com",
+    projectId: "bestbrightness-a6989",
+    storageBucket: "bestbrightness-a6989.firebasestorage.app",
+    messagingSenderId: "954124195623",
+    appId: "1:954124195623:web:0b56d3a7cf2a4f4d517b02",
+    measurementId: "G-Q4YXFN5TRF"
   }
 };
 

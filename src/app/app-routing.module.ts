@@ -124,6 +124,11 @@ const routes: Routes = [
     path: 'scanner',
     loadChildren: () => import('./scanner/scanner.module').then( m => m.ScannerPageModule)
   },
+  {
+    path: 'admin-custemer-orders',
+    loadChildren: () => import('./admin-custemer-orders/admin-custemer-orders.module').then( m => m.AdminCustemerOrdersPageModule)
+  },
+
 
   // {
   //   path: 'auth',

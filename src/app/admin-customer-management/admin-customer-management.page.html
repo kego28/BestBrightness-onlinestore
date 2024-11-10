@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 
 <ion-content class="ion-padding custom-background">
@@ -65,7 +66,7 @@
     </ion-card-header>
     <ion-card-content>
       <div class="cards-container">
-        <div class="user-card animate__animated animate__fadeIn" *ngFor="let user of filteredUsers">
+        <div class="user-card animate__animated animate__fadeIn" *ngFor="let user of filteredUsers" >
           <div class="card-header">
             <div class="user-primary-info">
               <div class="user-id">
@@ -81,7 +82,7 @@
               <button class="action-btn edit" (click)="editUser(user)" title="Edit">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="action-btn view" (click)="viewDetails(user)" title="View">
+              <button class="action-btn view" (click)="userDetails(user.user_id)" title="View">
                 <i class="fas fa-eye"></i>
               </button>
               <button class="action-btn delete" (click)="deleteUser(user.user_id)" title="Delete">

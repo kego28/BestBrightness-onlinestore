@@ -1,12 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+interface OrderItem {
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+}
 
+interface Order {
+  id: number;
+  date: Date;
+  status: 'pending' | 'completed' | 'canceled';
+  items: OrderItem[];
+  total: number;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class ChartDataService {
-  private apiBaseUrl = 'http://localhost/user_api'; // Replace with your actual backend path
+  private apiBaseUrl = 'http://localhost/user_api'; 
 
   constructor(private http: HttpClient) {}
 
@@ -48,7 +62,11 @@ export class ChartDataService {
 
 
   getSalesData(period: string): Observable<any> {
+  
     let params = new HttpParams().set('period', period);
     return this.http.get(`${this.apiBaseUrl}/analyseSales.php`,{ params });
   }
+
+ 
+
 }

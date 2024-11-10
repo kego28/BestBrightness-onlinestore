@@ -1,0 +1,209 @@
+<ion-header class="ion-no-border custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-customer-management"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="header-title">Customer Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div class="customer-header">
+    <div class="customer-info">
+      <h1>{{userData?.first_name + " "+ userData?.last_name}}</h1>
+      <p class="customer-id">ID: #{{userData?.user_id}}</p>
+      <div class="stats-container">
+        <div class="stat-item">
+          <span class="stat-value">{{orderSize}}</span>
+          <span class="stat-label">Orders</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value">{{customerSince}}</span>
+          <span class="stat-label">Customer Since</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)" class="custom-segment">
+    <ion-segment-button value="details">
+      <ion-label>
+        <ion-icon name="person-outline"></ion-icon>
+        <span>Details</span>
+      </ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="orders">
+      <ion-label>
+        <ion-icon name="bag-check-outline"></ion-icon>
+        <span>Orders</span>
+      </ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Customer Details Section -->
+  <div *ngIf="segment === 'details'" class="section-container">
+    <div class="section-title">
+      <h2>Contact Information</h2>
+    </div>
+    <ion-card class="custom-card">
+      <ion-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <ion-icon name="mail-outline"></ion-icon>
+            <div class="info-content">
+              <label>Email Address</label>
+              <p>{{userData?.email}}</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <ion-icon name="call-outline"></ion-icon>
+            <div class="info-content">
+              <label>Phone Number</label>
+              <p>{{+27740998711}}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <div class="info-content">
+              <label>Join Date</label>
+              <p>{{userData?.created_at | date:'mediumDate'}}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <ion-icon name="analytics-outline"></ion-icon>
+            <div class="info-content">
+              <label>Lifetime Value</label>
+              <p>R{{roundToDecimalPlaces(value,2)}}</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Orders Section -->
+  <div *ngIf="segment === 'orders'" class="section-container">
+    <div class="section-header">
+      <div class="section-title">
+        <h2>Order History</h2>
+        <span class="order-count">{{orders.length}} orders</span>
+      </div>
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        (ionChange)="filterOrders()"
+        placeholder="Search orders..."
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+
+    <ion-card class="custom-card" *ngFor="let order of filteredOrders">
+      <div class="order-card-content" (click)="viewOrderDetails(order)">
+        <div class="order-header">
+          <div class="order-id">
+            <h3>Order #{{order.orderNumber}}</h3>
+            <span class="order-date">{{order.created_at | date:'MMM d, y'}}</span>
+          </div>
+          <ion-chip [class]="'status-chip ' + order.status.toLowerCase()">
+            {{order.status}}
+          </ion-chip>
+        </div>
+        <div class="order-details">
+          <div class="items-count">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>{{order.number_of_items}} items</span>
+          </div>
+          <div class="order-total">
+            <span class="label">Total:</span>
+            <span class="amount">${{order.total_amount}}</span>
+          </div>
+        </div>
+      </div>
+    </ion-card>
+  </div>
+
+  <!-- Order Details Modal -->
+  <ion-modal *ngIf="selectedOrder.orderNumber" [isOpen]="true" [breakpoints]="[0, 0.5, 0.8]" [initialBreakpoint]="0.8" (didDismiss)="closeOrderDetails()">
+    <ng-template>
+      <ion-header class="modal-header">
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeOrderDetails()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title>Order Details</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-content">
+        <div class="order-detail-header">
+          <div class="order-basic-info">
+            <h2>Order #{{selectedOrder.orderNumber}}</h2>
+            <p class="order-timestamp">
+              <ion-icon name="time-outline"></ion-icon>
+              {{selectedOrder.created_at | date:'MMM d, y, h:mm a'}}
+            </p>
+          </div>
+          <ion-chip [class]="'status-chip ' + selectedOrder.status.toLowerCase()">
+            {{selectedOrder.status}}
+          </ion-chip>
+        </div>
+
+        <div class="items-section">
+          <h3>Order Items</h3>
+          <div class="items-list">
+            <!-- <div *ngFor="let item of items" class="item-card">
+              <div class="item-details">
+                <h4>{{item.name}}</h4>
+                <p class="item-meta">
+                  <span class="quantity">Qty: {{item.quantity}}</span>
+                  <span class="price">R{{item.price.toFixed(2)}} each</span>
+                </p>
+              </div>
+              <div class="item-total">R{{item.subtotal.toFixed(2)}}</div>
+            </div> -->
+            <div *ngFor="let item of items" class="item-card">
+              <div class="product-image">
+                <img [src]="item.image_url || '/api/placeholder/80/80'" [alt]="item.name" />
+              </div>
+              <div class="item-content">
+                <div class="item-details">
+                  <h4>{{item.name}}</h4>
+                  <p class="item-meta">
+                    <span class="quantity">Qty: {{item.quantity}}</span>
+                    <span class="price">R{{item.price}} each</span>
+                  </p>
+                </div>
+                <div class="item-total">
+                  <span class="label">Total</span>
+                  <span class="amount">R{{ item.quantity*item.price}}</span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>R{{calculateSubtotal(items).toFixed(2) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax</span>
+            <span>R{{calculateTax(items).toFixed(2) }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>R{{selectedOrder.total_amount}}</span>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

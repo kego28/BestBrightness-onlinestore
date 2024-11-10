@@ -43,6 +43,7 @@ interface RecentActivity {
 })
 
 export class AdminDashboardPage implements OnInit, AfterViewInit {
+  
   [x: string]: any;
   @ViewChild('salesChart') salesChartCanvas!: ElementRef;
   @ViewChild('areaChart')

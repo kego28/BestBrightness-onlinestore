@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
+import { Router } from '@angular/router';
 interface User {
   user_id: number;
   username: string;
@@ -50,7 +50,8 @@ export class AdminCustomerManagementPage implements OnInit {
     private http: HttpClient,
     private toastController: ToastController,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private router: Router
   ) {
     // Initialize debounced search
     this.searchSubject
@@ -67,6 +68,16 @@ export class AdminCustomerManagementPage implements OnInit {
   ngOnInit() {
     this.loadCustomers();
   }
+
+
+
+
+
+userDetails(customer_id : number) {
+
+  this.router.navigate(['/admin-custemer-orders'], { queryParams: { value: customer_id } });
+}
+
   getActiveUsers(): number {
     // return this.filteredUsers.filter(user => user?.status === 'active').length;
   return 5;}
